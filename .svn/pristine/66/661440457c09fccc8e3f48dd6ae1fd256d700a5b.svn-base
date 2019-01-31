@@ -1,0 +1,16 @@
+package com.upc.user.reqfrm.service;
+
+import java.util.List;
+
+import com.upc.user.reqfrm.vo.ReqFrmListVO;
+import com.upc.user.reqfrm.vo.ReqFrmVO;
+import com.upc.user.reqfrm.vo.SearchVO;
+import com.upc.user.reqfrm.vo.UsrInfVO;
+
+public interface ReqFrmService {
+	public String makeSeqNum();
+	public void insertReqFrm(ReqFrmVO vo, String prtnum) throws Exception;
+	public UsrInfVO selectUser(String prtnum);
+	List<ReqFrmListVO> selectReqFrmList(SearchVO searchVO);
+	void updateSts(List<ReqFrmListVO> reqFrmListVO) throws Exception;
+}

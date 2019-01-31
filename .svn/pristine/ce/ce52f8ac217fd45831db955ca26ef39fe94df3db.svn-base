@@ -1,0 +1,10 @@
+
+div h5{
+    font-size:2rem;
+    font-family: Arial;
+    font-weight: bolder;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+div .information{
+	font-family: 'Noto Sans KR', sans-serif;
+}

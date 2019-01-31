@@ -1,0 +1,308 @@
+package com.upc.common.file.service;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.upc.common.file.dao.MemberFileDAO;
+import com.upc.common.file.vo.FileVO;
+
+/**
+ * 회원 관련 파일 ServiceImpl
+ * @author 이 수빈
+ * @Date 2018.12.17
+ * @version 1.0
+ * @see
+ * 수정이력
+ * 버전	수정일		수정자	수정내용
+ * 1.1	2018.12.26	이수빈	트랜잭션 처리
+ */
+@Service("memberFileService")
+@Transactional
+public class MemberFileServiceImpl implements MemberFileService {
+
+	private static final Logger logger = LoggerFactory.getLogger(MemberFileServiceImpl.class);
+	
+	public static final String path = "c://files/" + pathName();
+	
+	@Autowired
+	private MemberFileDAO dao;
+	
+	/** 
+	 * 경로 지정(해당 날짜)
+	 * @return
+	 * @author 이수빈
+	 * @since 2018.12.24
+	 * @version 1.0
+	 */
+	public static final String pathName() {
+		
+		Date date = new Date();
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+		String dateFormat = format.format(date);
+		
+		/*String serverPath = "http://210.181.192.63/" + dateFormat;
+		String pathnm;
+
+		pathnm = Paths.get(serverPath).toString();*/
+		return dateFormat;
+		//return pathnm;
+	}
+	
+	/** 
+	 * 파일업로드
+	 * @param string(id)
+	 * @param multipartFile
+	 * @author 이수빈
+	 * @since 2018.12.17
+	 * @version 1.0
+	 * 버전		수정일		수정자		내용
+	 * 1.1		2018.12.31	이수빈		insertMember input Parameter 변경 (fileVO로 변경)
+	 */
+	@Override
+	@Transactional(rollbackFor=Exception.class)
+	public String insertFile(FileVO fileVO, MultipartFile file) throws Exception {
+
+		File dir = new File(path);
+		
+		if(!dir.isDirectory()) {
+			dir.mkdirs();
+		}
+		
+		String filenm = file.getOriginalFilename();
+		String fileseq = uploadAttFile();
+		
+		int pos = filenm.lastIndexOf(".");
+		String type = filenm.substring(pos);
+
+		fileVO.setFileseq(fileseq);
+		fileVO.setFilenm(filenm);
+		fileVO.setPath(path);
+		fileVO.setType(type);
+		
+		logger.info("fileVO : " + fileVO.toString());
+		
+		dao.insertFile(fileVO);
+		File target = new File(path,fileseq+type);
+		FileCopyUtils.copy(file.getBytes(), target);
+		
+		return fileseq;
+	}
+	
+	/** 
+	 * 파일 다운로드를 위한 파일 저장 정보 검색(파일명, 경로)
+	 * @param string(fileseq)
+	 * @return
+	 * @author 이수빈
+	 * @since 2018.12.17
+	 * @version 1.0
+	 * 
+	 */
+	@Override
+	public Map<String,String> selectFileInfo(String fileseq) throws Exception {
+	
+		Map<String, String> fileInfo = dao.selectFileInfo(fileseq);
+		return fileInfo;
+	}
+	
+	/** 
+	 * 파일 고유이름 생성(fileSeq)
+	 * @param string(filenm)
+	 * @return
+	 * @author 이수빈
+	 * @since 2018.12.17
+	 * @version 1.0
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0 		2018.12.17	이수빈		최초작성
+	 * 1.1		2018.12.20	이수빈		채번
+	 */
+	private String uploadAttFile() throws Exception {
+		
+		Date date = new Date();
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+		String dateFormat = format.format(date);
+		
+		String seq = String.format("%04d", dao.selectMaxseq()+1);
+		String fileseq = "ATT" + dateFormat	+ seq;
+		
+		logger.info("fileseq : " + fileseq);
+		
+		return fileseq;
+		
+	}
+
+	@Override
+	public void filedownload(HttpServletResponse response, String fileseq) throws Exception {
+		
+		ZipOutputStream zos = null;
+		String zipName="C:\\Users\\user\\Desktop\\upcDoc.zip";
+		
+		byte fileByte[] = null;
+		String fileName = "";
+		
+		List<String> fileList = new ArrayList<String>();
+		String[] list = fileseq.split(",");
+		
+		for(int i = 0; i < list.length; i++) {
+			fileList.add(list[i]);
+		}
+		
+		if(fileList.size() == 1) {
+			// 가입 신청서 seq 설정
+			Map<String, String> fileInfo = dao.selectFileInfo(fileseq);	//fileseq를 통해 file 정보(파일명, 경로) 불러오기
+			fileName = fileInfo.get("FILENM");
+			String saveFileName = fileInfo.get("PATH")+"\\"+fileInfo.get("FILENM");
+			fileByte = FileUtils.readFileToByteArray(new File(saveFileName));	// 실제 파일이 저장된 경로를 통해 첨부파일을 읽어 byte[]형태로 변환
+		} else {	
+			
+			try {
+				byte[] buf = new byte[4096];
+
+				zos = new ZipOutputStream(new FileOutputStream(zipName));
+				FileInputStream in = null;
+				
+				for (int i = 0; i < fileList.size(); i++) {
+					Map<String, String> fileInfo = selectFileInfo(fileList.get(i));
+					
+					in = new FileInputStream(fileInfo.get("PATH")+"/"+fileInfo.get("FILENM"));
+					String path = fileInfo.get("PATH")+"/"+fileInfo.get("FILENM");
+					
+					fileList.set(i, path);
+
+					zos.putNextEntry(new ZipEntry(fileInfo.get("FILENM")));
+
+					int len;
+					
+					while ((len = in.read(buf)) > 0) {
+						zos.write(buf, 0, len);
+					}
+					zos.closeEntry();
+					in.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				if (zos != null) {
+					try {
+						zos.close();
+					} catch (Exception e) {
+
+					}
+					zos = null;
+				}
+				File zipFile = new File(zipName); 
+				fileName = zipFile.getName();
+				fileByte = FileUtils.readFileToByteArray(zipFile);
+
+			}
+
+		}
+		
+		response.setContentType("application/octet-stream");						// application/octet-stream : application 형식이 지정되지 않았거나 모름을 의미
+	    //response.setContentLength(fileByte.length);
+	    response.setHeader("Content-Disposition", "attachment; fileName=\"" + URLEncoder.encode(fileName,"UTF-8")+"\";");	// attachment : 데이터 형식이 첨부파일임을 의미함
+																															// fileName=\"" : 첨부 파일의 이름 지정
+	    response.setHeader("Content-Transfer-Encoding", "binary");
+	    
+	    response.getOutputStream().write(fileByte);
+	    response.getOutputStream().flush();
+	    response.getOutputStream().close();
+	}
+	
+	/** 
+	 * 파일 새창으로 보기
+	 * @param fileVO
+	 * @param response
+	 * @author 강성효
+	 * @since 2019.01.08
+	 * @version 1.0
+	 * 버전		수정일		수정자		내용
+	 */
+	@Override
+	public void fileViewer(HttpServletResponse response,FileVO fileVO) throws Exception {
+		
+		byte fileByte[] = null;
+		String fileName = "";
+		
+		List<String> fileList = new ArrayList<String>();
+		String[] list = fileVO.getFileseq().split(",");
+		
+		for(int i = 0; i < list.length; i++) {
+			fileList.add(list[i]);
+		}
+			// 가입 신청서 seq 설정
+			Map<String, String> fileInfo = dao.selectFileInfo(fileVO.getFileseq());	//fileseq를 통해 file 정보(파일명, 경로) 불러오기
+			fileName = fileInfo.get("FILENM");
+			String saveFileName = fileInfo.get("PATH")+"\\"+fileInfo.get("FILENM");
+			fileByte = FileUtils.readFileToByteArray(new File(saveFileName));	// 실제 파일이 저장된 경로를 통해 첨부파일을 읽어 byte[]형태로 변환
+			
+		  if(fileVO.getType().equals(".pdf")) {
+			  
+			  response.setContentType("application/pdf");
+			  
+		  }else {
+			  response.setContentType("application/image");
+		  }
+		  	response.setContentLength(fileByte.length);
+			response.setHeader("Content-Disposition", "inline; fileName=\"" + URLEncoder.encode(fileName, "UTF-8") + "\";");
+			response.getOutputStream().write(fileByte);
+			 
+			response.getOutputStream().flush();
+			response.getOutputStream().close();
+
+	}
+
+	/** 
+	 * 파일 수정
+	 * @param fileVO
+	 * @param file
+	 * @author 강성효
+	 * @since 2019.01.08
+	 * @version 1.0
+	 * 버전		수정일		수정자		내용
+	 */
+	@Override
+	public void modifyFile(FileVO fileVO, MultipartFile file) throws Exception {
+		
+		File dir = new File(path);
+		
+		if(!dir.isDirectory()) {
+			dir.mkdirs();
+		}
+		
+		String filenm = file.getOriginalFilename();
+		String fileseq = fileVO.getFileseq();
+		int pos = filenm.lastIndexOf(".");
+		String type = filenm.substring(pos);
+
+		fileVO.setFileseq(fileseq);
+		fileVO.setFilenm(filenm);
+		fileVO.setPath(path);
+		fileVO.setType(type);
+		
+		dao.updateFile(fileVO);
+		File target = new File(path,fileVO.getFileseq()+fileVO.getType());
+		FileCopyUtils.copy(file.getBytes(), target);
+	}
+}

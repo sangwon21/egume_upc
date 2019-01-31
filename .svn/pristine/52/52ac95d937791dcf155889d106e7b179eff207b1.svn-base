@@ -1,0 +1,7 @@
+alrt.sms.sendtel=1566-2119
+alrt.sms.firstck=1
+alrt.sms.code1=KTNET
+alrt.sms.code2=구매확인발급지원센터
+alrt.sms.msg.sample=구매확인서 견본 파일이 등록되었습니다.다음 링크를 통해 홈페이지에서 확인해 주십시오. http://bit.ly/UPC2Fdxnwb
+alrt.sms.msg.sampleConfirm=구매확인서 견본 확인 파일이 등록되었습니다.다음 링크를 통해 홈페이지에서 확인해 주십시오. http://bit.ly/UPC2Fdxnwb
+alrt.sms.msg.issue=구매확인서 원본 파일이 등록되었습니다.다음 링크를 통해 홈페이지에서 확인해 주십시오. http://bit.ly/UPC2Fdxnwb

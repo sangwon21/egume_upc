@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	Date : 2018. 12. 19
+	Author : 이수빈
+	Description : memberInfoMappers.xml 생성
+	version 1.0
+	=======================================
+	버전 		수정일 		수정자 		설명
+	1.0		2018.12.19	이수빈		최초작성
+	1.1		2018.12.20	이수빈		회원정보수정
+	1.2		2018.12.20	이수빈		패스워드 일치/불일치 검사 및 회원탈퇴(휴면계정으로 전환)
+	1.3		2019.01.02	이수빈		회원정보조회 BSNSFILEID 값 변경
+-->
+<mapper namespace="com.upc.user.usrinf.dao.MemberInfoDAO">
+
+	<!-- 회원정보조회 -->
+	<select id="selectUsrInf" parameterType="String" resultType="usrInfVO">
+		SELECT U.PRTNUM, CMPNNM, CEONM, ADDR1, ADDR2, 
+			MGRNAME, MGRTEL, MGRPHONE, MGREMAIL, MGRPSTN, MGRFAX,
+			RMNCNT, PREPAYYN, EMAILYN, SMSYN, F.FILENM AS BSNSFILEID
+		FROM USRINF U, FILEINF F
+		WHERE U.BSNSFILEID = F.FILESEQ AND U.PRTNUM=#{prtnum}
+	</select>
+	
+	<!-- 회원정보수정 -->
+	<update id="updateUsrInf" parameterType="usrInfVO">
+		UPDATE USRINF SET 
+			PW = #{pw}, 
+			MGRNAME = #{mgrname}, MGRTEL = #{mgrtel},
+			MGRPHONE = #{mgrphone}, MGREMAIL=#{mgremail},
+			MGRPSTN = #{mgrpstn}, MGRFAX = #{mgrfax},
+			EMAILYN = #{emailyn}, EMAILDT = SYSDATE,
+			SMSYN = #{smsyn}, SMSDT = SYSDATE,
+			PREPAYYN=#{prepayyn},
+			MDFTM = SYSDATE, MDFID = #{prtnum}
+		
+		WHERE PRTNUM=#{prtnum}
+	</update>
+	
+	<!-- 패스워드 일치 확인 -->
+	<select id="checkPw" parameterType="String" resultType="String">
+		SELECT PW FROM USRINF WHERE PRTNUM = #{prtnum}
+	</select>
+	
+	<!-- 회원 탈퇴(휴면계정) -->
+	<update id="deleteUsrInf" parameterType="String">
+		UPDATE USRINF SET STS='N' WHERE PRTNUM=#{prtnum}
+	</update>
+</mapper> 

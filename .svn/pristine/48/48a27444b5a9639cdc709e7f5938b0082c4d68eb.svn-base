@@ -1,0 +1,85 @@
+package com.upc.admin.userjoinreqlist.service;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.upc.admin.userjoinreqlist.dao.UserJoinReqListDAO;
+import com.upc.admin.userjoinreqlist.vo.SearchVO;
+import com.upc.admin.userjoinreqlist.vo.UserJoinReqVO;
+
+
+@Service("userJoinReqListService")
+@Transactional
+public class UserJoinReqListServiceImpl implements UserJoinReqListService {
+
+private static final org.slf4j.Logger logger = LoggerFactory.getLogger(UserJoinReqListServiceImpl.class);
+	
+	@Autowired
+	private UserJoinReqListDAO dao;
+	
+	@Override
+	public List<UserJoinReqVO> getUserJoinReqList(SearchVO searchVO) throws Exception {
+		List<UserJoinReqVO> userJoinReqList=null;
+		
+		//페이지에 처음 접속 시, 접수일자 조회일자를 1주일전~현재로 세팅
+		if (searchVO.getDateFrom() == null && searchVO.getDateTo() == null) {
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+			Date currentTime = new Date();
+			String mTime = simpleDateFormat.format(currentTime);
+			searchVO.setDateTo(mTime);
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.DAY_OF_WEEK_IN_MONTH, -1);
+			searchVO.setDateFrom(simpleDateFormat.format(cal.getTime()));
+		}
+		
+		// 전체 접수건
+		int boardTotUnit = dao.getBoardTotUnit(searchVO);
+		// 현재페이지
+		int pageIndex = searchVO.getPageIndex();
+		// 한페이지당 건 수
+		int pageUnit = searchVO.getPageUnit();
+		// 보여줄 페이지 크기
+		int pageSize = searchVO.getPageSize();
+		// 전체페이지
+		int totPage = (boardTotUnit % pageUnit == 0) ? (boardTotUnit / pageUnit) : (boardTotUnit / pageUnit + 1); 
+		// 시작페이지
+		int firstIndex = ((pageIndex - 1) / pageSize) * pageSize + 1;
+		// 끝페이지
+		int lastIndex = firstIndex + pageSize - 1;
+		//끝페이지 처리
+		if (lastIndex > totPage) {
+			lastIndex = totPage;
+		}
+		searchVO.setBoardTotUnit(boardTotUnit);
+		searchVO.setTotPage(totPage);
+		searchVO.setFirstIndex(firstIndex);
+		searchVO.setLastIndex(lastIndex);
+		logger.info("Processing : Paging Ok");
+		try {
+			userJoinReqList = dao.getUserJoinReqList(searchVO);
+		}catch (Exception e) {
+			logger.error("Error occurred : database select(userJoinReqList)");
+		}
+		
+		return userJoinReqList;
+	}
+
+	@Override
+	public int getBoardTotUnit(SearchVO searchVO) {
+		return dao.getBoardTotUnit(searchVO);
+	}
+
+	@Override
+	@Transactional(rollbackFor=Exception.class)
+	public int delUserJoinReq(String delUserId) throws Exception {
+		return dao.delUserJoinReq(delUserId);
+	}
+
+}

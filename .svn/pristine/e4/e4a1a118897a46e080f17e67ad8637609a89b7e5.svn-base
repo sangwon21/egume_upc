@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	Date : 2019. 01. 02
+	Author : 김진혁
+	Description : 고객 등록 신청서  처리를 위한 Mappers
+	version 1.0
+	=======================================
+	버전 		수정일 		수정자 		설명
+	1.0		2019.1.2	김진혁		최초작성
+-->
+<mapper namespace="com.upc.admin.userjoinreqdetail.dao.UserJoinReqDetailDAO"> 
+
+	<!-- id 속성은 DAO 의 메소드와 같아야 한다  --> 
+	
+	<!-- 고객 등록 신청서 상세 조회  -->
+	<select id="getUserJoinReqInfo" parameterType="string" resultType="userJoinReqDetailVO">
+	SELECT *
+	FROM 
+	(
+        SELECT 	A.prtnum, A.cmpnnm, A.ceonm, A.addr1, A.addr2, 
+        		A.mgrname, A.mgrtel, A.mgrphone, A.mgremail, A.mgrpstn, A.mgrfax, 
+        		A.prepayyn, A.emailyn, A.smsyn, A.bsnsfileid, A.applfileid, A.bsnsfilenm, A.bsnstype, B.applfilenm, B.appltype
+        FROM
+	        	(SELECT u.*, f.fileseq bsnsfileseq, f.filenm bsnsfilenm, f.type bsnstype
+	       	 	FROM usrinf u, fileinf f
+	        	WHERE u.bsnsfileid=f.fileseq) A
+	        		LEFT OUTER JOIN
+	        	(SELECT u.*, f.fileseq applfileseq, f.filenm applfilenm, f.type appltype
+	        	FROM usrinf u, fileinf f
+	        	WHERE u.applfileid=f.fileseq) B
+        			ON A.prtnum=B.prtnum
+    )
+    WHERE prtnum=#{prtnum}
+	</select>
+	
+	<!-- 고객 등록 신청서 승인 -->
+	<update id="confirmUserJoin" parameterType="userJoinReqDetailVO">
+		UPDATE USRINF 
+		SET cmpnnm=#{cmpnnm}, ceonm=#{ceonm}, addr1=#{addr1}, addr2=#{addr2}, 
+			emailyn=<if test="emailyn == 'on'">'Y'</if><if test="emailyn != 'on'">'N'</if>, 
+			smsyn=<if test="smsyn == 'on'">'Y'</if><if test="smsyn != 'on'">'N'</if>, 
+			prepayyn=<if test="prepayyn == 'on'">'Y'</if><if test="prepayyn != 'on'">'N'</if>,
+			sts='Y',
+			mgrname=#{mgrname}, mgrtel=#{mgrtel}, mgrphone=#{mgrphone}, mgremail=#{mgremail}, mgrpstn=#{mgrpstn}, mgrfax=#{mgrfax},
+			mdftm=SYSDATE, mdfid=#{mdfid}
+			<if test="bsnsfileid != null and bsnsfileid != '' ">, bsnsfileid=#{bsnsfileid} </if> 
+		where prtnum=#{prtnum}
+	</update>
+ 
+ </mapper>

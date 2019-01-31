@@ -1,0 +1,54 @@
+package com.upc.common.login.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import com.upc.common.login.dao.LoginDAO;
+import com.upc.common.login.vo.UserDetailsVO;
+
+/**
+ * 로그인 정보 ServiceImpl
+ * (username, password, authority, enabled, name(cmpnnm/admname))
+ * @author 이 수빈
+ * @Date 2018.12.24
+ * @version 1.0
+ * @see
+ *
+ */
+@Service("userAuthenticationService")
+public class UserAuthenticationServiceImpl implements UserDetailsService {
+	private static final Logger logger = LoggerFactory.getLogger(UserAuthenticationServiceImpl.class);
+
+	@Autowired
+	private LoginDAO dao;
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		Map<String, Object> user = dao.selectLoginInfo(username);
+
+		if (user == null)
+			throw new UsernameNotFoundException(username);
+
+		logger.info("login user info : " + user.toString());
+
+
+		boolean enabled = (Integer.parseInt(user.get("ENABLED").toString()) != 0);
+		List<GrantedAuthority> gas = new ArrayList<GrantedAuthority>();
+		gas.add(new SimpleGrantedAuthority(user.get("AUTHORITY").toString()));
+
+		return new UserDetailsVO(user.get("USERNAME").toString(), user.get("PASSWORD").toString(),
+				enabled, true, true, true, gas, user.get("CMPNNM").toString(), user.get("MGRNAME").toString());
+	}
+
+}

@@ -1,0 +1,171 @@
+package com.upc.admin.applrcptrgst.service;
+
+import static org.junit.Assert.assertEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.upc.admin.applrcptlist.controller.ApplRcptListController;
+import com.upc.admin.applrcptlist.vo.ApplRcptListVO;
+import com.upc.admin.applrcptrgst.dao.ApplRcptRgstDAO;
+import com.upc.common.file.vo.FileVO;
+import com.upc.common.rgstid.vo.UsrInfVO;
+
+import ch.qos.logback.core.net.SyslogOutputStream;
+import oracle.net.aso.f;
+
+/**
+ * @author 강성효
+ * @since 2018. 12. 27.
+ * @version
+ * @see 참고
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"file:src/mapper/*.xml","file:WebContent/WEB-INF/spring/*.xml"})
+@Service
+public class ApplRcptRgstServiceImpl implements ApplRcptRgstService {
+	
+	Logger log = LoggerFactory.getLogger(ApplRcptRgstServiceImpl.class);
+	
+	@Autowired
+	private ApplRcptRgstDAO applRcptRgstDAO;
+	
+	
+	@Test
+	public void applRcptOneTest() {
+		
+		ApplRcptListVO applRcptListVO = new ApplRcptListVO();
+		
+		applRcptListVO.setApplNum("APPL201812240118");
+		
+		applRcptListVO =  applRcptRgstDAO.getApplRcptOne(applRcptListVO);
+		assertEquals(1, applRcptListVO);
+	}
+	
+	@Test
+	public void fileInfoListTest() {
+		ApplRcptListVO applRcptListVO = new ApplRcptListVO();
+		applRcptListVO.setApplNum("APPL201812280081");
+		ArrayList<FileVO> fileList = applRcptRgstDAO.getFileInfoList(applRcptListVO);
+		assertEquals(2, fileList.size());
+		ArrayList<FileVO> prsfileList = new ArrayList<>();
+		
+		for(int i = 0; i < fileList.size() ; i++) {
+			
+			String formType = fileList.get(i).getFormtype();
+			String fileSeq[] = fileList.get(i).getFileseq().split(",");
+			String fileNm[] = fileList.get(i).getFilenm().split(",");
+			String fileType[] = fileList.get(i).getType().split(",");
+			
+			for(int j = 0; j < 3; j++) {
+				if(fileSeq.length - 1 < j) {
+					
+					prsfileList.add(new FileVO());
+				}else {
+					
+					FileVO fileVO = new FileVO();
+					fileVO.setFormtype(formType);
+					fileVO.setFileseq(fileSeq[j]);
+					fileVO.setFilenm(fileNm[j]);
+					fileVO.setType(fileType[j]);
+					prsfileList.add(fileVO);
+				}
+			}
+		}
+		Collections.swap(prsfileList, 1, 3);
+		Collections.swap(prsfileList, 4, 3);
+		
+		assertEquals(6, prsfileList.size());
+	}
+	
+	@Override
+	public ApplRcptListVO applRcptOne(ApplRcptListVO applRcptListVO) {
+		
+		try {
+			
+			applRcptListVO = applRcptRgstDAO.getApplRcptOne(applRcptListVO);
+			
+		} catch (Exception e) {
+			
+		}
+		
+		return applRcptListVO;
+		
+	}
+	
+
+	@Override
+	public ArrayList<FileVO> fileInfoList(ApplRcptListVO applRcptListVO) {
+		ArrayList<FileVO> fileList = applRcptRgstDAO.getFileInfoList(applRcptListVO);
+		ArrayList<FileVO> prsfileList = new ArrayList<>();
+		if(fileList.size() != 0) {
+		
+			for(int i = 0; i < fileList.size() ; i++) {
+				
+				String formType   =   fileList.get(i).getFormtype();
+				String fileSeq[]  =  fileList.get(i).getFileseq().split(",");
+				String fileNm[]   =   fileList.get(i).getFilenm().split(",");
+				String fileType[] = fileList.get(i).getType().split(",");
+				
+				for(int j = 0; j < 3; j++) {
+					
+					if(fileSeq.length - 1 < j) {
+						prsfileList.add(null);
+						
+					}else {
+						
+						FileVO fileVO = new FileVO();
+						fileVO.setFormtype(formType);
+						fileVO.setFileseq(fileSeq[j]);
+						fileVO.setFilenm(fileNm[j]);
+						fileVO.setType(fileType[j]);
+						prsfileList.add(fileVO);
+					}
+				}
+			}
+			
+			for(int i = fileList.size()-1; i < 2; i++) {
+				for(int j = 0; j < 3; j++) {
+					prsfileList.add(null);
+				}
+			}
+		
+			Collections.swap(prsfileList, 1, 3);
+			Collections.swap(prsfileList, 4, 3);
+			
+		}else {
+			for(int j = 0; j < 6; j++) {
+					prsfileList.add(null);
+			}
+		}
+		return prsfileList;
+	}
+
+	@Override
+	public int modApplRgst(ApplRcptListVO applRcptListVO,FileVO fileVO, MultipartFile[] tax, MultipartFile[] sup) {
+		
+		for(int i = 0; i < 3; i++ ) {
+			if(tax[i].isEmpty()) {
+				
+			}
+		}
+		
+		return 0;
+	}
+	
+	
+}

@@ -1,0 +1,9 @@
+package com.upc.admin.applrcptrgst.dao;
+
+
+import com.upc.admin.applrcptlist.vo.ApplRcptListVO;
+
+public interface ApplRcptRgstDAO {
+	ApplRcptListVO getApplRcptOne(ApplRcptListVO applRcptListVO);
+	
+}

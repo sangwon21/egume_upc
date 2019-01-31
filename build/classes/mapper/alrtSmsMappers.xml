@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	Date : 2019. 01. 07
+	Author : 신혜영
+	Description : sms 알림 문자 전송 
+	Version : 1.0
+	History
+	Date			Author		Contents
+	==========		=========	===========================
+	2019.01.07		신혜영		알림 문자 등록 기능 추가
+ -->
+<mapper namespace="com.upc.common.alert.dao.AlrtSmsDAO">
+
+	<!-- 알림 문자 등록 -->
+	<insert id="insertSms" parameterType="com.upc.common.alert.vo.AlrtSmsVO">
+		INSERT 
+		INTO SMS (
+			Sm_InDate
+			, Sm_SdMbNo
+			, Sm_RvMbNo
+			, Sm_Msg
+			, Sm_FirstCk
+			, Sm_code1
+			, Sm_code2
+			, Sm_code3
+		) VALUES (
+			CURRENT_TIMESTAMP
+			, #{Sm_SdMbNo}
+			, #{Sm_RvMbNo}
+			, #{Sm_Msg}
+			, #{Sm_FirstCk}
+			, #{Sm_code1}
+			, #{Sm_code2}
+			, #{Sm_code3}
+		)
+	</insert>
+
+</mapper>

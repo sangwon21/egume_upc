@@ -1,0 +1,37 @@
+package com.upc.common.interceptor;
+
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.aop.ThrowsAdvice;
+
+@Aspect
+public class EgumeInterceptor implements ThrowsAdvice{
+
+	private static final Logger logger = LoggerFactory.getLogger(EgumeInterceptor.class);
+	
+	/*@Before("execution(public * com..service.*ServiceImpl.insert*(..)) or execution(public * com..service.*ServiceImpl.update*(..)) or execution(public * com..service.*ServiceImpl.delete*(..)) or execution(public * com..service.*ServiceImpl.select*(..)))")
+	public void beforeInterceptor(JoinPoint joinpoint) {
+		logger.info("EgumeInterceptor.beforeInterceptor executed.");
+		//Class clazz = joinpoint.getTarget()	.getClass();
+		String className = joinpoint.getTarget().getClass().getSimpleName();
+		String methodName = joinpoint.getSignature().getName();
+		
+		logger.info(className + "." + methodName + " executed.");
+	}
+	
+	@AfterReturning(pointcut="execution(public * com..service.*ServiceImpl.insert*(..)) or execution(public * com..service.*ServiceImpl.update*(..)) or execution(public * com..service.*ServiceImpl.delete*(..)) or execution(public * com..service.*ServiceImpl.select*(..)))", returning="retVal")
+	public void afterInterceptor(JoinPoint joinpoint, Object retVal) {
+		logger.info("EgumeInterceptor.afterInterceptor executed." + "return value is [" + retVal + "]");
+	}*/
+	
+	@AfterThrowing(pointcut="execution(public * com..service.*ServiceImpl.insert*(..)) or execution(public * com..service.*ServiceImpl.update*(..)) or execution(public * com..service.*ServiceImpl.delete*(..)) or execution(public * com..service.*ServiceImpl.select*(..)))", throwing="exception")
+	public void afterExceptionInterceptor(JoinPoint joinpoint, Exception exception) {
+		logger.info("EgumeInterceptor.afterExceptionInterceptor executed.");
+		logger.error("error happened. : " + exception);
+	}
+}

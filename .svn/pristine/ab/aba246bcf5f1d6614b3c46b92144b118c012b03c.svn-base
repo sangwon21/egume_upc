@@ -1,0 +1,91 @@
+package com.upc.admin.wrtinfodetail.service;
+
+import java.util.Date;
+import java.util.List;
+
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.upc.admin.wrtinfodetail.dao.WrtInfoDetailDAO;
+import com.upc.admin.wrtinfodetail.vo.CnfrmPrchIsueVO;
+import com.upc.admin.wrtinfodetail.vo.CnfrmPrchReqVO;
+import com.upc.common.file.service.MemberFileService;
+
+/**
+ * 발급지원 작성 상세정보를 가져옴
+ * @author 신혜영
+ * @since 2018. 12. 26.
+ * @version 1.0
+ * @see
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ */
+@Service("wrtInfoDetailService")
+public class WrtInfoDetailServiceImpl implements WrtInfoDetailService {
+
+	@Autowired
+	private WrtInfoDetailDAO wrtInfoDetailDAO;
+
+	@Autowired
+	private MemberFileService fileService;
+
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(WrtInfoDetailServiceImpl.class);
+
+	/**
+	 * 발급신청 상세조회를 가져옴
+	 * @param applnum
+	 * @return CnfrmPrchReqVO
+	 * @author 신혜영
+	 * @since 2018. 12. 26.
+	 * @version 1.0
+	 */
+	@Override
+	public CnfrmPrchReqVO selectCnfrmPrchReq(String applnum) {
+		return wrtInfoDetailDAO.selectCnfrmPrchReq(applnum);
+	}
+
+	/**
+	 * 구매확인서 원본 목록을 가져옴
+	 * @param issuenum
+	 * @return List<CnfrmPrchIsueVO>
+	 * @author 신혜영
+	 * @since 2018. 12. 26.
+	 * @version 1.0
+	 */
+	@Override
+	public List<CnfrmPrchIsueVO> selectCnfrmPrchIsue(String issuenum) {
+		return wrtInfoDetailDAO.selectCnfrmPrchIsue(issuenum);
+	}
+
+	/**
+	 * 견본 파일 업로드 및 발급신청 견본 정보 업데이트
+	 * @param file
+	 * @return CnfrmPrchReqVO
+	 * @author 신혜영
+	 * @since 2018. 12. 27.
+	 * @version 1.0
+	 * @throws Exception
+	 */
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public CnfrmPrchReqVO insertSmpFile(CnfrmPrchReqVO cnfrmPrchReqVO, MultipartFile file) throws Exception {
+
+		//견본 파일 insert
+		String fileseq = fileService.insertFile(cnfrmPrchReqVO.getPrtnum(), file, cnfrmPrchReqVO.getApplnum(), "견본");
+
+		//cnfrmPrchReqVO.setSmpldocid(smpldocid);
+		cnfrmPrchReqVO.setSmplfileid(fileseq);
+		
+		//발급신청 정보에 견본 정보 추가
+		if (wrtInfoDetailDAO.updateSmpInfo(cnfrmPrchReqVO) != 1) {
+			logger.info("updating cnfrmprchreq sample info is failed");
+			throw new Exception("구매확인서 발급신청 견본 정보 업데이트 실패");
+		}
+
+		return cnfrmPrchReqVO;
+	}
+
+}

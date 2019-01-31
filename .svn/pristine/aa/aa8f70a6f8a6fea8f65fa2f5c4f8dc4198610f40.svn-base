@@ -1,0 +1,11 @@
+package com.upc.admin.wrtinfodetail.service;
+
+import java.util.List;
+
+import com.upc.admin.wrtinfodetail.vo.CnfrmPrchIsueVO;
+import com.upc.admin.wrtinfodetail.vo.CnfrmPrchReqVO;
+
+public interface WrtInfoDetailService {
+	CnfrmPrchReqVO selectCnfrmPrchReq(String applnum);
+	List<CnfrmPrchIsueVO> selectCnfrmPrchIsue(String issuenum);
+}

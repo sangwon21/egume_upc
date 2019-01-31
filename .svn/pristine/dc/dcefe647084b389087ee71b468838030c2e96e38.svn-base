@@ -1,0 +1,244 @@
+#combine {
+	text-align: right;
+}
+
+#combine>h5 {
+	margin-bottom: -0.5%
+}
+
+#cmbTdy {
+	font-weight: bold;
+}
+
+.form-orizontal {
+	background-color: #9dcde3;
+}
+
+#form_container {
+	padding: 30px;
+}
+
+#search {
+	width: 90%;
+	display: flex;
+}
+
+#search_date {
+	width: 20%;
+	margin-left: 30px;
+	margin-right: 30px;
+}
+
+#search_date_show1 {
+	width: 20%;
+}
+
+#search_date_show2 {
+	width: 20%;
+}
+
+#search_condition {
+	margin-left: 30px;
+	margin-right: 106px;
+}
+
+#search_status {
+	margin-left: 30px;
+	margin-right: 30px;
+}
+
+#search_writer {
+	margin-left: 44px;
+	margin-right: 30px;
+}
+
+#search_btn {
+	float: right;
+	margin-top: -40px;
+}
+
+#btns {
+	margin-bottom: 10px;
+	text-align: right;
+}
+
+#paging {
+	text-align: center;
+}
+
+#list_title {
+	font-size: 30px;
+	padding: 35px;
+}
+
+.well {
+	background-image: linear-gradient(#FAFAFA, #ECECEC);
+}
+
+#search_container {
+	background-image: linear-gradient(#FAFAFA, #ECECEC);
+}
+
+#searchForm {
+	padding: 30px;
+}
+
+#search {
+	width: 90%;
+	display: flex;
+}
+
+#dtCondi {
+	margin-left: 30px;
+	margin-right: 10px;
+	width: 150px;
+}
+
+.container3 {
+	display: inline-block;
+}
+
+.container3_left {
+	width: 60%;
+}
+
+#dateFrom {
+	width: 150px;
+}
+
+#dateTo {
+	width: 150px;
+	margin-right: 30px;
+}
+
+#searchCondi {
+	margin-left: 30px;
+	margin-right: 10px;
+	width: 150px;
+}
+
+#stsCondi {
+	margin-left: 30px;
+	margin-right: 30px;
+}
+
+#wrtrCondi {
+	margin-left: 44px;
+	width: 150px;
+}
+
+#searchBtn {
+	float: right;
+	margin-top: -40px;
+}
+
+#sts_change_btn {
+	float: right;
+	margin-top: 20px;
+	margin-bottom: 10px;
+}
+
+#appMthd{
+	margin-left: 35px;
+	width: 119px;
+}
+
+#appMthdForm{
+	margin-left: 401px;
+}
+
+#rgstVwPrtNum {
+	width: 200px;
+  margin-left: 10px
+}
+hr{
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+#fileTableHeader{
+  width : 45%;
+}
+.image-preview-input {
+    position: relative;
+    overflow: hidden;
+  	margin: 0px;
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+}
+.image-preview-input input[type=file] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 0;
+	padding: 0;
+	font-size: 20px;
+	cursor: pointer;
+	opacity: 0;
+	filter: alpha(opacity=0);
+}
+.image-preview-input-title {
+    margin-left:2px;
+}
+#rgstVwHeader{
+	display : inline-flex;
+	margin-top: 15px;
+	position: absolute;
+    bottom: 45px;
+}
+#topRow{
+	position: relative;
+	width : 1140px;
+	height : 141px;
+}
+#topFileForm{
+	float: right;
+}
+
+.shape{    
+    border-style: solid; border-width: 0 70px 40px 0; float:right; height: 0px; width: 0px;
+	-ms-transform:rotate(360deg); /* IE 9 */
+	-o-transform: rotate(360deg);  /* Opera 10.5 */
+	-webkit-transform:rotate(360deg); /* Safari and Chrome */
+	transform:rotate(360deg);
+}
+.offer{
+	background:#fff; border:1px solid #ddd; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); margin: 15px 0; overflow:hidden;
+}
+.offer:hover {
+    -webkit-transform: scale(1.1); 
+    -moz-transform: scale(1.1); 
+    -ms-transform: scale(1.1); 
+    -o-transform: scale(1.1); 
+    transform:rotate scale(1.1); 
+    -webkit-transition: all 0.4s ease-in-out; 
+-moz-transition: all 0.4s ease-in-out; 
+-o-transition: all 0.4s ease-in-out;
+transition: all 0.4s ease-in-out;
+    }
+.shape {
+	border-color: rgba(255,255,255,0) #d9534f rgba(255,255,255,0) rgba(255,255,255,0);
+}
+.offer-radius{
+	border-radius:7px;
+}
+
+
+.offer-primary {	border-color: #428bca; }
+.offer-primary .shape{
+	border-color: transparent #428bca transparent transparent;
+}
+
+.shape-text{
+	color:#fff; font-size:12px; font-weight:bold; position:relative; right:-40px; top:2px; white-space: nowrap;
+	-ms-transform:rotate(30deg); /* IE 9 */
+	-o-transform: rotate(360deg);  /* Opera 10.5 */
+	-webkit-transform:rotate(30deg); /* Safari and Chrome */
+	transform:rotate(30deg);
+}	
+.offer-content{
+	padding:0 20px 10px;
+}
+#fileDownBtn{
+	cursor: pointer;
+}

@@ -1,0 +1,974 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ page session="false"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="ko">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="referrer" content="no-referrer" />
+        <!-- 위 3개의 메타 태그는 *반드시* head 태그의 처음에 와야합니다; 어떤 다른 콘텐츠들은 반드시 이 태그들 *다음에* 와야 합니다 -->
+        <title>구매확인서 발급 서비스</title>
+   		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.2/css/bootstrapValidator.min.css"/>
+   		<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <link href="http://fonts.googleapis.com/earlyaccess/jejugothic.css" rel="stylesheet">
+        <link href="http://fonts.googleapis.com/earlyaccess/jejumyeongjo.css" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,700&amp;subset=korean" rel="stylesheet">
+    	<link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR&amp;subset=korean" rel="stylesheet">
+    	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/user.css">
+    </head>
+
+    <body>
+        <c:import url="../header.jsp" />
+        
+        <div class="container .col-xs-12" >
+	  		<div class="title"> 구매확인서 발급 지원 신청
+	  		</div>
+  			<ul class="nav nav-tabs">
+  				<li class="active"><a data-toggle="tab" href="#WriteForm">신청서작성</a></li>
+    			<li><a data-toggle="tab" href="#FileForm">신청서업로드</a></li>
+			</ul>
+        </div>
+        <br>
+        <div class="container col-sm-7 tab-content clearfix" style="float:none; margin:0 auto;">
+        <div id="WriteForm" class="tab-pane fade in active">  
+            <form class="form-horizontal" action="${pageContext.request.contextPath}/user/reqfrm/prchCnfrmApplCreate" id="applForm" method="post" enctype="multipart/form-data">
+			<div class="col-sm-12">
+				<table class="table col-lg-6 contents__box">
+				<thead>
+					<tr>
+						<th scope="col" colspan=3>신청구분</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr id="typeSelectionForm">
+						<td><input type="radio" name="applditc" value="O" checked="checked"> 신규발행</td>
+						<td><input type="radio" name="applditc" value="A"> 변경발행</td>
+					</tr>
+				</tbody>
+				</table>
+			</div>
+                <div class=" col-sm-6">
+                <table class="table col-lg-6 contents__box">
+                	<thead>
+                    	<tr>
+                    		<th scope="col"> 구매자 </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    	<tr>
+                    		<th><label for="prtnum"> 사업자등록번호</label></th>
+                    		<td><input type="text" class="form-control" id="prtnum" name="prtnum" placeholder="${usrinfvo.prtnum }" disabled></td>
+                        </tr>
+                        <tr>
+                        	<th scope="row"><label for="add1" >주소</label></th>
+                        	<td><input type="text" class="form-control"  placeholder="${usrinfvo.addr1 }" disabled></td>
+                    	</tr>
+                   		<tr>
+                   			<th scope="row"></th>
+                   			<td><input type="text" class="form-control"  placeholder="${usrinfvo.addr2 }" disabled></td>
+                    	</tr>
+                    	<tr>
+                    		<th scope="row"><label for="purName" >대표자명</label></th>
+                        	<td><input type="text" class="form-control"  placeholder="${usrinfvo.ceonm }" disabled/></td>
+						</tr>
+						<tr>
+							<th scope="row"><label for="add1" >상호</label></th>
+                        	<td><input type="text" class="col-sm-5 form-control"  placeholder="${ usrinfvo.cmpnnm }" disabled ></td>
+ 						</tr>
+ 					</tbody>
+ 				</table>
+ 				</div>
+ 				<div class="col-sm-6">
+                <table class="table col-lg-6 contents__box">
+                	<thead>
+                    	<tr>
+                    		<th scope="col">공급자</th>
+                    		<td></td>
+                    		<td></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    	<tr>
+                    		<th><label for="splyprtnum" >사업자등록번호</label></th>
+                    		<td><input type="text" class="form-control" id="splyprtnum" name="splyprtnum" placeholder="사업자등록번호" required onkeyup="fn_prtnumCheck()">
+                    			<small class="help-block" id="id-notEmpty" >사업자등록번호를 입력해주십시오.</small>
+								<small class="help-block" id="id-length" >사업자등록번호는 10자리로 입력해주십시오.</small>
+								<small class="help-block" id="id-callback" >사업자등록번호가 올바르지 않습니다.</small>
+                    		</td>
+                    		<td></td>
+                        </tr>
+                        <tr>
+                        	<th scope="row"><label for="splyaddr1" >주소<span class="text-danger"></span></label></th>
+                        	<td><input type="text" class="form-control" id="splyaddr1" name="splyaddr1" placeholder="주소" required onkeyup="fn_addr1()">
+                        		<small class="help-block" id="addr1-notEmpty">주소를 입력해주십시오.</small>
+								<small class="help-block" id="addr1-length" >주소는 35자 이하로 입력해주십시오.</small>
+								<small class="help-block" id="addr1-regexp" >주소가 올바르지 않습니다.</small>
+                        	</td>
+                        	<td><button type="button" id="searchAddress" class="btn btn-default"> 찾기</button></td>
+                    	</tr>
+                   		<tr>
+                   			<th scope="row"></th>
+                   			<td><input type="text" class="form-control" id="splyaddr2" name="splyaddr2" placeholder="주소" required onkeyup="fn_addr2()">
+                   				<small class="help-block" id="addr2-notEmpty">상세주소를 입력해주십시오.</small>
+								<small class="help-block" id="addr2-length">상세주소는 35자 이하로 입력해주십시오.</small>
+								<small class="help-block" id="addr2-regexp">상세주소가 올바르지 않습니다.</small>
+                   			</td>
+                   			<td></td>
+                    	</tr>
+                    	<tr>
+                    		<th scope="row"><label for="splyceonm" >대표자명</label></th>
+                        	<td><input type="text" class="form-control" id="splyceonm" name="splyceonm" placeholder="성명" required onkeyup="fn_ceonm()">
+                        		<small class="help-block" id="ceonm-notEmpty">대표자명을 입력해주십시오.</small>
+								<small class="help-block" id="ceonm-length">대표자명은 25자 이하로 입력해주십시오.</small>
+								<small class="help-block" id="ceonm-regexp">대표자명이 올바르지 않습니다.</small>
+                        	</td>
+                        	<td></td>
+						</tr>
+						<tr>
+							<th scope="row"><label for="splyorgnm" >상호</label></th>
+                        	<td><input type="text" class="form-control" id="splyorgnm" name="splyorgnm" placeholder="상호명" required onkeyup="fn_cmpnnm()">
+                        		<small class="help-block" id="cmpnnm-notEmpty">상호명을 입력해주십시오.</small>
+								<small class="help-block" id="cmpnnm-length">상호명은 25자 이하로 입력해주십시오.</small>
+								<small class="help-block" id="cmpnnm-regexp">상호명이 올바르지 않습니다.</small>
+                        	</td>
+ 						</tr>
+ 					</tbody>
+                </table>
+                </div>
+                <div class="col-sm-12">
+                <table class="dates contents__box  table">
+                	<thead>
+                    	<tr>
+                    		<th scope="col">구매확인 근거날짜</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    	<tr>
+                    		<th scope="row"><label for="prchdt" >구매일</label><font color="red">*</font>  </th>
+                        	<td><input type="text" class="form-control" id="prchdt" name="prchdt" placeholder="구매일" required onchange="fn_prchdtFormat(); fn_dateCheck()"></td>
+                        	<td><label for="shipdt" >선적기일</label><font color="red">*</font>  </td>
+                        	<td><input type="text" class="form-control" id="shipdt" name="shipdt" placeholder="선적기일" required onchange="fn_shipdtFormat(); fn_dateCheck()" >
+                        		<small class="help-block" id="dateValidation">선적기일은 구매일자보다 빠를 수 없습니다.</small>
+                            </td>
+                        </tr>
+ 					</tbody>
+                </table>
+              	</div>
+              	<small class="help-block" id="fileValidation">올바른 확장자를 입력해주십시오.</small>
+              	<div class="col-sm-6">
+                <table class="table  contents__box">
+                	<thead>
+                    	<tr>
+                    		<th colspan="2"> 세금계산서 <font color="red">*</font>  
+             					<a data-toggle="modal"  href="#myModalTax"><span class="glyphicon glyphicon-info-sign"></span></a>
+             				</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    	<tr>
+                    		<th scope="row" class="inputFile"><input type="text" class="form-control preview-filename" disabled="disabled"></th>
+                        	<td><div class="btn btn-default file-input">
+                                <span class="glyphicon glyphicon-folder-open"></span>
+                                <span class="file-input-title">업로드</span>
+                                <input type="file"  name="tax"/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                        	<th scope="row" class="inputFile"><input type="text" class="form-control preview-filename"  disabled="disabled"></th>
+                        	<td><div class="btn btn-default file-input">
+                                <span class="glyphicon glyphicon-folder-open"></span>
+                                <span class="file-input-title">업로드</span>
+                                <input type="file"  name="tax"/>
+                                </div>
+                            </td>
+                    	</tr>
+                   		<tr>
+                   			<th scope="row" class="inputFile"><input type="text" class="form-control preview-filename"  disabled="disabled"></th>
+                   			<td><div class="btn btn-default file-input">
+                                <span class="glyphicon glyphicon-folder-open"></span>
+                                <span class="file-input-title">업로드</span>
+                                <input type="file"  name="tax"/>
+                                </div>
+                            </td>
+                    	</tr>
+ 					</tbody>
+                </table>
+                </div>
+                <div class="col-sm-6">
+                <table class="table contents__box">
+                	<thead>
+                    	<tr>
+                    		<th colspan="2"> 수출근거서류<font color="red">*</font>  
+        					<a data-toggle="modal"  href="#myModalExport"><span class="glyphicon glyphicon-info-sign"></span></a>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    	<tr>
+                    		<th scope="row" class="inputFile"><input type="text" class="form-control preview-filename" disabled="disabled"></th>
+                        	<td><div class="btn btn-default file-input">
+                                <span class="glyphicon glyphicon-folder-open"></span>
+                                <span class="file-input-title">업로드</span>
+                                <input type="file"  name="sup"/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                        	<th scope="row" class="inputFile"><input type="text" class="form-control preview-filename"  disabled="disabled"></th>
+                        	<td><div class="btn btn-default file-input">
+                                <span class="glyphicon glyphicon-folder-open"></span>
+                                <span class="file-input-title">업로드</span>
+                                <input type="file"  name="sup"/>
+                                </div>
+                            </td>
+                    	</tr>
+                   		<tr>
+                   			<th scope="row" class="inputFile"><input type="text" class="form-control preview-filename"  disabled="disabled"></th>
+                   			<td><div class="btn btn-default file-input">
+                                <span class="glyphicon glyphicon-folder-open"></span>
+                                <span class="file-input-title">업로드</span>
+                                <input type="file"  name="sup"/>
+                                </div>
+                            </td>
+                    	</tr>
+ 					</tbody>
+                </table>
+                </div>
+                
+                <div class="container col-sm-12" id="buttonForWebSubmit"align="right">           
+                <button type="text" class="btn btn-default btnCancel" >취소</button>
+                <button type="submit" id="submitBtn" class="btn btn-primary" onclick="fn_validation()">제출</button>
+     </div>
+        </form>
+    </div>
+    
+    
+    <div id="FileForm" class="tab-pane fade">
+    	<form class="form-horizontal" method="post" action="${pageContext.request.contextPath}/user/reqfrm/prchCnfrmApplFileCreate" enctype="multipart/form-data">
+     		<div class="col-sm-12">
+				<table class="table col-lg-6 contents__box">
+					<thead>
+						<tr>
+							<th scope="col" colspan=3>신청구분</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><input type="radio" name="applditc" value="O" checked="checked"> 신규발행</td>
+							<td><input type="radio" name="applditc" value="A"> 변경발행</td>
+							
+						</tr>
+					</tbody>
+				</table>
+			</div>
+     		<div class="col-sm-12">
+			    <table class="table col-lg-6 contents__box">
+			   		<thead>
+			      		<tr>
+			       			<th scope="col">신청서<font color="red">*</font></th>
+			      		</tr>
+			      </thead>
+			      <tbody>
+			      <tr>
+			      	<th scope="row" class="inputFile"><input type="text" class="form-control preview-filename" disabled="disabled"></th>
+			          <td><div class="btn btn-default file-input">
+			               <span class="glyphicon glyphicon-folder-open"></span>
+			               <span class="file-input-title">업로드</span>
+			               <input type="file"  name="applfrm" id="applfrm" placeholder="신청서" onchange="fileCheck()" required/>
+			               </div>
+			           </td>
+			           <td><div class="btn btn-default file-input" id="downloadForm">
+			               <span class="glyphicon glyphicon-file"></span>
+			               <span class="file-input-title">양식다운로드</span>
+			               </div>
+			        </tr>
+				 </tbody>
+				</table>
+		</div>
+		<div class="col-sm-6">
+        	<table class="table  contents__box">
+	           	<thead>
+	               	<tr>
+	               		<th colspan="2"> 세금계산서 <font color="red">*</font>  
+	        					<a data-toggle="modal"  href="#myModalTax"><span class="glyphicon glyphicon-info-sign"></span></a>
+	        				</th>
+	                   </tr>
+	               </thead>
+	               <tbody>
+	               	<tr>
+	               		<th scope="row" class="inputFile"><input type="text" class="form-control preview-filename" disabled="disabled"></th>
+	                   	<td><div class="btn btn-default file-input">
+	                           <span class="glyphicon glyphicon-folder-open"></span>
+	                           <span class="file-input-title">업로드</span>
+	                           <input type="file"  name="tax"/>
+	                           </div>
+	                      </td>
+	                </tr>
+	                <tr>
+	                   	<th scope="row" class="inputFile"><input type="text" class="form-control preview-filename"  disabled="disabled"></th>
+	                   	<td><div class="btn btn-default file-input">
+	                           <span class="glyphicon glyphicon-folder-open"></span>
+	                           <span class="file-input-title">업로드</span>
+	                           <input type="file"  name="tax"/>
+	                           </div>
+	                    </td>
+	               	</tr>
+	              	<tr>
+	              		<th scope="row" class="inputFile"><input type="text" class="form-control preview-filename"  disabled="disabled"></th>
+	              		<td><div class="btn btn-default file-input">
+	                        <span class="glyphicon glyphicon-folder-open"></span>
+	                        <span class="file-input-title">업로드</span>
+	                        <input type="file"  name="tax"/>
+	                        </div>
+	                    </td>
+	               	</tr>
+				</tbody>
+	        </table>
+	     </div>
+         <div class="col-sm-6">
+         	<table class="table contents__box">
+              	<thead>
+                  	<tr>
+                  		<th colspan="2"> 수출근거서류<font color="red">*</font>  
+      					<a data-toggle="modal"  href="#myModalExport"><span class="glyphicon glyphicon-info-sign"></span></a>
+                      </tr>
+                  </thead>
+                  <tbody>
+                  	<tr>
+                  		<th scope="row" class="inputFile"><input type="text" class="form-control preview-filename" disabled="disabled"></th>
+                      	<td><div class="btn btn-default file-input">
+                              <span class="glyphicon glyphicon-folder-open"></span>
+                              <span class="file-input-title">업로드</span>
+                              <input type="file"  name="sup"/>
+                              </div>
+                          </td>
+                      </tr>
+                      <tr>
+                      	<th scope="row" class="inputFile"><input type="text" class="form-control preview-filename"  disabled="disabled"></th>
+                      	<td><div class="btn btn-default file-input">
+                              <span class="glyphicon glyphicon-folder-open"></span>
+                              <span class="file-input-title">업로드</span>
+                              <input type="file"  name="sup"/>
+                              </div>
+                          </td>
+                  	</tr>
+                 		<tr>
+                 			<th scope="row" class="inputFile"><input type="text" class="form-control preview-filename"  disabled="disabled"></th>
+                 			<td><div class="btn btn-default file-input">
+                              <span class="glyphicon glyphicon-folder-open"></span>
+                              <span class="file-input-title">업로드</span>
+                              <input type="file"  name="sup"/>
+                              </div>
+                          </td>
+                  	</tr>
+				</tbody>
+              </table>
+         </div>
+		<div class="container col-sm-12 " id="buttonForFileSubmit" align="right">           
+                <button type="text" class="btn btn-default btnCancel" >취소</button>
+                <button type="submit" id="submitBtn" class="btn btn-primary">제출</button>
+     	</div>
+       </form>
+    </div>
+   </div>
+    
+	<!-- Modal -->
+	<div class="modal fade" id="myModalExport" role="dialog">
+		<div class="modal-dialog">
+	    <!-- Modal content-->
+		    <div class="modal-content">
+		    	<div class="modal-header">
+		     		<button type="button" class="close" data-dismiss="modal">&times;</button>
+		          	<h4 class="modal-title">수출근거서류 첨부안내</h4>
+		        </div>
+		        <div class="modal-body">
+		          <p>1. 수출신용장<br>
+		             *수출계약서(품목, 수량, 가격 등에 합의하여 서명한 수출계약 입증서류)<br>
+		             *외화매입서/예치증명서<br>
+		               -외화획득이행 관련 대금임이 서류에 의해 확인되는 경우만 해당<br>
+		              <br>
+		              2. 내국신용장/구매확인서<br>
+		               -N차 공급자의 경우에 해당<br>
+		                *수출신고필증<br>
+		                *대외무역법시행령 제 26조 각호에 따른<br>
+		                외화획득에 제공되는 물품 등을 생산하기 위한 경우임을 입증할 수 있는 서류<br>
+		          </p>
+		        </div>
+		        <div class="modal-footer">
+		          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        </div>
+		    </div>
+	    </div>
+	</div>
+	<div class="modal fade" id="myModalTax" role="dialog">
+		<div class="modal-dialog">
+	    
+	      <!-- Modal content-->
+	     <div class="modal-content">
+	       <div class="modal-header">
+	         <button type="button" class="close" data-dismiss="modal">&times;</button>
+	         <h4 class="modal-title">세금계산서 첨부안내</h4>
+	       </div>
+	       <div class="modal-body">
+	         <p>*사전발급: 구매일 기준 익월 10일 이전<br>
+	             -외화획득용 원료/기재를 구매하려는 경우 세금계산서 없이 발급<br><br>
+	             *사후발급: 구매일 기준 익월 10일 이후<br>
+	             -외화획득용 원료/기재를 구매한 경우 세금계산서 정보 기재 후 발급
+	         </p>
+	       </div>
+	       <div class="modal-footer">
+	         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	       </div>
+	     </div>
+	   </div>
+	</div>
+	
+	<div class="modal fade" id="searchReqFrm" role="dialog">
+		<div class="modal-dialog">
+	    
+	      <!-- Modal content-->
+	     <div class="modal-content">
+	       <div class="modal-header">
+	         <button type="button" class="close" id="searchClose" data-dismiss="modal">&times;</button>
+	         <h4 class="modal-title">발급지원번호로 검색하기</h4>
+	       </div>
+	       <div class="modal-body">
+	         <input type="text" id="searchApplnum">
+	         <button id="searchForReqFrm">검색</button>
+	         <table class="table" id="pushTable">
+	         	<tr>
+	         		<td>발급신청번호</th>
+	         		<td>공급자상호</td>
+	         		<td>공급자대표자</td>
+	         		<td>공급자주소1</td>
+	         		<td>공급자주소2</td>
+	         	</tr>
+	         		
+	         </table>
+	       </div>
+	       <div class="modal-footer">
+	         <button type="button" class="btn btn-default" id="searchCloseBtn" data-dismiss="modal">Close</button>
+	       </div>
+	     </div>
+	   </div>
+	</div>
+	
+	<!-- script -->
+	<c:import url="../footer.jsp" />
+	<script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.2/js/bootstrapValidator.min.js"></script>
+    <script src="${pageContext.request.contextPath }/js/usrInf.js"></script>
+    <script>
+    function fn_popup() {
+    	new daum.Postcode({
+    		oncomplete:function(data) {
+    			var roadAddr = data.roadAddress; // 도로명 주소 변수
+    		
+    		    $("#splyaddr1").val(roadAddr);
+    		 }
+    	}).open();
+    }
+    
+    function getContextPath() {
+		var hostIndex = location.href.indexOf( location.host ) + location.host.length;
+		return location.href.substring( hostIndex, location.href.indexOf('/', hostIndex + 1) );
+	};
+	function getReqFrmVOFromController(resultObj){
+		
+		console.log(resultObj);
+		
+		if(resultObj.length === 0){
+			alert('검색 결과가 없습니다')
+			return;
+		}
+		let pushTable = document.querySelector("#pushTable");
+		
+		resultObj.forEach(function(element){
+			let tr = document.createElement("tr");
+			let applnum = document.createElement("td");
+			let splyorgnm = document.createElement("td");
+			let splyceonm = document.createElement("td");
+			let splyaddr1 = document.createElement("td");
+			let splyaddr2 = document.createElement("td");
+			splyaddr2.innerText = element.splyaddr2;
+			splyaddr1.innerText = element.splyaddr1;
+			splyceonm.innerText = element.splyceonm;
+			splyorgnm.innerText = element.splyorgnm;
+			applnum.innerText = element.applnum;
+			applnum.classList.add("pointer");
+			tr.appendChild(applnum);
+			tr.appendChild(splyorgnm);
+			tr.appendChild(splyceonm);
+			tr.appendChild(splyaddr1);
+			tr.appendChild(splyaddr2);
+			applnum.addEventListener("click", function(){
+				let documentSplyorgnm = document.querySelector("#splyorgnm");
+				documentSplyorgnm.value = element.splyorgnm;
+				
+				let documentSplyaddr1 = document.querySelector("#splyaddr1");
+				documentSplyaddr1.value = element.splyaddr1;
+				
+				let documentSplyaddr2 = document.querySelector("#splyaddr2");
+				documentSplyaddr2.value = element.splyaddr2;
+				
+				let documentSplyceonm = document.querySelector("#splyceonm");
+				documentSplyceonm.value = element.splyceonm;
+				
+				let documentSplyprtnum = document.querySelector("#splyprtnum");
+				documentSplyprtnum.value = element.splyprtnum;
+				
+				let documentPrchdt = document.querySelector("#prchdt");
+				documentPrchdt.value = element.prchdt;
+				
+				let documentShipdt = document.querySelector("#shipdt");
+				documentShipdt.value =  element.shipdt;
+				
+				document.querySelector("#searchClose").click();
+			})
+			pushTable.appendChild(tr);
+		})
+		// 하나만 받아왔을 때
+		/* let splyorgnm = document.querySelector("#splyorgnm");
+		splyorgnm.value = resultObj.splyorgnm;
+		
+		let splyaddr1 = document.querySelector("#splyaddr1");
+		splyaddr1.value = resultObj.splyaddr1;
+		
+		let splyaddr2 = document.querySelector("#splyaddr2");
+		splyaddr2.value = resultObj.splyaddr2;
+		
+		let splyceonm = document.querySelector("#splyceonm");
+		splyceonm.value = resultObj.splyceonm;
+		
+		let splyprtnum = document.querySelector("#splyprtnum");
+		splyprtnum.value = resultObj.splyprtnum;
+		
+		let prchdt = document.querySelector("#prchdt");
+		prchdt.value = resultObj.prchdt;
+		
+		let shipdt = document.querySelector("#shipdt");
+		shipdt.value =  resultObj.shipdt; */
+		
+	}
+	function getReqFrmVOByApplnum(params) {
+		$.ajax({
+			url: "/egume_upc/user/reqfrm/searchByApplnum", 
+			type: "GET", 
+			contentType: "application/json", 
+			dataType : "json", 
+			data: params, 
+			success: function(result) {
+				alert("검색 요청을 완료했습니다");
+				getReqFrmVOFromController(result);
+			}, 
+			error: function(request, status, error) {
+				alert("검색  결과가 없습니다.");
+			}
+		});
+	}
+	
+	function searchByApplnum(applnum){
+		function param(){
+			this.applnum = applnum
+		}
+		getReqFrmVOByApplnum(new param());
+	}
+	
+    window.onload = function() {
+    	
+    	$(".help-block").hide();
+    	document.querySelector("#searchClose").addEventListener("click", function(){
+    		 $("#pushTable").find("tr:gt(0)").remove();
+    	})
+    	
+    	document.querySelector("#searchCloseBtn").addEventListener("click", function(){
+    		 $("#pushTable").find("tr:gt(0)").remove();
+    	})
+    	
+    	let tableForWriteIssuemdfreq = `<div class="col-sm-12" id="writeIssuemdfreqForm">
+            <table table class="reason contents__box  table"> 
+        	<thead>
+            	<tr>
+            		<th scope="col">신청사유</th>
+                </tr>
+              
+            </thead>
+            <tbody>
+            	<tr>
+            		
+            		<td><textarea rows="6" maxlength="50" name="issuemdfreq" ></textarea></td>
+            		
+                </tr>
+            </tbody>
+        </table>
+        </div>`;
+        
+        let tableForFileIssuemdfreq = `<div class="col-sm-12" id="fileIssuemdfreqForm">
+	        <table table class="reason contents__box  table"> 
+	    	<thead>
+	        	<tr>
+	        		<th scope="col">신청사유</th>
+	            </tr>
+	          
+	        </thead>
+	        <tbody>
+	        	<tr>
+	        		
+	        		<td><textarea rows="6" maxlength="50" name="issuemdfreq" ></textarea></td>
+	        		
+	            </tr>
+	        </tbody>
+	    </table>
+	    </div>`;
+	    
+    	let buttonForReqFrmVOSearch = `<td id="searchReqFrmForm"><div class="btn btn-default file-input" id="searchReqFrmVO" data-toggle="modal" data-target="#searchReqFrm">
+            <span class="file-input-title">조회</span>
+            </div></td>`;
+            
+        $( "#WriteForm input[value='O']" ).on("click", function(){
+	    	if($("#searchReqFrmForm").length !== 0 && $("#writeIssuemdfreqForm") !== 0){
+	        	$("#searchReqFrmForm").remove();
+		    	$("#writeIssuemdfreqForm").remove();
+	    	}
+        })
+		$( "#FileForm input[value='O']" ).on("click", function(){
+	    	if($("#fileIssuemdfreqForm") !== 0){
+				$("#fileIssuemdfreqForm").remove();
+			}
+        })
+        $( "#WriteForm input[value='A']" ).on("click", function(){
+   	    	if($("#writeIssuemdfreqForm").length === 0){
+   	   	    	$("#buttonForWebSubmit").before(tableForWriteIssuemdfreq);
+   	    	}
+   	    	if($("#searchReqFrmForm").length === 0){
+   	   	    	$("#typeSelectionForm").append(buttonForReqFrmVOSearch);
+   	    	}
+        })
+        $( "#FileForm input[value='A']" ).on("click", function(){
+   	    	if($("#fileIssuemdfreqForm").length === 0){
+		    	$('#buttonForFileSubmit').before(tableForFileIssuemdfreq);
+   	   	    }
+        })
+    	
+		document.querySelector("#downloadForm").addEventListener("click", function(){
+			location.href="${pageContext.request.contextPath}/filedownload/?fileseq="
+		})
+		document.querySelector("#searchAddress").addEventListener("click", fn_popup);
+		
+		document.querySelector("#searchForReqFrm").addEventListener("click", function(e){
+			var applnum = $(this).siblings("#searchApplnum").val();
+			
+			searchByApplnum(applnum);
+
+			
+		})
+		
+		$(".file-input input:file").change(function (){     
+	         var file = this.files[0];
+	         var reader = new FileReader();
+	         var tis = $(this);
+	         
+	         // Set preview image into the popover data-content
+	         reader.onload = function (e) {
+	           
+	        	tis.closest('div').parents('tr').find('.inputFile').find('.preview-filename').val(file.name);
+	         }        
+	         reader.readAsDataURL(file);
+	     }); 
+		
+		
+		
+		/* console.log(${reqfrmvo.splyorgnm}); */
+		if(!${reqfrmvo ne null}  &&  ${reqfrmvo.comingFromWhere eq 'list'} ){
+			
+			let splyorgnm = document.querySelector("#splyorgnm");
+			splyorgnm.value = `${reqfrmvo.splyorgnm}`;
+			
+			let splyaddr1 = document.querySelector("#splyaddr1");
+			splyaddr1.value = `${reqfrmvo.splyaddr1}`;
+			
+			let splyaddr2 = document.querySelector("#splyaddr2");
+			splyaddr2.value = `${reqfrmvo.splyaddr2}`;
+			
+			let splyceonm = document.querySelector("#splyceonm");
+			splyceonm.value = `${reqfrmvo.splyceonm}`;
+			
+			let splyprtnum = document.querySelector("#splyprtnum");
+			splyprtnum.value = `${reqfrmvo.splyprtnum}`;
+			
+			let prchdt = document.querySelector("#prchdt");
+			prchdt.value = `${reqfrmvo.prchdt}`;
+			
+			let shipdt = document.querySelector("#shipdt");
+			shipdt.value =  `${reqfrmvo.shipdt}`;
+		}
+		
+		
+		
+		$.datepicker.setDefaults({
+			dateFormat: 'yymmdd'
+		});
+		$("#prchdt").datepicker();
+		$("#shipdt").datepicker();
+		
+		var cancelBtn = document.querySelectorAll(".btnCancel");
+		
+		
+		var url = getContextPath()+'/user/reqfrm/prchCnfrmApplList.do'
+		
+		cancelBtn[0].addEventListener("click", function(){
+			$(location).attr('href', url);
+		});
+		cancelBtn[1].addEventListener("click", function(){
+			$(location).attr('href', url);
+		});
+	}
+
+    /*
+     * 사업자등록번호발급규칙유효성 검사
+     */
+    function fn_prtnumCheckLogic(prtnum) {
+    	var sum = 0;
+    	var checknum = 0;
+        var arrNumList = new Array();
+    	var arrCheckNum = new Array(1, 3, 7, 1, 3, 7, 1, 3, 5, 1); 
+    	
+    	for(var i = 0; i < 10; i++) {
+    		//alert($("#prtnum").val()[i]);
+    		arrNumList[i] = parseInt(prtnum[i]);
+    	} 
+    	for(var i = 0; i < 9; i++) {
+    		sum += arrNumList[i] * arrCheckNum[i];
+    	}
+    	
+    	sum += parseInt((arrNumList[8] * 5) / 10);
+    	checknum = (10 - (sum % 10)) % 10;
+    	return (checknum == arrNumList[9]);
+    }
+
+    /*
+     * 사업자등록번호 체크 (이미 등록된 회원 검사)
+     */
+    function fn_prtnumCheck() {
+    	var result = false;
+    	var length = $("#splyprtnum").val().length;
+    	var prtnum = $("#splyprtnum").val();
+    	
+    	if(length == 0) {
+    		$("#id-notEmpty").show();
+    		$("#id-length").hide();
+    		$("#id-callback").hide();
+    	} else if(length != 10) {
+    		$("#id-length").show();
+    		$("#id-notEmpty").hide();
+    	} else {
+    		$("#id-notEmpty").hide();
+    		$("#id-length").hide();
+    		
+    		result = true;
+    	}
+    	
+    	if(!fn_prtnumCheckLogic(prtnum)) {	//사업자등록증 번호 발급 로직 검사
+    		$("#id-callback").show();
+    	} else {
+    		$("#id-callback").hide();
+    		
+    		result = true;
+    	}
+    	
+    	return result;
+    	
+    }
+    
+
+    /*
+     * 상호명 체크
+     */
+    function fn_cmpnnm() {
+    	
+    	var result = false;
+    	
+    	var cmpnnm = $("#splyorgnm").val();
+    	
+    	var length = $("#splyorgnm").val().length;
+    	var regexp = /[A-Za-z0-9가-힣]/;
+    	
+    	if(length == 0) {
+    		$("#cmpnnm-notEmpty").show();
+    		$("#cmpnnm-length").hide();
+    		$("#cmpnnm-regexp").hide();
+    	} else if(length > 25 && !regexp.test(cmpnnm)) {
+    		$("#cmpnnm-length").show();
+    		$("#cmpnnm-regexp").show();
+    		$("#cmpnnm-notEmpty").hide();
+    	} else if(length <= 25  && !regexp.test(cmpnnm)) {
+    			$("#cmpnnm-regexp").show();
+    			$("#cmpnnm-notEmpty").hide();
+    			$("#cmpnnm-length").hide();
+    	} else {
+    		$("#cmpnnm-notEmpty").hide();
+    		$("#cmpnnm-length").hide();
+    		$("#cmpnnm-regexp").hide();
+    		
+    		result = true;
+    	}
+    	
+    	return result;
+    }
+
+    /*
+     * 대표자명 체크
+     */
+    function fn_ceonm() {
+    	
+    	var result = false;
+    	var ceonm = $("#splyceonm").val();
+    	
+    	var length = $("#splyceonm").val().length;
+    	var regexp = /^[가-힣]{2,4}|[a-zA-Z]{2,10}\s[a-zA-Z]{2,10}$/;
+    	
+    	if(length == 0) {
+    		$("#ceonm-notEmpty").show();
+    		$("#ceonm-length").hide();
+    		$("#ceonm-regexp").hide();
+    	} else if(length > 25 && !regexp.test(ceonm)) {
+    		$("#ceonm-length").show();
+    		$("#ceonm-regexp").show();
+    		$("#ceonm-notEmpty").hide();
+    	} else if(length <= 25  && !regexp.test(ceonm)) {
+    			$("#ceonm-regexp").show();
+    			$("#ceonm-notEmpty").hide();
+    			$("#ceonm-length").hide();
+    	} else {
+    		$("#ceonm-notEmpty").hide();
+    		$("#ceonm-length").hide();
+    		$("#ceonm-regexp").hide();
+    		
+    		result = true;
+    	}
+    	
+    	return result;
+    }
+
+    /* 
+     * 주소 체크
+     */
+    function fn_addr1() {
+    	var result = false;
+    	
+    	var addr1 = $("#splyaddr1").val();
+    	
+    	var length = $("#splyaddr1").val().length;
+    	var regexp = /[A-Za-z0-9가-힣]/;
+    	
+    	if(length == 0) {
+    		$("#addr1-notEmpty").show();
+    		$("#addr1-length").hide();
+    		$("#addr1-regexp").hide();
+    	} else if(length > 35 && !regexp.test(addr1)) {
+    		$("#addr1-length").show();
+    		$("#addr1-regexp").show();
+    		$("#addr1-notEmpty").hide();
+    	} else if(length <= 35  && !regexp.test(addr1)) {
+    			$("#addr1-regexp").show();
+    			$("#addr1-notEmpty").hide();
+    			$("#addr1-length").hide();
+    	} else {
+    		$("#addr1-notEmpty").hide();
+    		$("#addr1-length").hide();
+    		$("#addr1-regexp").hide();
+    		
+    		result = true;
+    	}
+    	
+    	return result;
+    	
+    }
+
+    /* 
+     * 상세 주소 체크
+     */
+    function fn_addr2() {
+    	var result = false;
+    	
+    	var addr2 = $("#splyaddr2").val();
+    	
+    	var length = $("#splyaddr2").val().length;
+    	var regexp = /[A-Za-z0-9가-힣]/;
+    	
+    	if(length == 0) {
+    		$("#addr2-notEmpty").show();
+    		$("#addr2-length").hide();
+    		$("#addr2-regexp").hide();
+    	} else if(length > 35 && !regexp.test(addr2)) {
+    		$("#addr2-length").show();
+    		$("#addr2-regexp").show();
+    		$("#addr2-notEmpty").hide();
+    	} else if(length <= 35  && !regexp.test(addr2)) {
+    			$("#addr2-regexp").show();
+    			$("#addr2-notEmpty").hide();
+    			$("#addr2-length").hide();
+    	} else {
+    		$("#addr2-notEmpty").hide();
+    		$("#addr2-length").hide();
+    		$("#addr2-regexp").hide();
+    	
+    		result = true;
+    	}
+    	
+    	return result;
+    }
+
+    function fn_prchdtFormat() {
+    	var prchdt = $("#prchdt").val();
+
+    	var prchdtFormat = prchdt.substring(0,4) + '-' + prchdt.substring(4,6) + '-' + prchdt.substring(6,8);
+    	$("#prchdt").val(prchdtFormat);
+    	
+    }
+    
+    function fn_shipdtFormat() {
+    	var shipdt = $("#shipdt").val();
+
+    	var shipdtFormat = shipdt.substring(0,4) + '-' + shipdt.substring(4,6) + '-' + shipdt.substring(6,8);
+    	$("#shipdt").val(shipdtFormat);
+    }
+    
+    function fn_dateCheck() {
+    	
+    	var prchdt = $("#prchdt").val();
+    	var shipdt = $("#shipdt").val();
+
+    	prchdt = prchdt.substring(0,4) + prchdt.substring(5,7) + prchdt.substring(8,10);
+    	shipdt = shipdt.substring(0,4) + shipdt.substring(5,7) + shipdt.substring(8,10);
+		
+    	if(parseInt(prchdt) > parseInt(shipdt)) {
+    		$(".dateLabel").css('color','#a94442');
+    		$("#dateValidation").show();
+    		
+    		return false;
+    	} else {
+    		$(".dateLabel").css('color','black');
+    		$("#dateValidation").hide();
+    		
+    		return true;
+    	}
+    }
+    
+    function fn_validation() {
+    	if(fn_prtnumCheck() && fn_addr1() && fn_addr2() 
+    			&& fn_cmpnnm() && fn_ceonm && fn_dateCheck()) {
+    		return true;
+    	} else {
+    		alert("항목을 올바르게 입력해주십시오.");
+    		return false;
+    	}
+    }
+
+    </script>
+</body>
+</html>

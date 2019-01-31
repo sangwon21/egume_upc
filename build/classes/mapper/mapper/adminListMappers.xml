@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	Date : 2018. 12. 19
+	Author : 김진혁
+	Description : 어드민 조회 처리를 위한 Mappers
+	version 1.0
+	=======================================
+	버전 		수정일 		수정자 		설명
+	1.0		2018.12.19	김진혁		adminList 추가
+-->
+<mapper namespace="com.upc.admin.adminlist.dao.AdminListDAO"> 
+
+	<!-- id 속성은 DAO 의 메소드와 같아야 한다  --> 
+	<select id="adminList" resultType="AdminVO">
+		SELECT admid, name, email, tel, TO_CHAR(rgsttm,'YYYY-MM-DD') as rgsttm, 
+			CASE role WHEN 'M' THEN '관리자' WHEN 'R' THEN '접수자' ELSE '작성자' END as role, 
+			CASE useyn WHEN 'Y' THEN '사용' ELSE '사용안함' END as useyn 
+		FROM admusr
+	</select>
+	
+ 
+ </mapper>

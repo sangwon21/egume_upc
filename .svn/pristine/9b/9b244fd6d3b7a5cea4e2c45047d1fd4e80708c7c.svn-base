@@ -1,0 +1,57 @@
+package com.upc.admin.userlist.controller;
+
+import java.util.List;
+
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.upc.admin.userlist.service.UserListService;
+import com.upc.admin.userlist.vo.SearchVO;
+import com.upc.admin.userlist.vo.UserVO;
+
+/**
+ * 
+ * @author 김진혁
+ * @since 2018. 12. 26.
+ * @version
+ * @see 참고
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ */
+@Controller
+@RequestMapping("/admin")
+public class UserListController {
+
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(UserListController.class);
+	
+	@Autowired
+	private UserListService userListService;
+	
+	/**
+	 * 
+	 * @param searchVO
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 * @author 김진혁
+	 * @since 2018. 12. 26.
+	 * @version
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 */
+	@RequestMapping(value = "/userList", method = RequestMethod.GET)
+	public String getUserListView(@ModelAttribute SearchVO searchVO, Model model) throws Exception{
+		List<UserVO> userList = userListService.userList(searchVO);
+		logger.info("searchVO={}" + searchVO);
+		model.addAttribute("searchVO",searchVO);
+		logger.info("userList={}",userList);
+		model.addAttribute("userList", userList);
+		return "admin/userList";
+	}   
+	
+}

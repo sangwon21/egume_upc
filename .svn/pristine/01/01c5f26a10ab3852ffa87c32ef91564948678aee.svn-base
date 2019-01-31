@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- Date : 2018. 12. 13 
+	 Author : 강성효 
+	 Description : 발급신청 목록 관련 Mapper
+	 version 1.1
+	 ======================================= 
+	 버전			수정일 		수정자     		설명 
+	1.1 		2018.12.14  강성효             	getTotEntCnt 추가
+	1.2 		2018.12.17 강성효       		applRcptCmbRst 추가 -->
+<mapper
+	namespace="com.upc.admin.applrcptlist.dao.ApplRcptListDAO">
+
+	<!--발급취합  -->
+	<select id="getApplRcptCmbRst" resultType="com.upc.admin.applrcptlist.vo.ApplRcptRstVO">
+		SELECT
+			appl.applreqtdy,
+			appl.appltdy,
+			prvmth.applprvmth,
+			TO_CHAR(sysdate,'yyyy/mm/dd hh24:mi') reqTime
+		FROM
+			(SELECT
+				count(applnum) applreqtdy
+			FROM
+				cnfrmprchreq
+			WHERE
+				appldt 
+					BETWEEN 
+						TRUNC(SYSDATE) 
+					AND 
+						SYSDATE )
+			appl,
+
+			(SELECT
+				count(applnum) appltdy
+			FROM
+				cnfrmprchreq
+			WHERE
+				appldt 
+					BETWEEN 
+						TRUNC(SYSDATE) 
+					AND 
+						SYSDATE
+			AND
+				sts = 'C1')
+			appl,
+	
+			(SELECT
+				count(applnum) applprvmth
+			FROM
+				cnfrmprchreq
+			WHERE
+				appldt 
+				    BETWEEN 
+						TRUNC(ADD_MONTHS(sysdate,-1),'MM') 
+				    AND 
+				   		TRUNC(ADD_MONTHS(sysdate,-1)+31,'MM')-1
+			AND
+				sts = 'C1')
+			prvmth,
+			dual
+	</select>
+
+	<!--구매확인 신청 목록  -->
+	<select id="getApplList"  resultType="com.upc.admin.applrcptlist.vo.ApplRcptListVO">
+	SELECT
+		cnfB.applnum,
+		cnfB.prtnum,
+		cnfB.splyorgnm,
+		cnfB.sts,
+		TO_CHAR(cnfB.appldt,'YYYY-MM-DD') appldt,
+		TO_CHAR(cnfB.applrcvdt,'YYYY-MM-DD') applrcvdt,
+		cnfB.appmthd,
+		cnfB.notes,
+		cnfB.name,
+		cnfB.codenm,
+		cnfB.cmpnnm
+	FROM
+		( SELECT
+		    rownum as rn,
+			cnfA.*
+		FROM
+			(SELECT
+				prtnum,
+				applnum,
+				splyorgnm,
+				sts,
+				appldt,
+				applrcvdt,
+				appmthd,
+				notes,
+				(SELECT name FROM admusr WHERE cnfrmprchreq.wrtrid = admusr.admid) name, 
+				(SELECT codenm FROM code WHERE code.mstrcode = 'APPLSTS' AND cnfrmprchreq.sts = code.code ) codenm,
+				(SELECT cmpnnm FROM usrinf WHERE cnfrmprchreq.prtnum = usrinf.prtnum) cmpnnm
+			FROM
+				cnfrmprchreq
+
+			WHERE
+			<choose>
+				<when test="dtCondi eq '신청일자'">appldt</when>
+				<when test="dtCondi eq '접수일자'">applrcvdt</when>
+			</choose>
+			BETWEEN
+				TO_DATE(#{dateFrom}, 'YYYYMMDDHH24MISS') AND TO_DATE(#{dateTo}, 'YYYYMMDDHH24MISS')+1
+			<if test="searchCondi neq '전체'">
+			AND
+				<choose>
+					<when test="searchCondi eq '사업자등록번호'">cnfrmprchreq.prtnum LIKE '%'||#{searchVal}||'%'</when>
+					<when test="searchCondi eq '구매자상호'"> cnfrmprchreq.prtnum IN (SELECT 
+																					 prtnum 
+																				   FROM
+																				  	 usrinf
+																				   WHERE
+																				  	 usrinf.cmpnnm LIKE '%'||#{searchVal}||'%')
+					</when>
+					<when test="searchCondi eq '공급자상호'">cnfrmprchreq.splyorgnm LIKE '%'||#{searchVal}||'%' </when>
+				</choose>
+			</if>
+			
+			<if test="searchCondi eq '전체'">
+			  <choose>
+				 <when test="searchVal neq null and !searchVal.equals('')">
+					 AND(
+						cnfrmprchreq.prtnum LIKE '%'||#{searchVal}||'%'
+					 OR
+					 	cnfrmprchreq.prtnum IN (SELECT 
+												 prtnum 
+											   FROM
+											  	 usrinf
+											   WHERE
+											  	 usrinf.ceonm LIKE '%'||#{searchVal}||'%')
+					 OR
+					 	cnfrmprchreq.splyorgnm LIKE '%'||#{searchVal}||'%' )
+				 </when>
+			 </choose>
+		   </if> 
+		
+			<if test="stsCondi neq '전체'">
+			AND
+				cnfrmprchreq.sts = #{stsCondi}
+			</if>
+			
+			<if test="wrtrCondi neq '전체'">
+			AND
+				cnfrmprchreq.wrtrid = #{wrtrCondi}
+			</if>
+			
+			<if test="appMthd neq '전체'">
+			AND
+				cnfrmprchreq.appmthd = #{appMthd}
+			</if>
+			
+			ORDER BY
+				cnfrmprchreq.applnum DESC) cnfA		
+		WHERE
+			rownum<![CDATA[ <= ]]> #{pageUnit}*#{pageIndex} ) cnfB
+	WHERE
+		cnfB.rn >= #{pageIndex}*#{pageUnit}-#{pageUnit}+1
+	
+	</select>
+	
+	<select id="getBoardTotUnit" parameterType="com.upc.admin.applrcptlist.vo.SearchVO" resultType="int">
+        SELECT
+			count(applnum)
+		FROM
+			cnfrmprchreq
+		WHERE
+			<choose>
+				<when test="dtCondi eq '신청일자'">appldt</when>
+				<when test="dtCondi eq '접수일자'">applrcvdt</when>
+			</choose>
+		BETWEEN
+			TO_DATE(#{dateFrom}, 'YYYYMMDDHH24MISS') AND TO_DATE(#{dateTo}, 'YYYYMMDDHH24MISS')+1
+		<if test="searchCondi neq '전체'">
+		AND
+			<choose>
+				<when test="searchCondi eq '사업자등록번호'">cnfrmprchreq.prtnum LIKE '%'||#{searchVal}||'%'</when>
+				<when test="searchCondi eq '구매자상호'"> cnfrmprchreq.prtnum IN (SELECT 
+																				prtnum 
+																			  FROM
+																			  	usrinf
+																			  WHERE
+																			  	usrinf.cmpnnm LIKE '%'||#{searchVal}||'%')
+				</when>
+				<when test="searchCondi eq '공급자상호'">cnfrmprchreq.splyorgnm LIKE '%'||#{searchVal}||'%' </when>
+			</choose>
+		</if>
+		
+	 	<if test="searchCondi eq '전체'">
+			<choose>
+			 <when test="searchVal neq null and !searchVal.equals('')">
+			 AND(
+				cnfrmprchreq.prtnum LIKE '%'||#{searchVal}||'%'
+			 OR
+			 	cnfrmprchreq.prtnum IN (SELECT 
+										 prtnum 
+									   FROM
+									  	 usrinf
+									   WHERE
+									  	 usrinf.ceonm LIKE '%'||#{searchVal}||'%')
+			 OR
+			 	cnfrmprchreq.splyorgnm LIKE '%'||#{searchVal}||'%')
+			 </when>
+			 </choose>
+		</if> 
+		
+		<if test="stsCondi neq '전체'">
+			AND
+				cnfrmprchreq.sts = #{stsCondi}
+		</if>
+		
+		<if test="wrtrCondi neq  '전체'">
+		AND
+			cnfrmprchreq.wrtrid = #{wrtrCondi}
+		</if>
+		
+	    <if test="appMthd neq '전체'">
+		AND
+			cnfrmprchreq.appmthd = #{appMthd}
+		</if>
+		
+		
+	</select>
+	
+	<!--담당자 지정 -->
+	<update id="updateWrtrApptd" parameterType="com.upc.admin.applrcptlist.vo.ApplRcptListVO">
+		UPDATE 
+			cnfrmprchreq
+		SET
+			wrtrid = #{wrtrId}, 
+			applrcvdt = sysdate,
+			applrcvid = #{applRcvId} 
+			<choose>
+				<when test="sts eq 'R1'">,sts = 'R2'</when>
+			</choose>
+		WHERE
+			applnum = #{applNum}	
+	</update>
+
+
+</mapper>

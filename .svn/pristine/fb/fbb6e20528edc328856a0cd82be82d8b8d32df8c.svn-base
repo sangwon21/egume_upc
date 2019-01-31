@@ -1,0 +1,256 @@
+package com.upc.common.login.controller;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.RedirectStrategy;
+import org.springframework.security.web.WebAttributes;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
+import org.springframework.util.StringUtils;
+
+
+/**
+ * 로그인 성공 시 수행할 로직을 구성하는 핸들러
+ * @author 김진혁
+ * @since 2018. 12. 18.
+ * @version 1.0
+ * @see 참고
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ * 1.0		2018.12.18	김진혁		최초작성
+ * 1.1		2018.12.19	이수빈		로그인 후 이전페이지로 이동하는 기능 구현
+ */
+
+public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+
+	private static Logger logger = LoggerFactory.getLogger(CustomAuthenticationSuccessHandler.class);
+	
+	private RequestCache requestCache = new HttpSessionRequestCache();
+	private String targetUrlParameter;
+	private String defaultUrl;
+	private boolean useReferer;
+	
+	public String getTargetUrlParameter() {
+		return targetUrlParameter;
+	}
+
+	public void setTargetUrlParameter(String targetUrlParameter) {
+		this.targetUrlParameter = targetUrlParameter;
+	}
+
+	public String getDefaultUrl() {
+		return defaultUrl;
+	}
+
+	public void setDefaultUrl(String defaultUrl) {
+		this.defaultUrl = defaultUrl;
+	}
+
+	public boolean isUseReferer() {
+		return useReferer;
+	}
+
+	public void setUseReferer(boolean useReferer) {
+		this.useReferer = useReferer;
+	}
+
+	private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+	
+	public CustomAuthenticationSuccessHandler() {
+		targetUrlParameter="";
+		defaultUrl="/";
+		useReferer = false;
+	}
+	
+	/**
+	 * 로그인 성공 시 수행할 로직을 담당하는 메소드
+	 * (로그인 초기화면, 링크 이동 전 인증의 경우)
+	 * @param request
+	 * @param response
+	 * @param authentication
+	 * @return
+	 * @author 이수빈
+	 * @since 2018. 12. 19
+	 * @version 1.0
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0		2018.12.19	이수빈		최초작성
+	 */
+	@Override
+	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication auth)
+			throws IOException, ServletException {
+		// TODO Auto-generated method stub
+		
+		clearAuthenticationAttributes(request);
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
+		int intRedirectStrategy = decideRedirectStrategy(request, response);
+		switch(intRedirectStrategy) {
+			case 1:	// 지정된 URL이 있는 경우
+				useTargetUrl(request, response);
+				break;
+			case 2: // 지정된 URL이 없는 경우(세션에 저장된 URL로 이동)
+				useSessionUrl(request, response);
+				break;
+			default : // 위의 두 가지에 해당하지 않는 경우
+				useDefaultUrl(request, response, authentication);
+		}
+		
+	}
+	
+	/**
+	 * 로그인 실패 시 에러에 대한 세션 삭제
+	 * @param request
+	 * @author 이수빈
+	 * @since 2018. 12. 19
+	 * @version 1.0
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0		2018.12.19	이수빈		최초작성
+	 */
+	private void clearAuthenticationAttributes(HttpServletRequest request) {
+		HttpSession session = request.getSession(false);
+		if(session == null) {
+			return;
+		}
+		session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+	}
+	
+	/**
+	 * 지정된 URL이 있는 경우 화면 이동
+	 * @param request
+	 * @param response
+	 * @author 이수빈
+	 * @since 2018. 12. 19
+	 * @version 1.0
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0		2018.12.19	이수빈		최초작성
+	 */
+	private void useTargetUrl(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		SavedRequest savedRequest = requestCache.getRequest(request, response);
+		if(savedRequest != null) {
+			requestCache.removeRequest(request, response);
+		}
+		String targetUrl = request.getParameter(targetUrlParameter);
+		
+		redirectStrategy.sendRedirect(request, response, targetUrl);
+	}
+	
+	/**
+	 * 지정된 URL이 없는 경우 Session에 저장된 URL로 이동
+	 * @param request
+	 * @param response
+	 * @author 이수빈
+	 * @since 2018. 12. 19
+	 * @version 1.0
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0		2018.12.19	이수빈		최초작성
+	 */
+	private void useSessionUrl(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		SavedRequest savedRequest = requestCache.getRequest(request, response);
+		String targetUrl = savedRequest.getRedirectUrl();
+		
+		redirectStrategy.sendRedirect(request, response, targetUrl);
+	}
+	
+	/**
+	 * 그 외의 로그인 성공 시 수행할 default URL로 이동
+	 * @param request
+	 * @param response
+	 * @param auth
+	 * @author 김진혁
+	 * @since 2018. 12. 18
+	 * @version 1.0
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0		2018.12.18	김진혁		최초작성
+	 * 1.1		2018.12.26	이수빈		사용자 로그인 시 메인화면 변경
+	 * 1.2		2019.1.3	김진혁		어드민 로그인 시 첫 화면 변경
+	 */
+	private void useDefaultUrl(HttpServletRequest request, HttpServletResponse response, Authentication auth) throws IOException {
+		UserDetails userDetails = (UserDetails) auth.getPrincipal(); 
+		String targetUrl;
+		
+		//ADMIN ROLE를 가졌을 경우 어드민 전용 메인페이지로
+		if(userDetails.getAuthorities().contains(new SimpleGrantedAuthority("M"))) {	
+			targetUrl="/admin/userJoinReqList.do";
+		}
+		else if(userDetails.getAuthorities().contains(new SimpleGrantedAuthority("R"))) {
+			targetUrl="/admin/applrcpt/prchCnfrmApplList.do";
+		}
+		else if(userDetails.getAuthorities().contains(new SimpleGrantedAuthority("W"))) {
+			targetUrl="/admin/wrtlist.do";
+		}
+		
+		//USER ROLE를 가졌을 경우 유저 전용 메인페이지로
+		else if(userDetails.getAuthorities().contains(new SimpleGrantedAuthority("Y"))) {
+			targetUrl="/";
+		}
+		
+		else {
+			targetUrl="/user/loginForm.do";
+		}
+		
+		redirectStrategy.sendRedirect(request, response, targetUrl);
+	}
+	
+	/**
+	 * 로그인 인증 성공 후 URL redirect 우선순위 결정
+	 * @param request
+	 * @param response
+	 * @return 
+	 * @author 이수빈
+	 * @since 2018. 12. 19
+	 * @version 1.0
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0		2018.12.19	이수빈		최초작성
+	 */
+	private int decideRedirectStrategy(HttpServletRequest request, HttpServletResponse response) {
+		int result = 0;
+		
+		SavedRequest savedRequest = requestCache.getRequest(request,response);
+		
+		if(!"".equals(targetUrlParameter)) {
+			String targetUrl = request.getParameter(targetUrlParameter);
+			if(StringUtils.hasText(targetUrl)) {
+				result = 1;
+			} else {
+				if(savedRequest != null) {
+					result = 2;
+				} else {
+					result = 0;
+				}
+			}
+
+			return result;
+			
+		}
+		if(savedRequest != null)  {
+			result = 2;
+			return result;
+		} else {
+			result = 0;
+		}
+		
+		return result;
+	}	
+
+}

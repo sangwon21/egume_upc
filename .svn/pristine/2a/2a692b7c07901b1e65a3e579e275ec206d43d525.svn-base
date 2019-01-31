@@ -1,0 +1,123 @@
+/**
+ * 회원정보 조회 Controller
+ * @author 이수빈
+ * @since 2018. 12. 19
+ * @version 1.0
+ * @see 
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ * 1.0 		2018.12.19	이수빈		최초작성
+ * 1.1		2018.12.20	이수빈		회원정보 수정/탈퇴 기능
+ */
+package com.upc.user.usrinf.controller;
+
+import java.security.Principal;
+
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.upc.user.usrinf.vo.UsrInfVO;
+import com.upc.user.usrinf.service.MemberInfoService;
+
+@Controller
+@RequestMapping("/user/usrinf/")
+public class MemberInfoController {
+
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(MemberInfoController.class);
+
+	@Autowired
+	private MemberInfoService service;
+	
+	/**
+	 * 회원정보 조회
+	 * @param model
+	 * @param principal
+	 * @return
+	 * @author 이수빈
+	 * @since 2018. 12. 19
+	 * @version 1.0
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0		2018.12.19	이수빈		최초작성
+	 */
+	@RequestMapping(value="/userInfo.do", method=RequestMethod.GET)
+	public String userInfo(Model model, Principal principal) throws Exception {
+		String prtnum = principal.getName();
+		logger.info("User Prtnum : " + prtnum);
+
+		model.addAttribute("usrInf", service.selectUsrInf(prtnum));
+		return "user/userInfoRC";
+	}
+	
+	/**
+	 * 회원정보 수정
+	 * @param usrInfVO
+	 * @return
+	 * @author 이수빈
+	 * @since 2018. 12. 20
+	 * @version 1.0
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0		2018.12.20	이수빈		최초작성
+	 */
+	@RequestMapping(value="/userInfo", method=RequestMethod.POST)
+	public String modUserInfo(@ModelAttribute UsrInfVO usrInfVO) throws Exception {
+		logger.info("Modify User Prtnum : " + usrInfVO.getPrtnum());
+		
+		service.updateUsrInf(usrInfVO);
+		
+		return "redirect:/user/usrinf/userInfo.do";
+	}
+	
+	/**
+	 * 회원 탈퇴를 위한 패스워드 일치/불일치 검사
+	 * @param principal
+	 * @param pw
+	 * @return
+	 * @author 이수빈
+	 * @since 2018. 12. 20
+	 * @version 1.0
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0		2018.12.20	이수빈		최초작성
+	 */
+	@RequestMapping(value="/pwCheck", method=RequestMethod.GET) 
+	public @ResponseBody boolean checkPw(Principal principal, @RequestParam("pw") String pw) throws Exception {
+		String prtnum = principal.getName();
+		
+		boolean result;
+		
+		result = service.checkPw(prtnum, pw);
+		
+		return result;
+	}
+	
+	/**
+	 * 회원 탈퇴(휴면계정으로 전환)
+	 * @param principal
+	 * @return
+	 * @author 이수빈
+	 * @since 2018. 12. 20
+	 * @version 1.0
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0		2018.12.20	이수빈		최초작성
+	 */
+	@RequestMapping(value="/deleteInfo", method=RequestMethod.POST)
+	public String deleteInfo(Principal principal) throws Exception {
+		String prtnum = principal.getName();
+		logger.info("Delete User Prtnum : " + prtnum);
+
+		service.deleteUsrInf(prtnum);
+		
+		return "redirect:/logout";
+		
+	}
+}

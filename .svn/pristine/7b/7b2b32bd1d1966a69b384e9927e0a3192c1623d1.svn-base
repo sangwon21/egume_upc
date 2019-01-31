@@ -1,0 +1,116 @@
+package com.upc.common.login.controller;
+
+import java.security.Principal;
+import java.util.Locale;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+
+
+/**
+ * 로그인 처리 페이지를 담당하는 컨트롤러
+ * @author 김진혁
+ * @since 2018. 12. 13.
+ * @version 1.2
+ * @see 참고
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ * 1.0 		2018.12.13	김진혁		최초작성
+ * 1.1		2018.12.14	김진혁		loginDo 메소드 추가
+ * 1.2		2018.12.18	김진혁		loginDo 메소드 삭제, accessDenied/adminMain/userMain 메소드 추가
+ */
+@Controller
+public class LoginController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
+		
+	/**
+	 * 디폴트 페이지 처리 메소드
+	 * @param locale
+	 * @param model
+	 * @return
+	 * @author 김진혁
+	 * @since 2018. 12. 13.
+	 * @version 1.0
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.1		2018.12.13	김진혁		최초작성
+	 */
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public String defaultPage(Locale locale, Model model) {
+		//return "login";
+		return "main";
+	}
+	
+	/**
+	 * 로그인 페이지 요청 시 로그인 페이지를 응답하는 메소드
+	 * @param locale
+	 * @param model
+	 * @return
+	 * @author 김진혁
+	 * @since 2018. 12. 13.
+	 * @version 1.0
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.1		2018.12.13	김진혁		최초작성
+	 * 1.2		2018.12.31	이수빈		loginForm 메핑 주소 변경
+	 */
+	@RequestMapping(value = "/user/loginForm.do", method = RequestMethod.GET)
+	public String loginForm(Locale locale, Model model) {
+		//return "login";
+		return "login";
+	}
+		
+	@RequestMapping(value = "/adminLogin.do", method = RequestMethod.GET)
+	public String adminLoginForm(Locale locale, Model model) {
+		
+		return "adminLogin";
+	}
+	
+	
+	/**
+	 * 로그인 처리 시 접근이 제한되었을 때 응답 페이지를 제공하는 메소드
+	 * @param locale
+	 * @param model
+	 * @return
+	 * @author 김진혁
+	 * @since 2018. 12. 18.
+	 * @version 1.0
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0		2018.12.18	김진혁		최초작성
+	 */
+	@RequestMapping(value = "/accessDenied", method = RequestMethod.GET)
+	public String accessDenied(Locale locale, Model model) {
+		logger.info("Welcome Access Denied!");
+		
+		return "accessDenied";
+	}
+	
+	/**
+	 * admin전용 메인 페이지를 제공하는 메소드
+	 * @param locale
+	 * @param model
+	 * @param principal
+	 * @return
+	 * @author 김진혁
+	 * @since 2018. 12. 18.
+	 * @version
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0		2018.12.18	김진혁		최초작성
+	 */
+	@RequestMapping(value = "/admin/adminMain.do", method = RequestMethod.GET)
+	public String adminMain(Locale locale, Model model, Principal principal) {
+		String name=principal.getName();	
+		logger.info("name = {}", name);
+		model.addAttribute("name", name);
+		return "/admin/adminMain";
+	}
+	
+}	

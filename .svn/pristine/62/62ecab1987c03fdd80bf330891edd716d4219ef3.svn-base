@@ -1,0 +1,25 @@
+package com.upc.user.reqfrm.service;
+
+import java.util.HashMap;
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import com.upc.user.reqfrm.vo.ReqFrmListVO;
+import com.upc.user.reqfrm.vo.ReqFrmVO;
+import com.upc.user.reqfrm.vo.SearchVO;
+import com.upc.user.reqfrm.vo.UsrInfVO;
+public interface ReqFrmService {
+	public String makeSeqNum();
+	public UsrInfVO selectUser(String prtnum);
+	List<ReqFrmListVO> selectReqFrmList(SearchVO searchVO);
+	void updateSts(List<ReqFrmListVO> reqFrmListVO) throws Exception;
+	List<ReqFrmVO> selectListsOfReqFrm(HashMap<String, Object> map);
+	String insertApplformFile(ReqFrmVO reqFrmVO, MultipartFile file) throws Exception;
+	void insertTaxFile(ReqFrmVO reqFrmVO, MultipartFile file) throws Exception;
+	void insertSupFile(ReqFrmVO reqFrmVO, MultipartFile file) throws Exception;
+	void insertFileReqFrm(ReqFrmVO reqFrmVO, String prtnum, MultipartFile applfrm, MultipartFile[] tax,
+			MultipartFile[] sup) throws Exception;
+	void insertWebReqFrm(ReqFrmVO reqFrmVO, String prtnum, MultipartFile[] tax, MultipartFile[] sup) throws Exception;
+	ReqFrmVO selectReqFrm(HashMap<String, Object> map, String issuenum);
+}

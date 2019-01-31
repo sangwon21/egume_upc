@@ -1,0 +1,128 @@
+package com.upc.admin.wrtinfodetail.vo;
+
+/**
+ * 구매확인서발급 VO
+ * @author 신혜영
+ * @since 2018. 12. 26.
+ * @version 1.2
+ * @see
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ * 1.1	2018.12.28		신혜영	applnum, issuecnt 추가
+ * 1.2	2019.01.07		신혜영	mgrphone, smsyn 추가
+ */
+public class CnfrmPrchIsueVO {
+	private String prtnum;
+	private String applnum; //구매확인서번호를 넣을 발급신청 건
+	private String issuenum;
+	private int seq;
+	private String mgrphone;
+	private String smsyn;
+	private String docditc;
+	private String docid;
+	private String splyprtnum;
+	private String splyorgnm;
+	private String notes;
+	private String isuefileid;
+	private String rgstid;
+	private String rgstnm;
+	private String rgsttm;
+	private int issuecnt;
+	
+	public String getPrtnum() {
+		return prtnum;
+	}
+	public void setPrtnum(String prtnum) {
+		this.prtnum = prtnum;
+	}
+	public String getApplnum() {
+		return applnum;
+	}
+	public void setApplnum(String applnum) {
+		this.applnum = applnum;
+	}
+	public String getIssuenum() {
+		return issuenum;
+	}
+	public void setIssuenum(String issuenum) {
+		this.issuenum = issuenum;
+	}
+	public int getSeq() {
+		return seq;
+	}
+	public void setSeq(int seq) {
+		this.seq = seq;
+	}
+	public String getMgrphone() {
+		return mgrphone;
+	}
+	public void setMgrphone(String mgrphone) {
+		this.mgrphone = mgrphone;
+	}
+	public String getSmsyn() {
+		return smsyn;
+	}
+	public void setSmsyn(String smsyn) {
+		this.smsyn = smsyn;
+	}
+	public String getDocditc() {
+		return docditc;
+	}
+	public void setDocditc(String docditc) {
+		this.docditc = docditc;
+	}
+	public String getDocid() {
+		return docid;
+	}
+	public void setDocid(String docid) {
+		this.docid = docid;
+	}
+	public String getSplyprtnum() {
+		return splyprtnum;
+	}
+	public void setSplyprtnum(String splyprtnum) {
+		this.splyprtnum = splyprtnum;
+	}
+	public String getSplyorgnm() {
+		return splyorgnm;
+	}
+	public void setSplyorgnm(String splyorgnm) {
+		this.splyorgnm = splyorgnm;
+	}
+	public String getNotes() {
+		return notes;
+	}
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+	public String getIsuefileid() {
+		return isuefileid;
+	}
+	public void setIsuefileid(String isuefileid) {
+		this.isuefileid = isuefileid;
+	}
+	public String getRgstid() {
+		return rgstid;
+	}
+	public void setRgstid(String rgstid) {
+		this.rgstid = rgstid;
+	}
+	public String getRgstnm() {
+		return rgstnm;
+	}
+	public void setRgstnm(String rgstnm) {
+		this.rgstnm = rgstnm;
+	}
+	public String getRgsttm() {
+		return rgsttm;
+	}
+	public void setRgsttm(String rgsttm) {
+		this.rgsttm = rgsttm;
+	}
+	public int getIssuecnt() {
+		return issuecnt;
+	}
+	public void setIssuecnt(int issuecnt) {
+		this.issuecnt = issuecnt;
+	}
+}

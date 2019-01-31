@@ -1,0 +1,182 @@
+package com.upc.user.reqfrm.controller;
+
+import java.security.Principal;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.upc.common.file.service.MemberFileService;
+import com.upc.common.file.vo.FileVO;
+import com.upc.user.reqfrm.service.ReqFrmService;
+import com.upc.user.reqfrm.vo.ReqFrmListVO;
+import com.upc.user.reqfrm.vo.ReqFrmVO;
+import com.upc.user.reqfrm.vo.SearchVO;
+import com.upc.user.reqfrm.vo.UsrInfVO;
+
+/**
+ * 발급지원 작성 목록 조회 화면 제어
+ * @author 이상원
+ * @since 2018. 12. 14.
+ * @version 1.0
+ * @see 
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ * 1.1		18.12.18	이상원		다중 파일 업로드 기능 추가, file.do Post방식 처리 추가
+ * 1.2		18.12.26	이수빈		파일 업로드 (파일 종류 값 추가)
+ */
+@Controller
+@RequestMapping("/user/reqfrm/")
+public class ReqFrmController {
+	
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ReqFrmController.class);
+	
+	@Autowired
+	private ReqFrmService reqFrmService;
+	
+	
+	@GetMapping("prchCnfrmApplCreate.do")
+	public String requestWeb(Model model, Principal principal,
+			@RequestParam(value="applnumFromList", defaultValue="false") String applnumFromList, 
+			@RequestParam(value="issuenum",required=false) String issuenum) {
+
+		
+		// 유저의 id를 얻어온 다음
+		String prtnum = principal.getName();
+		ReqFrmVO reqFrmVO = new ReqFrmVO();
+		String method = "O";
+		UsrInfVO usrinfvo = reqFrmService.selectUser(prtnum);
+		
+		
+		if(!applnumFromList.equals("false")) {
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("prtnum", prtnum);
+			map.put("applnum",applnumFromList);
+			//reqFrmService.selectReqFrm(map);
+			reqFrmVO = reqFrmService.selectReqFrm(map, issuenum);
+			logger.info("상호명은" + reqFrmVO.getSplyorgnm());
+			logger.info("주소 1은" + reqFrmVO.getSplyaddr1());
+			method="A";
+		}
+		
+		logger.info("Get 방식에서 pathvariable값은 : " + reqFrmVO.getComingFromWhere());
+		
+		model.addAttribute("method", method);
+		model.addAttribute("usrinfvo", usrinfvo);
+		model.addAttribute("reqfrmvo", reqFrmVO);
+		return "reqfrm/reqfrmWeb";
+	}
+	
+	@PostMapping("prchCnfrmApplCreate")
+	public String requestWebSubmit(@ModelAttribute FileVO fileVO, @ModelAttribute ReqFrmVO reqFrmVO, 
+		MultipartFile[] tax, MultipartFile[] sup, Principal principal, @RequestParam(value="applnumFromList", defaultValue="false") String applnumFromList) throws Exception {
+		
+		try {
+		String prtnum = principal.getName();
+		logger.info("reqFrmVO의 신청구분은"+reqFrmVO.getApplditc());
+		
+		
+		reqFrmService.insertWebReqFrm(reqFrmVO, prtnum, tax, sup);
+		}catch(Exception e) {
+			throw e;
+		}
+	
+		return "redirect:/user/reqfrm/prchCnfrmApplList.do";
+	}
+	
+	@GetMapping("searchByApplnum")
+	public @ResponseBody List<ReqFrmVO> searchByApplnum(@RequestParam(value="applnum") String applnum, Principal principal) {
+		
+		logger.info("start of searchByApplnum");	
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("prtnum", principal.getName());
+		map.put("applnum",applnum);
+		logger.info("applnum은 " + applnum);
+		logger.info("prtnum은 " + principal.getName());
+		//reqFrmService.selectReqFrm(map);
+		List<ReqFrmVO> listOfReqFrmVO = reqFrmService.selectListsOfReqFrm(map);
+		
+		
+		return listOfReqFrmVO;
+	}
+
+	
+	@PostMapping("prchCnfrmApplFileCreate")
+	public String requestFileSubmit(@ModelAttribute FileVO fileVO, @ModelAttribute ReqFrmVO reqFrmVO, MultipartFile applfrm,
+									MultipartFile[] tax, MultipartFile[] sup, Principal principal,
+									@RequestParam(value="applnumFromList", defaultValue="false") String applnumFromList) throws Exception {
+		
+		try {
+		String prtnum = principal.getName();
+		
+		logger.info("reqFrmVO의 신청구분은"+reqFrmVO.getApplditc());
+		reqFrmService.insertFileReqFrm(reqFrmVO, prtnum, applfrm, tax, sup);
+		
+		
+		}catch(Exception e) {
+			throw e;
+		}
+		return "redirect:/user/reqfrm/prchCnfrmApplList.do";
+	}
+	
+	@GetMapping("prchCnfrmApplList.do")
+	public String requestList(@ModelAttribute SearchVO searchVO, Model model, Principal principal) throws CloneNotSupportedException {
+		
+		String loginId = principal.getName();
+		logger.info("in controller searchVO : " + searchVO);
+		
+		logger.info("Period값은 " + searchVO.getPeriod());
+		searchVO.setPrtnum(loginId);
+
+		logger.info("requestList controller searchVO의 SearchCondition는  : " + searchVO.getSearchCondition());
+		logger.info("requestList controller searchVO의 ConditionValue는  : " + searchVO.getConditionValue());
+		logger.info("requestList controller searchVO의 DateCondition은  : " + searchVO.getDateCondition());
+		
+		
+		List<ReqFrmListVO> lists = reqFrmService.selectReqFrmList(searchVO);
+		
+		model.addAttribute("loginId",loginId);
+		model.addAttribute("list", lists);
+		model.addAttribute("searchVO", searchVO);
+		
+	
+		
+		return "reqfrm/reqfrmList";
+	}
+	
+	@GetMapping("updateStatus")
+	public String returnSite() {
+		return "redirect:/user/reqfrm/prchCnfrmApplList.do";
+	}
+	
+	
+	@PutMapping("updateStatus")
+	public @ResponseBody List<ReqFrmListVO> updateStatus(@RequestBody List<ReqFrmListVO> reqFrmListVO) throws Exception{
+		
+		logger.info("start updateStatus controller reqFrmListVO의 수정요청사항은 : " + reqFrmListVO.get(0).getSmplmdfreq());
+		try {
+			logger.info("컨트롤러에서 서비스 호출 reqFrmListVO : " );
+			reqFrmService.updateSts(reqFrmListVO);
+		}catch(Exception e) {
+			throw e;
+		}
+		return reqFrmListVO;
+	}
+	
+}

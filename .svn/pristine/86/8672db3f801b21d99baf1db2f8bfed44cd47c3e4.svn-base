@@ -1,0 +1,13 @@
+package com.upc.admin.usermdf.service;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import com.upc.admin.userlist.vo.UserVO;
+import com.upc.admin.usermdf.vo.UserMdfVO;
+
+
+public interface UserMdfService {
+	public UserMdfVO getUserInfo(String prtnum) throws Exception;
+	public void mdfUserInfo(UserMdfVO userMdfVO, MultipartFile bsnsFile, String checkFileChange) throws Exception;
+
+}

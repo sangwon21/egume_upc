@@ -1,0 +1,140 @@
+package com.upc.admin.wrtlist.service;
+
+import java.util.Date;
+import java.util.List;
+
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.upc.admin.wrtlist.dao.DepositCnfrmDAO;
+import com.upc.admin.wrtlist.dao.WrtListDAO;
+import com.upc.admin.wrtlist.vo.DepositCnfrmVO;
+import com.upc.admin.wrtlist.vo.SearchVO;
+import com.upc.admin.wrtlist.vo.WrtListVO;
+
+/**
+ * 접수완료 이후의 발급신청 건들 목록을 가져옴
+ * @author 신혜영
+ * @since 2018. 12. 14.
+ * @version 1.2
+ * @see 참고
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ * 1.0	2018.12.14		신혜영		작성 목록 가져오기 추가
+ * 1.1	2018.12.18		신혜영		상태변경 기능 추가
+ * 1.2	2018.12.19		신혜영		상태변경->입금정보등록, 발급건수 증가 기능 추가
+ */
+@Service("wrtListService")
+public class WrtListServiceImpl implements WrtListService {
+
+	@Autowired
+	private WrtListDAO wrtListDao;
+
+	@Autowired
+	private DepositCnfrmDAO depositCnfrmDao;
+
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(WrtListServiceImpl.class);
+
+
+	/**
+	 * 조건에 맞는 목록들을 가져옴
+	 * @param searchVO
+	 * @return List<WrtListVO>
+	 * @author 신혜영
+	 * @since 2018. 12. 14.
+	 * @version 1.0
+	 */
+	@Override
+	public List<WrtListVO> selectWrtrList(SearchVO searchVO) {
+
+		// 전체 접수건
+		int boardTotUnit = wrtListDao.selectBoardTotUnit(searchVO);
+		// 현재페이지
+		int pageIndex = searchVO.getPageIndex();
+		// 한페이지당 건 수
+		int pageUnit = searchVO.getPageUnit();
+		// 보여줄 페이지 크기
+		int pageSize = searchVO.getPageSize();
+		// 전체페이지
+		int totPage = (boardTotUnit % pageUnit == 0) ? (boardTotUnit / pageUnit) : (boardTotUnit / pageUnit + 1); 
+		// 시작페이지
+		int firstIndex = ((pageIndex - 1) / pageSize) * pageSize + 1;
+		// 끝페이지
+		int lastIndex = firstIndex + pageSize - 1;
+		//끝페이지 처리
+		if (lastIndex > totPage) {
+			lastIndex = totPage;
+		}
+		
+		searchVO.setBoardTotUnit(boardTotUnit);
+		searchVO.setTotPage(totPage);
+		searchVO.setFirstIndex(firstIndex);
+		searchVO.setLastIndex(lastIndex);
+
+		List<WrtListVO> result = wrtListDao.selectWrtrList(searchVO);
+		
+		for (WrtListVO item : result) {
+			logger.info("result : "+item.getApplrcvdt());
+		}
+		return result;
+	}
+
+	/**
+	 * 작성자 목록을 가져옴
+	 * @param
+	 * @return List<WrtListVO>
+	 * @author 신혜영
+	 * @since 2018. 12. 14.
+	 * @version 1.0
+	 */
+	@Override
+	public List<WrtListVO> selectWriters() {
+		return wrtListDao.selectWriters();
+	}
+
+	/**
+	 * 입금확인완료로 상태변경, 입금정보 등록 및 고객 건수 증가
+	 * @param wrtListVO
+	 * @return
+	 * @author 신혜영
+	 * @since 2018. 12. 18.
+	 * @version 1.0
+	 * @throws Exception 
+	 */
+	@Override
+	@Transactional(rollbackFor=Exception.class)
+	public void updateSts(List<WrtListVO> wrtListVO) throws Exception {
+
+		for (WrtListVO item : wrtListVO) {
+			DepositCnfrmVO depositCnfrmVo = new DepositCnfrmVO();
+
+			depositCnfrmVo.setPrtnum(item.getPrtnum());
+			// depositCnfrmVo.setDepdt(); //입금날짜 세팅
+			//depositCnfrmVo.setDeprnm(item.getName()); //입금자명 세팅
+			depositCnfrmVo.setRgstid(item.getWrtrid());
+
+			// 입금정보 등록
+			if (depositCnfrmDao.insertDepositHsty(depositCnfrmVo) != 1) {
+				logger.info("inserting deposit history is failed");
+				throw new Exception("입금정보 등록 실패");
+			}
+			// 고객 잔여건수 증가
+			if (depositCnfrmDao.updateUsrRmncnt(item) != 1) {
+				logger.info("updating user rmncnt to rmncnt+1 is failed");
+				throw new Exception("고객 건수 증가 실패");
+			}
+			// 발급신청의 진행 상태 변경
+			if (wrtListDao.updateSts(item) != 1) {
+				logger.info("updating cnfrmprchreq status is failed");
+				throw new Exception("발급신청 진행 상태 변경 실패");
+			}
+
+			logger.info("doing updateSts : " + depositCnfrmVo);
+		}
+
+		return;
+	}
+
+}

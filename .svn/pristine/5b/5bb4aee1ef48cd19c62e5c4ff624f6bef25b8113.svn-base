@@ -1,0 +1,113 @@
+ 
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  margin: 0;
+}
+
+.topnavi {
+	background-color: #30BBBB;
+	top: 0;
+  	left:0;
+}
+
+#topnav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #30BBBB;
+  position: static;
+  width: 100%;
+  z-index:1;
+}
+
+#topnav li {
+  width:100px;
+  float: left;
+  font-weight:800;
+}
+
+#topnav li a {
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+#topnav li a:hover:not(.active) {
+  background-color: #ddd;
+  color: black;
+  height: 54px;
+  text-decoration: none;
+}
+
+#topnav .active{
+  background-color: #ddd ; 
+  text-decoration: none !important;
+  color: black !important;
+  height: 54px;
+}
+
+.btLayer{
+	width: 100%;
+	height: 54px;
+	margin-top:10px;
+	margin-bottom: 20px;
+}
+
+.label-primary {
+	background-color:#30BBBB;
+}
+
+/* Footer */
+.footer {padding-top:10px; height:80px; float: center;  background-color:#333A46; color:white;  font-size: 12px;}
+
+.bg1 {
+  width: 100%;
+  height: 180px;
+  background-image: url('../img/img_index_visual_ktnetplus.png');
+  background-size: cover;
+  border: 0px;
+}
+
+#rcorners2 {
+  border-radius: 25px;
+  border: 3px solid #30BBBB;
+  padding: 10px 5px; 
+  width: 160px;
+  height: 120px; 
+  font-size: 15px;
+  font-style: bold;
+}
+
+
+.login {
+ /* width: 100%;*/
+ /* height: 60px;*/
+  background-color: white;
+  border: 0px;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  align-content:center;
+  text-align: middle;
+  overflow: auto;
+}
+
+.title {
+	font-size: 20px;
+	font-weight: bold;
+	width: 100%;
+    height: 55px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 14px 16px;
+}
+
+.clearfix {
+  overflow: auto;
+}

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+	Date : 2018. 12. 11
+	Author : 김진혁
+	Description : Spring Security 설정 
+	Version 1.0
+	History
+	Date			Author		Contents
+	==========		=========	===========================
+	2018.12.12		이수빈		BCrypt 암호화 bean 설정
+	2018.12.13		이수빈		403 접근 권한 에러 해결 설정
+	2018.12.18		김진혁		URL인터셉터 처리, 로그인/로그아웃 환경설정, 로그인성공핸들러 빈 설정
+	2018.12.24		이수빈		로그인 사용자 정보 추가(username, password, authority, enabled, name)
+	2018.12.31		이수빈		관리자/사용자 페이지 분리
+ -->
+
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	
+	<beans:bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+	<beans:bean id="customAuthenticationSuccessHandler" class="com.upc.common.login.controller.CustomAuthenticationSuccessHandler">
+		<beans:property name="targetUrlParameter" value="loginRedirect" />
+		<beans:property name="useReferer" value="false" />
+		<beans:property name="defaultUrl" value="/loginForm" />
+	</beans:bean>
+	<beans:bean id="userAuthenticationService" class="com.upc.common.login.service.UserAuthenticationServiceImpl" />
+	
+	<context:annotation-config />
+	<context:component-scan base-package="com.upc.common.login.dao" />
+
+	<http auto-config="true" use-expressions="true" pattern="/" disable-url-rewriting="true">
+		<intercept-url pattern="/" access="permitAll" />
+		<intercept-url pattern="/rgstid/**" access="permitAll"/>
+		<csrf disabled="true" />
+	</http>
+
+	<http auto-config="true" use-expressions="true" pattern="/user/**" disable-url-rewriting="true">
+		<intercept-url pattern="/user/loginForm.do" access="permitAll" />
+		<intercept-url pattern="/user/reqfrm/**" access="hasAuthority('Y')" />
+		<intercept-url pattern="/user/usrinf/**" access="hasAuthority('Y')" />
+		<form-login login-page="/user/loginForm.do"
+					login-processing-url="/user/login"
+					always-use-default-target="true"
+					default-target-url="/user/reqfrm/list"
+					authentication-failure-url="/user/loginForm.do?error"
+					authentication-success-handler-ref="customAuthenticationSuccessHandler"
+					username-parameter="id"
+					password-parameter="password" />
+		<logout logout-url="/user/logout"
+				logout-success-url="/user/loginForm.do" />
+		<access-denied-handler error-page="/accessDenied" />
+		<csrf disabled="true" />
+				
+	</http>
+	
+	<http auto-config="true" use-expressions="true" pattern="/admin/**" disable-url-rewriting="true">
+		<intercept-url pattern="/adminLogin.do" access="not(hasAuthority('Y'))" />
+		<intercept-url pattern="/admin/adminMain.do" access="hasAnyAuthority('M, R, W')" />
+		<form-login login-page="/adminLogin.do"
+					login-processing-url="/admin/login"
+					always-use-default-target="true"
+					authentication-failure-url="/adminLogin.do?error"
+					authentication-success-handler-ref="customAuthenticationSuccessHandler"
+					username-parameter="id"
+					password-parameter="password" />
+		<logout logout-url="/admin/logout"
+				logout-success-url="/adminLogin.do" />
+		<access-denied-handler error-page="/accessDenied" />
+		<csrf disabled="true" />
+	</http>
+	
+	<authentication-manager>
+		<authentication-provider user-service-ref="userAuthenticationService">
+			<password-encoder ref="bcryptPasswordEncoder"/>
+		</authentication-provider> 
+	  
+	</authentication-manager>
+    
+</beans:beans>

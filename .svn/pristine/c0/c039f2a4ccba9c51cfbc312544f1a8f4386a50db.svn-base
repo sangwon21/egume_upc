@@ -1,0 +1,243 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.2/css/bootstrapValidator.min.css"/>
+<title>UPC-개인정보조회</title>
+</head>
+<style>
+	label, p {
+		font-size:12px;
+	}
+</style>
+<header>
+	<c:import url="../header.jsp"></c:import>
+</header>
+<body>
+
+	<div class="container" style="padding-top:60px;">
+    	<h5><b>KTNET 개인 정보 조회</b></h5>
+	</div>
+    <br>
+    
+    <div class="container">
+   		<form class="form-horizontal" id="form" method="post" action="${pageContext.request.contextPath}/user/usrinf/userInfo">
+    		<div class="container">
+				<h5>고객정보 <span class="glyphicon glyphicon-info-sign"></span></h5>
+				<table class="col-lg-6">
+					<tr>
+						<td><label for="prtnum">사업자등록증번호<span class="text-danger">*</span></label></td>
+						<td><input type="text" class="form-control" name="prtnum" id="prtnum" value="${usrInf.prtnum }" readonly></td>
+					</tr>
+					<tr>
+						<td><label for="pw">패스워드<span class="text-danger">*</span></label></td>
+						<td><input type="password" class="form-control" name="pw" id="pw"></td>
+					</tr>
+					<tr>
+						<td><label for="pwCheck">패스워드확인<span class="text-danger">*</span></label></td>
+						<td><input type="password" class="form-control" name="pwCheck" id="pwCheck"></td>
+					</tr>
+					<tr>
+						<td><label for="cmpnnm">상호<span class="text-danger">*</span></label></td>
+						<td><input type="text" class="form-control" name="cmpnnm" id="cmpnnm" value="${usrInf.cmpnnm }" readonly></td>
+					</tr>
+					<tr>
+						<td><label for="ceonm">대표자<span class="text-danger">*</span></label></td>
+						<td><input type="text" class="form-control" name="ceonm" id="ceonm" value="${usrInf.ceonm }" readonly></td>
+					</tr>
+					<tr>
+						<td><label for="addr1">주소<span class="text-danger">*</span></label></td>
+						<td><input type="text" class="form-control" name="addr1" id="addr1" value="${usrInf.addr1 }" readonly></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td><input type="text" class="form-control" name="addr2" id="addr2" value="${usrInf.addr2 }" readonly></td>
+					</tr>
+				</table>					
+				<table class="col-lg-6">
+					<tr>
+						<td><label>담당자</label></td>
+						<td><label for="mgrname">성명<span class="text-danger">*</span></label></td>
+						<td><input type="text" class="form-control" name="mgrname" id="mgrname" value="${usrInf.mgrname }"></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td><label for="mgrtel">전화번호<span class="text-danger">*</span></label></td>
+						<td><input type="text" class="form-control" name="mgrtel" id="mgrtel" value="${usrInf.mgrtel }"></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td><label for="mgrphone">휴대전화<span class="text-danger">*</span></label></td>
+						<td><input type="text" class="form-control" name="mgrphone" id="mgrphone" value="${usrInf.mgrphone }"></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td><label for="mgrpstn">부서직위<span class="text-danger">*</span></label></td>
+						<td><input type="text" class="form-control" name="mgrpstn" id="mgrpstn" value="${usrInf.mgrpstn }"></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td><label for="mgrfax">팩스번호<span class="text-danger">*</span></label></td>
+						<td><input type="text" class="form-control" name="mgrfax" id="mgrfax" value="${usrInf.mgrfax }"></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td><label for="mgremail">이메일<span class="text-danger">*</span></label></td>
+						<td><input type="email" class="form-control" name="mgremail" id="mgremail" value="${usrInf.mgremail }"></td>
+					<tr>
+						<td><label>알림서비스</label></td>
+						<td><label for="emailyn" class="cotrol-label">이메일 수신 </label></td>
+						<td><label class="checkbox-inline">
+								<c:choose>
+									<c:when test="${usrInf.emailyn eq 'Y'}">
+										<input type="checkbox" name="emailyn" id="emailyn" checked>동의
+									</c:when>
+									<c:otherwise>
+										<input type="checkbox" name="emailyn" id="emailyn">동의
+									</c:otherwise>
+								</c:choose>
+							</label>
+						</td>
+						<td><label for="smsyn" class="cotrol-label">sns 수신 </label></td>
+						<td><label class="checkbox-inline">
+								<c:choose>
+									<c:when test="${usrInf.smsyn eq 'Y'}">
+										<input type="checkbox" name="smsyn" id="smsyn" checked>동의
+									</c:when>
+									<c:otherwise>
+										<input type="checkbox" name="smsyn" id="smsyn">동의
+									</c:otherwise>
+								</c:choose>
+							</label>
+						</td>
+					</tr>
+				</table>
+				<%-- <div class="container col-lg-12">
+					<div class="form-group">
+						<label class="col-sm-2 control-label">사업자등록증사본<span class="text-danger">*</span></label>
+						<div class="col-sm-10">
+							<input type="text" id="bsnsfileid" class="form-control" name="bsnsfileid" value="${usrInf.bsnsfileid }" readonly>
+						</div>
+					</div>
+				</div> --%>
+			</div>
+			<div class="container">
+				<h5>이용정보 <span class="glyphicon glyphicon-info-sign"></span></h5>
+				<table>
+					<tr>
+						<td><label>발급지원 수수료</label></td>
+						<td><label class="control-label">11,000원/건당(입금계좌 : 우리은행, 1005-901-807807883, (주)한국무역정보통신)</label></td>
+					</tr>
+					<tr>
+						<td><label>선불요금제</label></td>
+						<td><label class="checkbox-inline">
+								<c:choose>
+									<c:when test="${usrInf.prepayyn eq 'Y'}">
+										<input type="checkbox" name="prepayyn" id="prepayyn" checked>이용신청
+									</c:when>
+									<c:otherwise>
+										<input type="checkbox" name="prepayyn" id="prepayyn">이용신청
+									</c:otherwise>
+								</c:choose>	
+							</label>
+							<br>
+							<label class="control-label">(이용 가능 건수 및 요금 : 11건 110,000원, 11번째 신청 건 무료지원)</label>
+						</td>
+						<td><label>발급가능건수</label></td>
+						<td><label>${usrInf.rmncnt } 건</label></td>
+				</table>
+			</div>
+			<div class="container">
+				<h5>사업자등록증사본</h5>
+				<table>
+					<tr>
+						<td><input type="text" id="bsnsfileid" class="form-control" name="bsnsfileid" value="${usrInf.bsnsfileid }" readonly></td>
+					</tr>
+				</table>
+			</div>
+			<div class="container" style="padding-bottom:50px; padding-top:50px;">
+				<div class="col-sm-3"></div>
+				<div class="col-sm-3 text-center">
+					<button type="button" id="deleteInfo" class="btn btn-default" data-toggle="modal" data-target="#deleteInfModal" style="color:red;">탈퇴</button>
+				</div>
+				<div class="col-sm-3 text-center">
+					<button type="submit" class="btn btn-default" onclick="return fn_validationCheck()" id="submission" style="color:#30BBBB">수정</button>
+				</div>
+				<div class="col-sm-3"></div>
+			</div>
+		</form>
+	</div>		
+	
+	<!-- 회원탈퇴 Modal -->
+	<div class="modal fade" id="deleteInfModal" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form class="form-horizontal" method="post" action="${pageContext.request.contextPath }/user/usrinf/deleteInfo">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+	          			<h4 class="modal-title">회원 탈퇴</h4>
+					</div>
+					<div class="modal-body">
+				        	<p>회원 탈퇴를 신청한 시간으로 부터 1년간 휴면계정으로 전환됩니다.</p>
+				        	<p>이후 회원과 관련된 모든 정보가 삭제되며 탈퇴 완료 됩니다.</p>
+				        	<div class="form-group" >
+				        		<label for="pw" class="col-sm-2 control-label">패스워드<span class="text-danger">*</span></label>
+								<div class="col-sm-10">
+									<input type="password" class="form-control input-sm" name="pwConfirm" id="pwConfirm">
+								</div>
+				        	</div>
+				        	<br>
+				       
+			        </div>
+					<div class="modal-footer">
+			        	<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+			        	<button type="submit" class="btn btn-default" onclick="return fn_pwCheck()">확인</button>
+			        </div>
+			    </form>
+			</div>
+		</div>
+	</div>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.2/js/bootstrapValidator.min.js"></script>
+	<script src="${pageContext.request.contextPath}/js/usrInf.js"></script>
+	
+
+</body>
+<footer>
+	<c:import url="../footer.jsp" />
+</footer>
+<script type="text/javascript">
+
+
+/*
+ * 회원 탈퇴를 위한 패스워드 확인
+ */
+function fn_pwCheck() {
+	var pw = $("#pwConfirm").val();
+	
+	$.ajax({
+		type:'GET',
+		url:'/user/usrinf/pwCheck',
+		data:{'pw' : pw },
+		dataType:"text",
+		success:function(data) {
+			if(data == "true") {
+				return true;
+			} else {
+				alert("패스워드가 올바르지 않습니다.");
+				return false;
+			}
+		}, error:function(request, status, error) {
+			console.log("pw check error >> code:" + request.status+"\n" + "message:" + request.responseText+"\n" + "error:" + error );
+		}
+		
+	});
+}
+</script>
+</html>

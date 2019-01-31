@@ -1,0 +1,53 @@
+package com.upc.admin.applrcptlist.service;
+
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import org.springframework.stereotype.Service;
+
+import com.upc.admin.applrcptlist.vo.ApplRcptListVO;
+import com.upc.admin.applrcptlist.vo.ApplRcptRstVO;
+import com.upc.admin.applrcptlist.vo.SearchVO;
+
+@Service
+public interface ApplRcptListService {
+	/** 
+	 * 발급건수 취합
+	 * @return 금일 신청,발급 건수, 지난달 발급건수
+	 * @throws SQLException
+	 * @author 강성효
+	 * @since 2018. 12. 20.
+	 * @version
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 */
+	ApplRcptRstVO applRcptCmbRst() throws SQLException;
+	
+	/** 
+	 * 조회화면 List
+	 * @param searchVO
+	 * @return 신청내역 List
+	 * @author 강성효
+	 * @since 2018. 12. 20.
+	 * @version
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 */
+	ArrayList<ApplRcptListVO> applList(SearchVO searchVO);
+	
+	
+	/** 
+	 * 담당자 지정 
+	 * @param applNumList
+	 * @param wrtrIdList
+	 * @return SUCCESS, FAIL
+	 * @author 강성효
+	 * @since 2018. 12. 26.
+	 * @version
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 */
+	int wrtrApptd(String[] applNumList, String[] wrtrIdList);
+	
+}

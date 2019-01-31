@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.upc.admin.applrcptrgst.dao.ApplRcptRgstDAO">
+	<!-- 
+	Date : 2018. 12. 26
+	Author : 강성효
+	Description : 발급신청 등록 & 상세 관련 Mapper
+	version 1.2
+	=======================================
+	버전 		수정일 		수정자 		설명
+-->
+	
+	<!-- 발급신청번호에 대한 상세신청현황 조회 -->
+	<select id="getApplRcptOne" parameterType="com.upc.admin.applrcptlist.vo.ApplRcptListVO" resultType="com.upc.admin.applrcptlist.vo.ApplRcptListVO">
+		SELECT 
+			prtnum,
+			applnum,
+			prchdt,
+			shipdt,
+			splyprtnum,
+			splyorgnm,
+			splyceonm,
+			splyaddr1,
+			splyaddr2,
+			TO_CHAR(appldt,'YYYY-MM-DD') appldt,
+			TO_CHAR(applrcvdt,'YYYY-MM-DD') applrcvdt,
+			sts,
+			applfileid,
+			appmthd,
+			applfileid,
+			(SELECT name FROM admusr WHERE cnfrmprchreq.wrtrid = admusr.admid) name, 
+			(SELECT codenm FROM code WHERE code.mstrcode = 'APPLSTS' AND cnfrmprchreq.sts = code.code ) codenm,
+			(SELECT cmpnnm FROM usrinf WHERE cnfrmprchreq.prtnum = usrinf.prtnum) cmpnnm,
+			notes
+		FROM
+			cnfrmprchreq
+		WHERE
+			applnum = #{applNum}
+
+	</select>
+	
+	<!-- 접수된 첨부서류 목록 조회 -->
+	<select id="getFileInfoList" parameterType="com.upc.admin.applrcptlist.vo.ApplRcptListVO" 
+	resultType="com.upc.common.file.vo.FileVO">
+		SELECT 
+			formtype,
+        	LISTAGG(fileseq,',')WITHIN GROUP ( ORDER BY fileseq DESC) fileseq,
+       		LISTAGG(filenm,',')WITHIN GROUP ( ORDER BY fileseq DESC) filenm,
+        	LISTAGG(type,',')WITHIN GROUP ( ORDER BY fileseq DESC) type
+ 		FROM 
+ 			fileinf
+ 		WHERE 
+ 			applnum = #{applNum} AND (formtype = '세금계산서' or formtype = '수출근거서류')
+ 		GROUP BY 
+ 			formtype
+ 		ORDER BY
+ 			formtype
+ 			
+	</select>
+	
+	<!-- 발급신청내역 수정 -->
+	<update id="updateApplRcpt" parameterType="com.upc.user.reqfrm.vo.ReqFrmVO">
+		UPDATE
+			cnfrmprchreq
+		SET
+			prchdt = #{prchdt}, 
+			shipdt = #{shipdt}, 
+			splyprtnum = #{splyprtnum}, 
+			splyorgnm = #{splyorgnm}, 
+			splyceonm = #{splyceonm}, 
+			splyaddr1 = #{splyaddr1}, 
+			splyaddr2 = #{splyaddr2},
+			notes = #{notes}
+		WHERE
+			applnum = #{applnum}
+	
+	</update>
+
+</mapper>

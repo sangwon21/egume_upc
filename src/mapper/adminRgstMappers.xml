@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	Date : 2018. 12. 19
+	Author : 김진혁
+	Description : 어드민 등록 처리를 위한 Mappers
+	version 1.0
+	=======================================
+	버전 		수정일 		수정자 		설명
+	1.0		2018.12.19	김진혁		insertAdmin, checkId 추가
+-->
+<mapper namespace="com.upc.admin.adminrgst.dao.AdminRgstDAO"> 
+
+	<!-- id 속성은 DAO 의 메소드와 같아야 한다  --> 
+	<!-- 어드민 등록 -->
+	<insert id="insertAdmin" parameterType="adminVO">
+		INSERT INTO ADMUSR VALUES(#{admid}, #{pw}, #{name}, #{email}, #{tel}, 
+			#{role}, #{useyn}, SYSDATE, #{rgstid}, SYSDATE, #{mdfid})
+	</insert> 
+	
+	<select id="checkId" parameterType="String" resultType="Integer">
+		SELECT COUNT(*) FROM ADMUSR
+		WHERE
+		admid = #{id}
+	</select>
+	
+ 
+ </mapper>

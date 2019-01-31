@@ -1,0 +1,132 @@
+/**
+ * 파일관리 controller
+ * (사업자등록증사본, 가입신청서)
+ * @author 이 수빈
+ * @Date 2018.12.17
+ * @version 1.0
+ * @see
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ * 
+ */
+package com.upc.common.file.controller;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.upc.common.file.service.MemberFileService;
+
+@Controller
+public class MemberFileController {
+  
+	@Autowired
+	MemberFileService service;
+	
+	/** 
+	 * 파일 다운로드
+	 * @param 
+	 * @return
+	 * @author 이수빈
+	 * @since 2018.12.17
+	 * @version 1.0
+	 * 수정이력
+	 * 버전	수정일		수정자	내용
+	 * 1.1	2018.12.27	이수빈	압축파일 다운로드
+	 */
+	@RequestMapping(value="/filedownload", method=RequestMethod.GET)
+	public String download(HttpServletResponse response, String fileseq) throws Exception {
+		
+		ZipOutputStream zos = null;
+		String zipName="C:\\Users\\user\\Desktop\\upcDoc.zip";
+		
+		byte fileByte[] = null;
+		String fileName = "";
+		
+		List<String> fileList = new ArrayList<String>();
+		String[] list = fileseq.split(",");
+		
+		for(int i = 0; i < list.length; i++) {
+			fileList.add(list[i]);
+		}
+		
+		if(fileList.size() == 1) {
+			// 가입 신청서 seq 설정
+			Map<String, String> fileInfo = service.selectFileInfo(fileseq);	//fileseq를 통해 file 정보(파일명, 경로) 불러오기
+					
+			fileName = fileInfo.get("FILENM");
+			String saveFileName = fileInfo.get("PATH")+"\\"+fileInfo.get("FILENM");
+			fileByte = FileUtils.readFileToByteArray(new File(saveFileName));	// 실제 파일이 저장된 경로를 통해 첨부파일을 읽어 byte[]형태로 변환
+		} else {	
+			
+			try {
+				byte[] buf = new byte[4096];
+
+				zos = new ZipOutputStream(new FileOutputStream(zipName));
+				FileInputStream in = null;
+				
+				for (int i = 0; i < fileList.size(); i++) {
+					Map<String, String> fileInfo = service.selectFileInfo(fileList.get(i));
+					
+					in = new FileInputStream(fileInfo.get("PATH")+"/"+fileInfo.get("FILENM"));
+					String path = fileInfo.get("PATH")+"/"+fileInfo.get("FILENM");
+					
+					fileList.set(i, path);
+
+					zos.putNextEntry(new ZipEntry(fileInfo.get("FILENM")));
+
+					int len;
+					
+					while ((len = in.read(buf)) > 0) {
+						zos.write(buf, 0, len);
+					}
+					zos.closeEntry();
+					in.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				if (zos != null) {
+					try {
+						zos.close();
+					} catch (Exception e) {
+
+					}
+					zos = null;
+				}
+				File zipFile = new File(zipName); 
+				fileName = zipFile.getName();
+				fileByte = FileUtils.readFileToByteArray(zipFile);
+
+			}
+
+		}
+		
+		response.setContentType("application/octet-stream");						// application/octet-stream : application 형식이 지정되지 않았거나 모름을 의미
+	    //response.setContentLength(fileByte.length);
+	    response.setHeader("Content-Disposition", "attachment; fileName=\"" + URLEncoder.encode(fileName,"UTF-8")+"\";");	// attachment : 데이터 형식이 첨부파일임을 의미함
+																															// fileName=\"" : 첨부 파일의 이름 지정
+	    response.setHeader("Content-Transfer-Encoding", "binary");
+	    
+	    response.getOutputStream().write(fileByte);
+	    response.getOutputStream().flush();
+	    response.getOutputStream().close();
+
+	    return null;
+	}
+
+}

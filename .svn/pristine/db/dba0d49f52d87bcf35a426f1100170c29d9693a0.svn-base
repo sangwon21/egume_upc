@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	Date : 2018. 12. 14
+	Author : 이상원
+	Description : 구매확인서 발급 신청  Mapper 
+	Version 1.0
+	History
+	Date			Author		Contents
+	==========		=========	===========================
+	
+ -->
+<!-- 맵핑될 DAO 인터페이스의 Full name 을 줍니다. --> 
+<mapper namespace="com.upc.user.reqfrm.dao.ReqFrmDAO"> 
+
+	<!-- id 속성은 DAO 의 메소드와 같아야 한다  --> 
+	<insert id="insertCnfrmPrchReq" parameterType="reqFrmVO">
+		INSERT INTO CNFRMPRCHREQ(PRTNUM, APPLNUM, PRCHDT, SHIPDT, SPLYPRTNUM, SPLYORGNM, SPLYCEONM, SPLYADDR1, SPLYADDR2, APPLDT, STS, APPMTHD, REGID, APPLDITC, APPLFILEID, NOTES) VALUES(#{prtnum}, #{applnum}, #{prchdt}, #{shipdt}, 
+			#{splyprtnum}, #{splyorgnm}, #{splyceonm}, #{splyaddr1}, #{splyaddr2}, SYSDATE, #{sts}, #{appmthd}, #{regid}, #{applditc}, #{applfileid}, #{notes})
+	</insert> 
+ 	
+ 	<select id="selectMaxSeq" resultType="int">
+		SELECT NVL((MAX(SUBSTR(applnum, 13))), '0000') FROM CNFRMPRCHREQ WHERE SUBSTR(applnum, 0, 4)='APPL'
+		AND to_char(sysdate) = to_char(appldt)
+	</select>
+ 	
+ 	<select id="selectUser" parameterType="String" resultType="com.upc.user.reqfrm.vo.UsrInfVO">
+ 		SELECT prtnum, cmpnnm, ceonm, addr1, addr2 FROM USRINF WHERE prtnum = #{prtnum}
+ 	</select>
+ 	
+ 	<update id="updateSts" parameterType="com.upc.user.reqfrm.vo.ReqFrmListVO">
+		UPDATE CNFRMPRCHREQ SET
+			sts=#{sts}
+			<if test='smplmdfreq != ""'>
+				,smplmdfreq=#{smplmdfreq}
+			</if>
+			<if test='issuemdfreq != ""'>
+				,issuemdfreq=#{issuemdfreq}
+			</if>
+			<if test='cnfrmid != ""'>
+				,cnfrmid=#{cnfrmid}
+			</if>
+			<if test='cnfrmid != ""'>
+				,cnfrmdt=SYSDATE
+			</if>
+		WHERE applnum=#{applnum}
+		AND prtnum=#{prtnum}
+	</update>
+
+ 	<select id="selectReqFrm" parameterType="hashmap" resultType="reqFrmVO">
+ 		SELECT APPLNUM, PRCHDT, SHIPDT, SPLYPRTNUM, SPLYORGNM, SPLYCEONM, SPLYADDR1, SPLYADDR2
+    		FROM CNFRMPRCHREQ
+    		WHERE applnum=#{applnum}
+    		AND prtnum=#{prtnum}
+ 	</select>
+ 	
+ 	<select id="selectListsOfReqFrm" parameterType="hashmap" resultType="reqFrmVO">
+ 		SELECT APPLNUM, PRCHDT, SHIPDT, SPLYPRTNUM, SPLYORGNM, SPLYCEONM, SPLYADDR1, SPLYADDR2
+ 			FROM CNFRMPRCHREQ
+ 			WHERE sts='C1'
+ 			AND prtnum=#{prtnum}
+ 			<if test='applnum != ""'>
+ 				AND applnum=#{applnum}
+ 			</if>
+ 	</select>
+ 	
+ 	<select id="selectReqFrmList" parameterType="com.upc.user.reqfrm.vo.SearchVO" resultType="reqFrmListVO">
+ 		SELECT list.* 
+		FROM (
+			SELECT prtnum
+				, applnum
+				, splyorgnm
+				, TO_CHAR(appldt,'YYYY-MM-DD') as appldt
+				, sts
+				, codenm
+				, issuenum
+				, TO_CHAR(rgsttm,'YYYY-MM-DD') as rgsttm 
+				, isuefileid
+				, smplfileid
+				, rownum rnum
+			FROM (
+ 				SELECT *
+ 				FROM(
+ 					SELECT  cpr.prtnum
+					, cpr.applnum 
+					, cpr.splyorgnm
+					, cpr.appldt
+					, cpr.sts
+					,(SELECT codenm 
+							FROM code 
+							WHERE code.mstrcode = 'APPLSTS' AND cpr.sts = code.code ) codenm
+					, cpr.issuenum
+					, (SELECT max(rgsttm) keep(dense_rank first order by cpi.seq desc) 
+							FROM cnfrmprchisue cpi 
+							WHERE cpr.issuenum=cpi.issuenum 
+							GROUP BY cpr.issuenum) rgsttm 
+					, (SELECT max(isuefileid) keep(dense_rank first order by cpi.seq desc) 
+							FROM cnfrmprchisue cpi 
+							WHERE cpr.issuenum=cpi.issuenum 
+							GROUP BY cpr.issuenum) isuefileid 
+					, cpr.smplfileid 
+				FROM CNFRMPRCHREQ cpr 
+		 		WHERE cpr.prtnum = #{prtnum}
+		 			<if test='dateCondition == "appldt"'>
+		 				and cpr.appldt BETWEEN to_date(#{dateFrom}, 'YYYY-MM-DD') AND to_date(#{dateTo}, 'YYYY-MM-DD')+1
+		 			</if>
+		 			<if test='dateCondition == "rgsttm"'>
+						and cpi.rgsttm BETWEEN to_date(#{dateFrom}, 'YYYY-MM-DD') AND to_date(#{dateTo}, 'YYYY-MM-DD')+1
+					</if>
+					<if test='conditionValue != ""'>
+						 <choose>
+							<when test='conditionValue == "issuenum"'>
+								AND cpr.issuenum=#{conditionValue} 
+							</when>
+							<otherwise>
+								AND cpr.splyorgnm like '%'||#{conditionValue}||'%'
+							</otherwise>
+						</choose>
+					</if>
+					<if test='searchStatus != "all"'>
+							AND cpr.sts=#{searchStatus} 
+					</if>
+				)
+				ORDER BY  
+					<choose>
+						<when test='dateCondition == "rgsstm"'>
+							rgsttm desc
+						</when>
+						<otherwise>
+							appldt desc
+						</otherwise>
+					</choose>
+			) 
+			WHERE rownum  <![CDATA[<=]]> ${pageUnit}*${pageIndex}
+		) list
+		WHERE rnum <![CDATA[>=]]> #{pageIndex}*#{pageUnit}-#{pageUnit}+1
+ 	</select>
+ 	
+ 	<select id="selectBoardTotUnit" parameterType="com.upc.user.reqfrm.vo.SearchVO" resultType="int">
+		SELECT count(applnum)
+		FROM (
+			SELECT cpr.prtnum
+				, cpr.applnum
+				, (SELECT max(rgsttm) keep(dense_rank first order by cpi.seq desc) 
+					FROM cnfrmprchisue cpi 
+					WHERE cpr.issuenum=cpi.issuenum 
+					GROUP BY cpr.issuenum) rgsttm
+			FROM CNFRMPRCHREQ cpr
+			WHERE cpr.prtnum = #{prtnum}
+	 			<if test='dateCondition == "appldt"'>
+	 				AND cpr.appldt BETWEEN to_date(#{dateFrom}, 'YYYY-MM-DD') AND to_date(#{dateTo}, 'YYYY-MM-DD')+1
+	 			</if>
+	 			<if test='dateCondition == "rgsttm"'>
+					AND cpi.rgsttm BETWEEN to_date(#{dateFrom}, 'YYYY-MM-DD') AND to_date(#{dateTo}, 'YYYY-MM-DD')+1
+				</if>
+				<if test='conditionValue != ""'>
+					 <choose>
+						<when test='conditionValue == "issuenum"'>
+							AND cpr.issuenum=#{conditionValue} 
+						</when>
+						<otherwise>
+							AND cpr.splyorgnm like '%'||#{conditionValue}||'%'
+						</otherwise>
+					</choose>
+				</if>
+				<if test='searchStatus != "all"'>
+						AND cpr.sts=#{searchStatus} 
+				</if>
+		)
+	</select>
+</mapper>
+

@@ -1,0 +1,186 @@
+#combine {
+	text-align: right;
+}
+
+#combine>h5 {
+	margin-bottom: -0.5%
+}
+
+#cmbTdy {
+	font-weight: bold;
+}
+
+.form-orizontal {
+	background-color: #9dcde3;
+}
+
+#form_container {
+	padding: 30px;
+}
+
+#search {
+	width: 90%;
+	display: flex;
+}
+
+#search_date {
+	width: 20%;
+	margin-left: 30px;
+	margin-right: 30px;
+}
+
+#search_date_show1 {
+	width: 20%;
+}
+
+#search_date_show2 {
+	width: 20%;
+}
+
+#search_condition {
+	margin-left: 30px;
+	margin-right: 106px;
+}
+
+#search_status {
+	margin-left: 30px;
+	margin-right: 30px;
+}
+
+#search_writer {
+	margin-left: 44px;
+	margin-right: 30px;
+}
+
+#search_btn {
+	float: right;
+	margin-top: -40px;
+}
+
+#btns {
+	margin-bottom: 10px;
+	text-align: right;
+}
+
+#paging {
+	text-align: center;
+}
+
+#list_title {
+	font-size: 30px;
+	padding: 35px;
+}
+
+.well {
+	background-image: linear-gradient(#FAFAFA, #ECECEC);
+}
+
+#search_container {
+	background-image: linear-gradient(#FAFAFA, #ECECEC);
+}
+
+#searchForm {
+	padding: 30px;
+}
+
+#search {
+	width: 90%;
+	display: flex;
+}
+
+#dtCondi {
+	margin-left: 30px;
+	margin-right: 10px;
+	width: 150px;
+}
+
+.container3 {
+	display: inline-block;
+}
+
+.container3_left {
+	width: 60%;
+}
+
+#dateFrom {
+	width: 150px;
+}
+
+#dateTo {
+	width: 150px;
+	margin-right: 30px;
+}
+
+#searchCondi {
+	margin-left: 30px;
+	margin-right: 10px;
+	width: 150px;
+}
+
+#stsCondi {
+	margin-left: 30px;
+	margin-right: 30px;
+}
+
+#wrtrCondi {
+	margin-left: 44px;
+	width: 150px;
+}
+
+#searchBtn {
+	float: right;
+	margin-top: -40px;
+}
+
+#sts_change_btn {
+	float: right;
+	margin-top: 20px;
+	margin-bottom: 10px;
+}
+
+#appMthd{
+	margin-left: 35px;
+	width: 119px;
+}
+
+#appMthdForm{
+	margin-left: 401px;
+}
+
+#rgstVwPrtNum {
+	width: 200px;
+  margin-left: 10px
+}
+hr{
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+#fileTableHeader{
+  width : 45%;
+}
+.image-preview-input {
+    position: relative;
+    overflow: hidden;
+  	margin: 0px;
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+}
+.image-preview-input input[type=file] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 0;
+	padding: 0;
+	font-size: 20px;
+	cursor: pointer;
+	opacity: 0;
+	filter: alpha(opacity=0);
+}
+.image-preview-input-title {
+    margin-left:2px;
+}
+#rgstVwHeader{
+	display : inline-flex;
+	margin-top: 15px;
+}

@@ -1,0 +1,14 @@
+@charset "UTF-8";
+
+label, p {
+	font-size:12px;
+}
+
+.col-lg-5{
+	margin-left:3%;
+	margin-right:3%;
+}
+
+td {
+	padding:1% !important;
+}

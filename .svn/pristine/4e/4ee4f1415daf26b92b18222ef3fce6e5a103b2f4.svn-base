@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<!-- 
+	Date : 2018. 12. 11
+	Author : 신 혜영
+	Description : mybatis 설정
+	version 1.0
+ -->
+
+<configuration> 
+
+	<settings> 
+		<!-- 오라클 필드 속성에 언더 스코어가 있을 때 카멜 케이스로 변환 --> 
+		<setting name="mapUnderscoreToCamelCase" value="true"/>
+		<setting name="jdbcTypeForNull" value="NULL" /> 
+	</settings> 
+	
+	<typeAliases>
+		<!--  mapper xmp에서 쓰이는 resultType 설정 -->
+		<typeAlias alias="usrJoinInfVO" type="com.upc.user.rgstid.vo.UsrInfVO"/>
+		<typeAlias alias="usrInfVO" type="com.upc.user.usrinf.vo.UsrInfVO"/>
+		<typeAlias alias="adminVO" type="com.upc.admin.common.vo.AdminVO"/>
+		<typeAlias alias="wrtListVO" type="com.upc.admin.wrtlist.vo.WrtListVO"/>
+		<typeAlias alias="reqFrmVO" type="com.upc.user.reqfrm.vo.ReqFrmVO"/>
+		<typeAlias alias="reqFrmListVO" type="com.upc.user.reqfrm.vo.ReqFrmListVO"/>
+		<typeAlias alias="fileVO" type="com.upc.user.file.vo.FileVO"/>
+		<typeAlias alias="depositHstyVO" type="com.upc.admin.wrtlist.vo.DepositCnfrmVO"/>
+	</typeAliases>
+
+</configuration>

@@ -1,0 +1,339 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" href="${pageContext.request.contextPath }/css/usrInf.css" />
+<style>
+.well {
+	background-image: #ECECEC;
+}
+</style>
+<header><c:import url="../header.jsp"></c:import></header>
+<body>
+<div class="container">
+  	<div class="title">서비스 이용신청</div>
+  	<ul class="nav nav-tabs">
+  		<li class="active"><a data-toggle="tab" href="#WriteForm">신청서작성</a></li>
+    	<li><a data-toggle="tab" href="#FileForm">신청서업로드</a></li>
+	</ul>
+</div>
+
+<div class="tab-content clearfix">
+	<div id="WriteForm" class="tab-pane fade in active">
+   		<form class="form-horizontal" id="form" method="post" action="${pageContext.request.contextPath}/rgstid/join" enctype="multipart/form-data" data-toggle="validator">
+   			<div class="container">
+	    		<div class="container col-lg-6">
+					<h5><span class="glyphicon glyphicon-plus-sign" style="color:#30BBBB;"></span> 기본정보 </h5>
+					<table>
+						<colgroup>
+							<col style="width:300px;">
+							<col style="width:300px;">
+							<col>
+						</colgroup>
+						<tr>
+							<td><label for="prtnum">사업자등록번호<span class="text-danger">*</span></label></td>
+							<td colspan="2"><input type="number" class="form-control input-sm" name="prtnum" id="prtnum" onkeyup="fn_prtnumCheck(this)" required data-error="아이디를 입력해주십시오.">
+								<input type="hidden" name="rgstid" id="rgstid" value="" />
+								<small class="help-block" id="id-danger" style="color:#a94442;">이미 등록된 아이디 입니다.</small>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="pw">패스워드<span class="text-danger">*</span></label></td>
+							<td colspan="2"><input type="password" class="form-control input-sm" name="pw" id="pw">
+								
+							</td>
+						</tr>
+						<tr>
+							<td><label for="pwCheck">패스워드확인<span class="text-danger">*</span></label></td>
+							<td colspan="2"><input type="password" class="form-control input-sm" name="pwCheck" id="pwCheck"></td>
+						</tr>
+						<tr>
+							<td><label for="cmpnnm">상호<span class="text-danger">*</span></label></td>
+							<td colspan="2"><input type="text" class="form-control input-sm" name="cmpnnm" id="cmpnnm"></td>
+						</tr>
+						<tr>
+							<td><label for="ceonm">대표자<span class="text-danger">*</span></label></td>
+							<td colspan="2"><input type="text" class="form-control input-sm" name="ceonm" id="ceonm"></td>
+						</tr>
+						<tr>
+							<td><label for="addr1">주소<span class="text-danger">*</span></label></td>
+							<td><input type="text" class="form-control input-sm" name="addr1" id="addr1"></td>
+							<td><button type="button" class="btn btn-sm btn-default" onclick="fn_popup()">주소검색<span class="glyphicon glyphicon-search"></span></button></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td colspan="2"><input type="text" class="form-control input-sm" name="addr2" id="addr2"></td>
+						</tr>
+						<tr>
+							<td><label for="bsnsfileid" id="fileLabel">사업자등록증사본<span class="text-danger">*</span></label></td>
+							<td><input type="text" class="form-control input-sm" id="bsnsfileid" name="bsnsfileid" readonly>
+								<small class="help-block bsnsfileValidation" style="color:#a94442;">올바른 확장자를 입력해주십시오.</small>
+							</td>
+							<td><label class="btn btn-sm btn-primary btn-file">
+								파일업로드<input type="file" class="form-control" id="bsnsFile" name="bsnsFile" onchange="fn_bsnsFileChange(this.id); fn_fileCheck()" style="display:none" >
+								</label>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div class="container col-lg-6">
+					<h5><span class="glyphicon glyphicon-plus-sign" style="color:#30BBBB;"></span> 담당자 정보 </h5>
+					<table>
+						<colgroup>
+							<col style="width:220px;">
+							<col style="width:155px;">
+							<col style="width:155px;">
+						</colgroup>
+						<tr>
+							<td><label for="mgrname">성명<span class="text-danger">*</span></label></td>
+							<td colspan="2"><input type="text" class="form-control input-sm" name="mgrname" id="mgrname"></td>
+						</tr>
+						<tr>
+							<td><label for="mgrtel">전화번호<span class="text-danger">*</span></label></td>
+							<td colspan="2"><input type="text" class="form-control input-sm" name="mgrtel" id="mgrtel"></td>
+						</tr>
+						<tr>
+							<td><label for="mgrphone">휴대전화<span class="text-danger">*</span></label></td>
+							<td colspan="2"><input type="text" class="form-control input-sm" name="mgrphone" id="mgrphone"></td>
+						</tr>
+						<tr>
+							<td><label for="mgrpstn">부서직위<span class="text-danger">*</span></label></td>
+							<td colspan="2"><input type="text" class="form-control input-sm" name="mgrpstn" id="mgrpstn"></td>
+						</tr>
+						<tr>
+							<td><label for="mgrfax">팩스번호<span class="text-danger">*</span></label></td>
+							<td colspan="2"><input type="text" class="form-control input-sm" name="mgrfax" id="mgrfax"></td>
+						</tr>
+						<tr>
+							<td><label for="mgremail">이메일<span class="text-danger">*</span></label></td>
+							<td colspan="2"><input type="email" class="form-control input-sm" name="mgremail" id="mgremail"></td>
+						</tr>
+						<tr>
+							<td><label>알림서비스</label></td>
+							<td><input type="checkbox" name="emailyn" class="emailyn" checked>이메일 수신 동의</td>
+							<td><input type="checkbox" name="smsyn" class="smsyn" checked>sms 수신 동의</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<br><br>
+			<div class="container well"  style="float: none; margin: 0 auto; border: 0.5px solid #bcbcbc;">
+				<h5><span class="glyphicon glyphicon-ok-sign" style="color:#30BBBB;"></span> 이용정보 </h5>
+				<table>
+					<colgroup>
+						<col style="width:220px;">
+						<col style="width:300px;">
+						<col style="width:300px;">
+					</colgroup>
+					
+					<tr>
+						<td><label>발급지원 수수료</label></td>
+						<td colspan="2"><label>11,000원/건당<br>
+										(입금계좌 : 우리은행, 1005-901-807807883,	(주)한국무역정보통신)</label></td>
+					</tr>
+					<tr>
+						<td><label>선불요금제</label></td>
+						<td colspan="2"><input type="checkbox" name="prepayyn" id="prepayyn" checked>이용신청
+							<label class="control-label">(이용 가능 건수 및 요금 : 11건 110,000원,
+								11번째 신청 건 무료지원)</label>
+						<td>
+					</tr>
+					<!-- <tr>
+						<td><label>이용약관</label></td>
+						<td colspan="2"><input type="checkbox" name="servInf" id="servInf">동의
+							<br>
+							<br>
+							<p><b>신청한 내용을 근거로 작성된 내용을 확인하기 위해 '외화획득용원료/기재 구매확인 신청서'를 보내드립니다.</b></p>
+							<p>- 내용 확인 후 수정 내용 없을 시 명판과 인감 날인 후 지원센터로 발송 </p>
+							<p>- 수정 내용 있을 시 수정 내용만 기재하여 지원센터로 발송 </p>
+							<p><b>구매확인서 발급지원 신청은 당일 16시까지 접수된 것은 당일 지원하며, 16시 이후는 익일 발급합니다.</b></p>
+				        	<p>특히, 매월 월마감일(10일)은 신청의 폭주로 인해 접수 누락 및 발급이 지연될 경우가 있으니, 사전(2일전)에 신청하여야 하며, 반드시 진행상황을 확인하여 주시기 바랍니다.</p>
+				        	<p>(당사의 귀채사유로 이용신청자에게 손해가 발생한 경우, 서비스수수료의 3배를 한도로 하여 그 손해를 배상합니다.)</p>
+				        	<p>* 마감일이 공휴일인 경우 다음 근무일 적용</p>
+						</td>
+					</tr> -->
+				</table>					
+			</div>				
+			<hr />	
+			<div class="container">
+				<div class="col-sm-3"></div>
+				<div class="col-sm-3 text-center">
+					<input type="checkbox" id="private"><a data-toggle="modal" id="privateModal" href="#consentModal" onclick="clickPrivate()">개인정보 수집 및 이용동의</a>
+					<input type="hidden" id="clickPrivate" value="0">
+				</div>
+				<div class="col-sm-3 text-center">
+					<input type="checkbox" id="servInf"><a data-toggle="modal" id="servInfModal" href="#infoModal" onclick="clickServInf()">이용약관</a>
+					<input type="hidden" id="clickServInf" value="0">
+				</div>
+				<div class="col-sm-3"></div>
+			</div>
+			<div class="container " style="padding-bottom:50px; padding-top:50px;">
+					<div class="col-sm-3"></div>
+					<div class="col-sm-3 text-center">
+						<button type="reset" class="btn btn-default" style="color:red;">취소</button>
+					</div>
+					<div class="col-sm-3 text-center">
+						<button type="submit" class="btn btn-default" onclick="return fn_validationCheck(this.id)" id="submissionWeb" style="color:#30BBBB">승인요청</button>
+					</div>
+					<div class="col-sm-3"></div>
+				</div>
+		</form>
+	</div>		
+
+	<!-- 개인정보 수집 및 동의 Modal -->
+	<div class="modal fade" id="consentModal" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+          			<h4 class="modal-title">개인정보 수집 및 동의</h4>
+				</div>
+				<div class="modal-body">
+		        	<p>(주)한국무역정보통신은 수집한 개인정보를 다음의 목적으로 보유하고 활용합니다.</p>
+		        	<p>- 수집하는 개인정보의 항목 : 이름, 주소, 전화번호, 핸드폰, 이메일, 회사명, 사업자등록번호, 생년월일(일반과세자)</p>
+		        	<p>- 개인정보의 수집 및 이용목적 : 회원제 서비스 이용에 따른 본인확인, 가입의사 확인, 전자세금계산서 발행, 불만처리 등 민원처리, 고지사항 전달 등 발송</p>
+		        	<p>- 개인정보의 보유 및 이용 기간 : 회원 탈퇴 시 1년간 휴면계정으로 전환 후 이후 삭제</p>
+		        	<br>
+		        </div>
+				<div class="modal-footer">
+		        	<button type="button" class="btn btn-default" data-dismiss="modal">확인</button>
+		        </div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 이용약관 Modal -->
+	<div class="modal fade" id="infoModal" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+          			<h4 class="modal-title">이용약관</h4>
+				</div>
+				<div class="modal-body">
+			        	<p><b>신청한 내용을 근거로 작성된 내용을 확인하기 위해 '외화획득용원료/기재 구매확인 신청서'를 보내드립니다.</b></p>
+						<p>- 내용 확인 후 수정 내용 없을 시 명판과 인감 날인 후 지원센터로 발송 </p>
+						<p>- 수정 내용 있을 시 수정 내용만 기재하여 지원센터로 발송 </p>
+						<p><b>구매확인서 발급지원 신청은 당일 16시까지 접수된 것은 당일 지원하며, 16시 이후는 익일 발급합니다.</b></p>
+			        	<p>특히, 매월 월마감일(10일)은 신청의 폭주로 인해 접수 누락 및 발급이 지연될 경우가 있으니, 사전(2일전)에 신청하여야 하며, 반드시 진행상황을 확인하여 주시기 바랍니다.</p>
+			        	<p>(당사의 귀채사유로 이용신청자에게 손해가 발생한 경우, 서비스수수료의 3배를 한도로 하여 그 손해를 배상합니다.)</p>
+			        	<p>* 마감일이 공휴일인 경우 다음 근무일 적용</p>
+		        </div>
+				<div class="modal-footer">
+		        	<button type="button" class="btn btn-default" data-dismiss="modal">확인</button>
+		        </div>
+			</div>
+		</div>
+	</div>
+<!--  DIV END of "applicationForm" -->
+
+	<div id="FileForm" class="tab-pane">
+		<form class="form-horizontal" id="form" method="post" action="${pageContext.request.contextPath}/rgstid/join" enctype="multipart/form-data">
+	   		<div class="container">
+	    		<div class="container col-lg-6" style="float: none; margin: 0 auto;">
+					<h5><span class="glyphicon glyphicon-plus-sign" style="color:#30BBBB;"></span> 고객정보</h5>
+					<table>
+						<colgroup>
+							<col style="width:300px;">
+							<col style="width:300px;">
+							<col>
+						</colgroup>
+						<tr>
+							<td><label for="prtnum">사업자등록번호<span class="text-danger">*</span></label></td>
+							<td colspan="2"><input type="number" class="form-control input-sm" name="prtnum" id="prtnum" onchange="fn_prtnumCheck(this)">
+								<input type="hidden" name="rgstid" id="rgstid" value="" />
+							</td>
+						</tr>
+						<tr>
+							<td><label for="pw">패스워드<span class="text-danger">*</span></label></td>
+							<td colspan="2"><input type="password" class="form-control input-sm" name="pw" id="pw" ></td>
+						</tr>
+						<tr>
+							<td><label for="pwCheck">패스워드확인<span class="text-danger">*</span></label></td>
+							<td colspan="2"><input type="password" class="form-control input-sm" name="pwCheck" id="pwCheck"></td>
+						</tr>
+						<tr>
+							<td><p>KTNET 구매확인서 서비스 가입 신청서<span class="text-danger">*</span>
+									<a href="${pageContext.request.contextPath}/filedownload?fileseq=att"><button type="button" class="btn btn-sm btn-default" id="template">양식다운로드<span class="glyphicon glyphicon-download-alt"></span></button></a>
+								</p>
+							</td>
+							<td><input type="text" id="applfileid" class="form-control input-sm" name="applfileid" readonly>
+								<small class="help-block" id="applfileValidation" style="color:#a94442;">올바른 확장자를 입력해주십시오.</small>
+							</td>
+							<td><label class="btn btn-sm btn-primary btn-file">
+	  							파일업로드<input type="file" id="applFile" class="form-control input-sm" name="applFile" onchange="fn_applFileChange(); fn_fileCheck()" style="display:none" >
+								</label>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="bsnsfileid" id="fileLabel">사업자등록증사본<span class="text-danger">*</span></label></td>
+							<td><input type="text" class="form-control input-sm" id="bsnsfileidAtt" name="bsnsfileid" readonly>
+								<small class="help-block bsnsfileValidation" style="color:#a94442;">올바른 확장자를 입력해주십시오.</small>
+							</td>
+							<td><label class="btn btn-sm btn-primary btn-file">
+								파일업로드<input type="file" class="form-control" id="bsnsFileAtt" name="bsnsFile" onchange="fn_bsnsFileChange(this.id); fn_fileCheck()" style="display:none" >
+								</label>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<br><br>
+				<div class="container col-lg-6 well" style="float: none; margin: 0 auto; border: 0.5px solid #bcbcbc;">
+					<h5><span class="glyphicon glyphicon-ok-sign" style="color:#30BBBB;"></span> 이용정보</h5>
+					<table>
+						<colgroup>
+							<col style="width:300px;">
+							<col style="width:150px;">
+							<col style="width:150px;">
+						</colgroup>
+						<tr>
+							<td><label>알림서비스</label></td>
+							<td><input type="checkbox" name="emailyn" class="emailyn" checked>이메일 수신 동의</td>
+							<td><input type="checkbox" name="smsyn" class="smsyn" checked>sms 수신 동의</td>
+						</tr>
+					</table>
+				</div>
+				<div class="container " style="padding-bottom:50px; padding-top:50px;">
+					<div class="col-sm-3"></div>
+					<div class="col-sm-3 text-center">
+						<button type="reset" class="btn btn-default" style="color:red;">취소</button>
+					</div>
+					<div class="col-sm-3 text-center">
+						<button type="submit" class="btn btn-default" onclick="return fn_validationCheck(this.id)" id="submissionAtt" style="color:#30BBBB">승인요청</button>
+					</div>
+					<div class="col-sm-3"></div>
+				</div>
+			</div>		
+		</form>	
+	</div> <!--  END OF DIV FileForm-->
+</div>	
+
+
+<!-- jQuery (부트스트랩의 자바스크립트 플러그인을 위해 필요합니다) -->
+<script src="${pageContext.request.contextPath}/js/usrInf.js"></script>
+<!-- 모든 컴파일된 플러그인을 포함합니다 (아래), 원하지 않는다면 필요한 각각의 파일을 포함하세요 -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.2/js/bootstrapValidator.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/validate.js/0.12.0/validate.min.js"></script>
+</body>
+<footer>
+	<c:import url="../footer.jsp" />
+</footer>
+
+<script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>
+<script>
+
+/*
+ * 주소 검색
+ */
+function fn_popup() {
+	new daum.Postcode({
+		oncomplete:function(data) {
+			var roadAddr = data.roadAddress; // 도로명 주소 변수
+		
+		    $("#addr1").val(roadAddr);
+		 }
+	}).open();
+}
+</script>
+</html>

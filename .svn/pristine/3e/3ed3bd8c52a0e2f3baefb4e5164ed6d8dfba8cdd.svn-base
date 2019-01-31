@@ -1,0 +1,5 @@
+package com.upc.admin.applrcptrgst.service;
+
+public interface ApplRcptRgstService {
+
+}

@@ -1,0 +1,283 @@
+/**
+ * 간편 사용자 등록 javascript
+ * @author 이수빈
+ * @since 2018.12.12
+ * @version 1.0
+ * @return
+ * @see
+ * 수정이력
+ * Date			Author		Contents
+ * ===========	=========	===================================
+ * 2018.12.14	이수빈		validation check, 첨부파일명 보이도록 수정
+ * 2018.12.17	이수빈		간편사용자등록(첨부파일) 파일명 보이도록 추가
+ * 2018.12.19	이수빈		validation check 수정 및 아이디 중복체크 구현
+ * 2018.12.20	이수빈		회원 탈퇴를 위한 패스워드 일치/불일치 검사 함수 추가
+ * 2018.12.27	이수빈		validation check 파일업로드 수정
+ * 2019.01.02	이수빈		validation check 개인정보 수집동의 수정
+ * 2019.01.06	이수빈		validation check 수정
+ */
+
+/*
+ * 초기화면 설정 : id 중복 확인 및 pw 일치/불일치 알림 메세지 숨김
+ */
+$(function(){
+	$(".help-block").hide();
+	$(".bsnsfileValidation").hide();
+	$("#applfileValidation").hide();
+	
+});
+
+/*
+ * 패스워드 체크
+ */
+function fn_pwCheck() {
+	
+	var result= false;
+	var pw = $("#pw").val();
+	
+	var length = $("#pw").val().length;
+	var regexp = /^.*(?=.{6,20})(?=.*[0-9])(?=.*[a-zA-Z]).*$/;
+	
+	if(length == 0) {
+		$("#pw-notEmpty").show();
+		$("#pw-length").hide();
+		$("#pw-regexp").hide();
+	} else if(length < 6 || length > 20 && !regexp.test(pw)) {
+		$("#pw-length").show();
+		$("#pw-regexp").show();
+		$("#pw-notEmpty").hide();
+	} else if(length >=6 && length <= 20  && !regexp.test(pw)) {
+			$("#pw-regexp").show();
+			$("#pw-notEmpty").hide();
+			$("#pw-length").hide();
+	} else {
+		$("#pw-notEmpty").hide();
+		$("#pw-length").hide();
+		$("#pw-regexp").hide();
+		
+		result = true;
+	}
+	
+	return result;
+	
+}
+
+/*
+ * 패스워드 확인(일치/불일치) 체크
+ */
+function fn_pwConfirm() {
+	var pw = $("#pw").val();
+	var pwCheck = $("#pwCheck").val();
+	
+	if(pw != pwCheck) {
+		$("#pw-identical").show();
+		
+		return false;
+	} else {
+		$("#pw-identical").hide();
+		
+		return true;
+	}
+}
+
+
+
+/* 
+ * 담당자명 체크
+ */
+function fn_mgrname() {
+	var result = false;
+	
+	var mgrname = $("#mgrname").val();
+	
+	var length = $("#mgrname").val().length;
+	var regexp = /^[가-힣]{2,4}|[a-zA-Z]{2,10}\s[a-zA-Z]{2,10}$/;
+	
+	if(length == 0) {
+		$("#mgrname-notEmpty").show();
+		$("#mgrname-length").hide();
+		$("#mgrname-regexp").hide();
+	} else if(length > 25 && !regexp.test(mgrname)) {
+		$("#mgrname-length").show();
+		$("#mgrname-regexp").show();
+		$("#mgrname-notEmpty").hide();
+	} else if(length <= 25  && !regexp.test(mgrname)) {
+			$("#mgrname-regexp").show();
+			$("#mgrname-notEmpty").hide();
+			$("#mgrname-length").hide();
+	} else {
+		$("#mgrname-notEmpty").hide();
+		$("#mgrname-length").hide();
+		$("#mgrname-regexp").hide();
+		
+		result = true;
+		
+	}
+	
+	return result;
+}
+
+/* 
+ * 담당자 전화번호 체크
+ */
+function fn_mgrtel() {
+	
+	var result = false;
+	
+	var mgrtel = $("#mgrtel").val();
+	
+	var length = $("#mgrtel").val().length;
+	var regexp = /([0-9]{2,3})-?([0-9]{3,4})-?([0-9]{4})$/;
+	
+	if(length == 0) {
+		$("#mgrtel-notEmpty").show();
+		$("#mgrtel-regexp").hide();
+	} else if(!regexp.test(mgrtel)) {
+			$("#mgrtel-regexp").show();
+			$("#mgrtel-notEmpty").hide();
+	} else {
+		$("#mgrtel-notEmpty").hide();
+		$("#mgrtel-regexp").hide();
+		
+		result= true;
+		
+	}
+	return result;
+}
+
+/* 
+ * 담당자휴대번호 체크
+ */
+function fn_mgrphone() {
+	var result = false;
+	
+	var mgrphone = $("#mgrphone").val();
+	
+	var length = $("#mgrphone").val().length;
+	var regexp = /01([0|1|6|7|8|9]?)-?([0-9]{3,4})-?([0-9]{4})$/;
+	
+	if(length == 0) {
+		$("#mgrphone-notEmpty").show();
+		$("#mgrphone-regexp").hide();
+	} else if(!regexp.test(mgrphone)) {
+			$("#mgrphone-regexp").show();
+			$("#mgrphone-notEmpty").hide();
+	} else {
+		$("#mgrphone-notEmpty").hide();
+		$("#mgrphone-regexp").hide();
+		
+		result = true;
+	}
+	
+	return result;
+}
+
+/* 
+ * 담당자 부서/직위 체크
+ */
+function fn_mgrpstn() {
+	var result = false;
+	
+	var mgrpstn = $("#mgrpstn").val();
+	
+	var length = $("#mgrpstn").val().length;
+	var regexp = /[A-Za-z0-9가-힣]/;
+	
+	if(length == 0) {
+		$("#mgrpstn-notEmpty").show();
+		$("#mgrpstn-length").hide();
+		$("#mgrpstn-regexp").hide();
+	} else if(length > 35 && !regexp.test(mgrpstn)) {
+		$("#mgrpstn-length").show();
+		$("#mgrpstn-regexp").show();
+		$("#mgrpstn-notEmpty").hide();
+	} else if(length <= 35  && !regexp.test(mgrpstn)) {
+			$("#mgrpstn-regexp").show();
+			$("#mgrpstn-notEmpty").hide();
+			$("#mgrpstn-length").hide();
+	} else {
+		$("#mgrpstn-notEmpty").hide();
+		$("#mgrpstn-length").hide();
+		$("#mgrpstn-regexp").hide();
+		
+		result = true;
+	}
+	
+	return result;
+	
+}
+
+/* 
+ * 담당자팩스 체크
+ */
+function fn_mgrfax() {
+	var result = false;
+	
+	var mgrfax = $("#mgrfax").val();
+	
+	var length = $("#mgrfax").val().length;
+	var regexp = /([0-9]{2,3})-?([0-9]{3,4})-?([0-9]{4})$/;
+	
+	if(length == 0) {
+		$("#mgrfax-notEmpty").show();
+		$("#mgrfax-regexp").hide();
+	} else if(!regexp.test(mgrfax)) {
+			$("#mgrfax-regexp").show();
+			$("#mgrfax-notEmpty").hide();
+	} else {
+		$("#mgrfax-notEmpty").hide();
+		$("#mgrfax-regexp").hide();
+		
+		result = true;
+	}
+	
+	return result;
+}
+
+/* 
+ * 담당자 이메일 체크
+ */
+function fn_mgremail() {
+	var result = false;
+	
+	var mgremail = $("#mgremail").val();
+	
+	var length = $("#mgremail").val().length;
+	var regexp = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+
+	if(length == 0) {
+		$("#mgremail-notEmpty").show();
+		$("#mgremail-regexp").hide();
+	} /*else if(!regexp.test(mgrfax)) {
+			$("#mgremail-regexp").show();
+			$("#mgremail-notEmpty").hide();
+	} */ else {
+		$("#mgremail-notEmpty").hide();
+		$("#mgremail-regexp").hide();
+		
+		result = true;
+	}
+	
+	return result;
+}
+
+/*
+ * checkbox(알림 및 선불요금제 유무) value 설정
+ */
+function fn_checkboxValue() {
+	var emailyn = $(".emailyn").prop("checked");
+	var smsyn = $(".smsyn").prop("checked");
+	var prepayyn = $("#prepayyn").prop("checked");
+	
+	if(emailyn) {
+		$(".emailyn").val("Y");
+	} 
+	if(smsyn) {
+		$(".smsyn").val("Y");
+	}
+	if(prepayyn) {
+		$("#prepayyn").val("Y");
+	}
+}
+
+

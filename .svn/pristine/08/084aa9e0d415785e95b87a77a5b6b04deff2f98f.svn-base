@@ -1,0 +1,126 @@
+package com.upc.common.search.vo;
+
+public abstract class SearchAbstractModel {
+
+	/** 조회 기간 */
+	protected String dateTo;
+	protected String dateFrom;
+	
+	/** 조회 조건 */
+	protected String searchCondi = "전체";
+	
+	/** 조회 Value */
+	protected String searchVal;
+	
+	/** 전체 게시물 갯수 */
+	protected int boardTotUnit;
+	
+	/** 전체 페이지 수*/
+	protected int totPage;
+	
+	/** 현재페이지 */
+	protected int pageIndex = 1;
+	
+	/** 페이지 갯수 세로 */
+	protected int pageUnit = 10;
+    
+	/** 페이지 사이즈 가로 */
+	protected int pageSize = 5;
+	
+	/** firstIndex */
+	protected int firstIndex = 1;
+	
+	/** lastIndex */
+	protected int lastIndex = 1;
+
+	public String getDateTo() {
+		return dateTo;
+	}
+
+	public void setDateTo(String dateTo) {
+		this.dateTo = dateTo;
+	}
+
+	public String getDateFrom() {
+		return dateFrom;
+	}
+
+	public void setDateFrom(String dateFrom) {
+		this.dateFrom = dateFrom;
+	}
+
+	public String getSearchCondi() {
+		return searchCondi;
+	}
+
+	public void setSearchCondi(String searchCondi) {
+		this.searchCondi = searchCondi;
+	}
+
+	public String getSearchVal() {
+		return searchVal;
+	}
+
+	public void setSearchVal(String searchVal) {
+		this.searchVal = searchVal;
+	}
+
+	public int getBoardTotUnit() {
+		return boardTotUnit;
+	}
+
+	public void setBoardTotUnit(int boardTotUnit) {
+		this.boardTotUnit = boardTotUnit;
+	}
+
+	public int getTotPage() {
+		return totPage;
+	}
+
+	public void setTotPage(int totPage) {
+		this.totPage = totPage;
+	}
+
+	public int getPageIndex() {
+		return pageIndex;
+	}
+
+	public void setPageIndex(int pageIndex) {
+		this.pageIndex = pageIndex;
+	}
+
+	public int getPageUnit() {
+		return pageUnit;
+	}
+
+	public void setPageUnit(int pageUnit) {
+		this.pageUnit = pageUnit;
+	}
+
+	public int getPageSize() {
+		return pageSize;
+	}
+
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+
+	public int getFirstIndex() {
+		return firstIndex;
+	}
+
+	public void setFirstIndex(int firstIndex) {
+		this.firstIndex = firstIndex;
+	}
+
+	public int getLastIndex() {
+		return lastIndex;
+	}
+
+	public void setLastIndex(int lastIndex) {
+		this.lastIndex = lastIndex;
+	}
+	
+	
+
+}

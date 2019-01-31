@@ -1,0 +1,18 @@
+package com.upc.admin.deplist.dao;
+
+import java.util.List;
+
+import com.upc.admin.deplist.vo.DepositCnfrmVO;
+import com.upc.admin.deplist.vo.SearchVO;
+import com.upc.user.usrinf.vo.UsrInfVO;
+
+
+public interface DepositListDAO {
+	List<DepositCnfrmVO> depList(SearchVO vo) throws Exception;
+	int delDep(String delDepSeq) throws Exception;
+	UsrInfVO searchCmpnCeoNm(String prtnum) throws Exception;
+	int insertDepositHsty(DepositCnfrmVO depCnfrmVO) throws Exception;
+	int updateUsrRmncnt(DepositCnfrmVO depCnfrmVO) throws Exception;
+	DepositCnfrmVO selectDepositHsty(String depseq) throws Exception;
+	int getBoardTotUnit(SearchVO searchVO);
+}

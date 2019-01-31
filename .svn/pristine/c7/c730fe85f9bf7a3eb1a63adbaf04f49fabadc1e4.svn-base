@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	Date : 2018. 12. 13
+	Author : 신혜영
+	Description : 구매확인서 작성 목록 조회 Mapper 
+	Version 1.0
+	History
+	Date			Author		Contents
+	==========		=========	===========================
+	2018.12.13		신혜영		작성 목록 select 기능 추가
+	2018.12.18		신혜영		입금확인상태변경 기능  추가
+ -->
+<!-- 맵핑될 DAO 인터페이스의 Full name 을 줍니다. -->
+<mapper namespace="com.upc.admin.wrtlist.dao.WrtListDAO">
+
+	<!-- id 속성은 DAO 의 메소드와 같아야 한다 -->
+	<select id="selectWrtrList" parameterType="com.upc.admin.wrtlist.vo.SearchVO" resultType="wrtListVO">
+		SELECT * 
+		FROM (
+			SELECT rownum rnum
+				, cpr.prtnum
+				, cpr.applnum
+				, cpr.splyorgnm
+				, cpr.sts
+				, cd.codenm
+				, cpr.applrcvdt
+				, cpr.issuenum
+				, adm.name
+				, cpr.wrtrid
+				, usr.cmpnnm
+				, cpi.rgsttm 
+			FROM CNFRMPRCHREQ cpr 
+			LEFT OUTER JOIN CODE cd ON cpr.sts=cd.code 
+			LEFT OUTER JOIN ADMUSR adm ON cpr.wrtrid=adm.admid 
+			LEFT OUTER JOIN USRINF usr ON cpr.prtnum=usr.prtnum 
+			LEFT OUTER JOIN CNFRMPRCHISUE cpi ON cpr.issuenum=cpi.issuenum 
+			WHERE 
+				<if test='dateCondition == "applrcvdt"'>
+					cpr.applrcvdt BETWEEN #{dateFrom} AND #{dateTo} 
+				</if>
+				<if test='dateCondition == "rgsttm"'>
+					cpi.rgsttm BETWEEN to_date(#{dateFrom}, 'YYYY-MM-DD') AND to_date(#{dateTo}, 'YYYY-MM-DD')+1
+				</if>
+				<if test='conditionValue != ""'>
+					<choose>
+						<when test='conditionValue == "cmpnnm"'>
+							AND usr.cmpnnm=#{conditionValue} 
+						</when>
+						<when test='conditionValue == "prtnum"'>
+							AND cpr.prtnum=#{conditionValue} 
+						</when>
+						<otherwise>
+							AND cpr.splyorgnm=#{conditionValue} 
+						</otherwise>
+					</choose>
+				</if>
+				<if test='searchStatus == "all"'>
+					AND cpr.sts not in('R1') 
+				</if>
+				<if test='searchStatus != "all"'>
+					AND cpr.sts=#{searchStatus} 
+				</if>
+				<if test='searchWriter != "all"'>
+					AND cpr.wrtrid=#{searchWriter} 
+				</if>	
+			ORDER BY 
+				<choose>
+						<when test='dateCondition == "applrcvdt"'>
+							cpr.applrcvdt desc
+						</when>
+						<otherwise>
+							cpi.rgsttm desc
+						</otherwise>
+				</choose>
+		)
+		WHERE rnum BETWEEN #{pageIndex}*#{pageUnit}-#{pageUnit}+1 AND ${pageUnit}*${pageIndex}
+			
+
+	</select>
+	
+	<select id="selectWriters" resultType="wrtListVO">
+		SELECT name
+			, admid as wrtrid
+		FROM ADMUSR 
+		WHERE role='W' 
+		ORDER BY name
+	</select>
+	
+	<update id="updateSts" parameterType="wrtListVO">
+		UPDATE CNFRMPRCHREQ SET
+			sts=#{sts} 
+		WHERE applnum=#{applnum}
+	</update>
+
+	<select id="selectBoardTotUnit" parameterType="com.upc.admin.wrtlist.vo.SearchVO" resultType="int">
+		SELECT count(cpr.applnum)
+		FROM CNFRMPRCHREQ cpr 
+		LEFT OUTER JOIN CODE cd ON cpr.sts=cd.code 
+		LEFT OUTER JOIN USRINF usr ON cpr.prtnum=usr.prtnum 
+		LEFT OUTER JOIN CNFRMPRCHISUE cpi ON cpr.issuenum=cpi.issuenum 
+		WHERE 
+			<if test='dateCondition == "applrcvdt"'>
+				cpr.applrcvdt BETWEEN #{dateFrom} AND #{dateTo} 
+			</if>
+			<if test='dateCondition == "rgsttm"'>
+				cpi.rgsttm BETWEEN to_date(#{dateFrom}, 'YYYY-MM-DD') AND to_date(#{dateTo}, 'YYYY-MM-DD')+1
+			</if>
+			<if test='conditionValue != ""'>
+				<choose>
+					<when test='conditionValue == "cmpnnm"'>
+						AND usr.cmpnnm=#{conditionValue} 
+					</when>
+					<when test='conditionValue == "prtnum"'>
+						AND cpr.prtnum=#{conditionValue} 
+					</when>
+					<otherwise>
+						AND cpr.splyorgnm=#{conditionValue} 
+					</otherwise>
+				</choose>
+			</if>
+			<if test='searchStatus == "all"'>
+				AND cpr.sts not in('R1') 
+			</if>
+			<if test='searchStatus != "all"'>
+				AND cpr.sts=#{searchStatus} 
+			</if>
+			<if test='searchWriter != "all"'>
+				AND cpr.wrtrid=#{searchWriter} 
+			</if>
+
+	</select>
+</mapper>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	Date : 2018. 12. 28
+	Author : 김진혁
+	Description : 최초작성
+	Version 1.0
+	=======================================
+	버전 		수정일 		수정자 		설명
+ -->
+<mapper namespace="com.upc.admin.userrgst.dao.UserRgstDAO"> 
+	
+	<!-- 고객 등록(by admin) -->
+	<insert id="insertMemberByAdm" parameterType="com.upc.admin.userrgst.vo.UsrInfVO">
+		INSERT INTO USRINF VALUES(#{prtnum}, #{pw}, #{cmpnnm}, #{ceonm}, 
+			#{addr1}, #{addr2}, #{mgrname}, #{mgrtel}, #{mgrphone}, #{mgremail},
+			#{mgrpstn}, #{mgrfax}, 0, #{prepayyn}, #{emailyn}, SYSDATE, #{smsyn},
+			SYSDATE, 'Y', SYSDATE, #{rgstid}, null, null, #{bsnsfileid}, null)
+	</insert>
+ 
+ 	<!-- 사업자등록번호(아이디) 중복체크 -->
+ 	<select id="checkId" parameterType="String" resultType="int">
+ 		SELECT COUNT(PRTNUM) FROM USRINF WHERE PRTNUM=#{prtnum}
+ 	</select>
+ </mapper>

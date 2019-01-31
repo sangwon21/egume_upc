@@ -1,0 +1,8 @@
+package com.upc.admin.adminmdf.dao;
+
+import com.upc.admin.common.vo.AdminVO;
+
+public interface AdminMdfDAO {
+	public AdminVO getAdminInfo(String id) throws Exception;
+	public void updateAdminInfo(AdminVO vo) throws Exception;
+}

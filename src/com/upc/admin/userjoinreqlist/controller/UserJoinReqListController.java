@@ -1,0 +1,87 @@
+package com.upc.admin.userjoinreqlist.controller;
+
+import java.util.List;
+
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.upc.admin.userjoinreqlist.service.UserJoinReqListService;
+import com.upc.admin.userjoinreqlist.vo.SearchVO;
+import com.upc.admin.userjoinreqlist.vo.UserJoinReqVO;
+
+
+
+/**
+ * 고객 등록 신청서 리스트를 담당하는 컨트롤러
+ * @author 김진혁
+ * @since 2018. 12. 28.
+ * @version 1.0
+ * @see 참고
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ * 1.0		2018.12.28	김진혁		최초작성
+ */
+@Controller
+@RequestMapping("/admin")
+public class UserJoinReqListController {
+
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(UserJoinReqListController.class);
+	
+	@Autowired
+	private UserJoinReqListService userJoinReqListService;
+	
+	/**
+	 * 고객 등록 신청서 리스트 페이지를 담당하는 메소드
+	 * @param searchVO
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 * @author 김진혁
+	 * @since 2018. 12. 28.
+	 * @version 1.0
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0		2018.12.28	김진혁		최초작성
+	 */
+	@RequestMapping(value = "/userJoinReqList.do", method = RequestMethod.GET)
+	public String getUserJoinReqListView(@ModelAttribute SearchVO searchVO, Model model) throws Exception{
+		List<UserJoinReqVO> userJoinReqList = userJoinReqListService.getUserJoinReqList(searchVO);
+		logger.info("searchVO={}" + searchVO);
+		model.addAttribute("searchVO",searchVO);
+		logger.info("userJoinReqList={}",userJoinReqList);
+		model.addAttribute("userJoinReqList", userJoinReqList);
+		return "admin/userJoinReqList";
+	}   
+	
+	/**
+	 * 고객 등록 신청서 삭제를 담당하는 메소드
+	 * @param model
+	 * @param delUserId
+	 * @return
+	 * @throws Exception
+	 * @author 김진혁
+	 * @since 2018. 12. 31.
+	 * @version 1.0
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0		2018.12.31	김진혁		최초작성
+	 */
+	@RequestMapping(value = "/userJoinReqDel", method = RequestMethod.GET)
+	public String deleteUserJoinReq(Model model, @RequestParam(value="RowCheck") String [] delUserId) throws Exception{
+		int result=0;
+		for(int i=0; i<delUserId.length; i++)
+		{
+			result=userJoinReqListService.delUserJoinReq(delUserId[i]);
+		}
+		if(result!=0) {
+			return "redirect:userJoinReqList.do";
+		}
+		return "redirect:userJoinReqList.do";
+	}
+}

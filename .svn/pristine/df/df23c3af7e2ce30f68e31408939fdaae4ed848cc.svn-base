@@ -1,0 +1,18 @@
+package com.upc.user.reqfrm.dao;
+
+import java.util.List;
+
+import com.upc.user.reqfrm.vo.ReqFrmListVO;
+import com.upc.user.reqfrm.vo.ReqFrmVO;
+import com.upc.user.reqfrm.vo.SearchVO;
+import com.upc.user.reqfrm.vo.UsrInfVO;
+
+public interface ReqFrmDAO {
+	void insertCnfrmPrchReq(ReqFrmVO vo);
+	UsrInfVO selectUser(String prtnum);
+	int selectMaxSeq();
+	List<ReqFrmListVO> selectReqFrmList(SearchVO searchVO);
+	List<ReqFrmListVO> selectReqFrms();
+	int selectBoardTotUnit(SearchVO searchVO);
+	void updateSts(ReqFrmListVO reqFrmListVO);
+}

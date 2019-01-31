@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- Date : 2018. 12. 13 
+	 Author : 강성효 
+	 Description : applrcptMappers.xml 생성 
+	 version 1.1
+	 ======================================= 
+	 버전			수정일 		수정자     		설명 
+	1.1 		2018.12.14  강성효             	getTotEntCnt 추가
+	1.2 		2018.12.17 강성효       		applRcptCmbRst 추가 -->
+<mapper
+	namespace="com.upc.admin.applrcptlist.dao.ApplRcptListDAO">
+
+	<select id="getApplRcptCmbRst" resultType="com.upc.admin.applrcptlist.vo.ApplRcptRstVO">
+		SELECT
+			appl.applreqtdy,
+			appl.appltdy,
+			prvmth.applprvmth,
+			TO_CHAR(sysdate,'YYYY/MM/DD hh24:mi') reqTime
+		FROM
+			(SELECT
+				count(applnum) applreqtdy
+			FROM
+				cnfrmprchreq
+			WHERE
+				appldt = TO_CHAR(sysdate,'YYYYMMDD'))
+			appl,
+
+			(SELECT
+				count(applnum) appltdy
+			FROM
+				cnfrmprchreq
+			WHERE
+				appldt = TO_CHAR(sysdate,'YYYYMMDD')
+			AND
+				sts = 'C1')
+			appl,
+	
+			(SELECT
+				count(applnum) applprvmth
+			FROM
+				cnfrmprchreq
+			WHERE
+				appldt like (TO_CHAR(ADD_MONTHS(sysdate,-1),'YYYYMM%'))
+			AND
+				sts = 'C1')
+			prvmth,
+			dual
+	</select>
+
+	<select id="getApplList"  resultType="com.upc.admin.applrcptlist.vo.ApplRcptListVO">
+	
+	SELECT
+		cnfB.name,
+		cnfB.codenm sts,
+		cnfB.appldt,
+		cnfB.applnum,
+		cnfB.prtnum,
+		cnfB.applrcvdt,
+		cnfB.cmpnnm,
+		cnfB.splyorgnm,
+		cnfB.appmthd,
+		cnfB.notes
+	FROM
+		( SELECT
+		    rownum as rn,
+			cnfA.name,
+			cnfA.codenm,
+			cnfA.appldt,
+			cnfA.applnum,
+			cnfA.prtnum,
+			cnfA.applrcvdt,
+			cnfA.cmpnnm,
+			cnfA.splyorgnm,
+			cnfA.appmthd,
+			cnfA.notes
+		FROM
+			(SELECT
+				admusr.name,
+				code.codenm,
+				cnfrmprchreq.appldt,
+				cnfrmprchreq.applnum,
+				cnfrmprchreq.prtnum,
+				cnfrmprchreq.applrcvdt,
+				usrinf.cmpnnm,
+				cnfrmprchreq.splyorgnm,
+				cnfrmprchreq.appmthd,
+				cnfrmprchreq.notes
+			FROM
+				cnfrmprchreq
+				LEFT OUTER JOIN
+					admusr
+				ON
+					cnfrmprchreq.wrtrid = admusr.admid
+				LEFT OUTER JOIN
+					usrinf
+				ON
+					cnfrmprchreq.prtnum = usrinf.prtnum
+				LEFT OUTER JOIN
+					code
+				ON
+					cnfrmprchreq.sts = code.code
+			WHERE
+			<choose>
+				<when test="dtCondi eq '신청일자'">appldt</when>
+				<when test="dtCondi eq '접수일자'">applrcvdt</when>
+			</choose>
+			BETWEEN
+				 #{dateTo} AND #{dateFrom} 
+			<if test="searchCondi != '전체'">
+			AND
+				<choose>
+					<when test="searchCondi eq '사업자등록번호'">cnfrmprchreq.prtnum LIKE '%'||#{searchVal}||'%'</when>
+					<when test="searchCondi eq '구매자상호'"> cnfrmprchreq.prtnum = (SELECT 
+																					prtnum 
+																				  FROM
+																				  	usrinf
+																				  WHERE
+																				  	usrinf.ceonm LIKE CONCAT('%',#{searchVal},'%'))
+					</when>
+					<when test="searchCondi eq '공급자상호'">cnfrmprchreq.splyorgnm LIKE CONCAT('%',#{searchVal},'%') </when>
+					<when test="searchCondi eq '신청방법'">cnfrmprchreq.appmth LIKE CONCAT('%',#{searchVal},'%') </when>
+				</choose>
+			</if>
+			<if test="stsCondi != '전체'">
+			AND
+				<choose>
+					<when test="stsCondi eq '발행요청'">cnfrmprchreq.sts = 'R1'</when>
+					<when test="stsCondi eq '접수완료'">cnfrmprchreq.sts = 'R2'</when>
+					<when test="stsCondi eq '입금확인'">cnfrmprchreq.sts = 'R3'</when>
+					<when test="stsCondi eq '견본완료'">cnfrmprchreq.sts = 'S1'</when>
+					<when test="stsCondi eq '견본수정중'">cnfrmprchreq.sts = 'S2'</when>
+					<when test="stsCondi eq '견본확인'">cnfrmprchreq.sts = 'S3'</when>
+					<when test="stsCondi eq '발행완료'">cnfrmprchreq.sts = 'C1'</when>
+				</choose>
+			</if>
+			
+			<if test="wrtrCondi != '전체'">
+			AND
+				cnfrmprchreq.wrtrid = (SELECT 
+							wrtrid
+						  FROM
+						  	admusr
+						  WHERE
+						  	admusr.name LIKE CONCAT('%',#{wrtrNm},'%'))
+			</if>
+			ORDER BY
+				cnfrmprchreq.appldt DESC) cnfA		
+		WHERE
+			rownum<![CDATA[ <= ]]> #{pageUnit}*#{pageIndex} ) cnfB
+	WHERE
+		cnfB.rn >= #{pageIndex}*#{pageUnit}-#{pageUnit}+1
+	
+	</select>
+	
+	<select id="getBoardTotUnit" parameterType="com.upc.admin.applrcptlist.vo.SearchVO" resultType="int">
+        SELECT
+			count(applnum)
+		FROM
+			cnfrmprchreq
+		WHERE
+			<choose>
+				<when test="dtCondi eq '신청일자'">appldt</when>
+				<when test="dtCondi eq '접수일자'">applrcvdt</when>
+			</choose>
+		BETWEEN
+				 #{dateTo} AND #{dateFrom} 
+		<if test="searchCondi != '전체'">
+		AND
+			<choose>
+					<when test="searchCondi eq '사업자등록번호'">cnfrmprchreq.prtnum LIKE '%'||#{searchVal}||'%')</when>
+					<when test="searchCondi eq '구매자상호'"> cnfrmprchreq.prtnum = (SELECT 
+																					prtnum 
+																				  FROM
+																				  	usrinf
+																				  WHERE
+																				  	usrinf.ceonm LIKE CONCAT('%',#{searchVal},'%'))
+					</when>
+					<when test="searchCondi eq '공급자상호'">cnfrmprchreq.splyorgnm LIKE CONCAT('%',#{searchVal},'%') </when>
+					<when test="searchCondi eq '신청방법'">cnfrmprchreq.appmth LIKE CONCAT('%',#{searchVal},'%') </when>
+			</choose>
+		</if>
+		<if test="stsCondi != '전체'">
+		AND
+			<choose>
+				<when test="stsCondi eq '발행요청'">cnfrmprchreq.sts = 'R1'</when>
+				<when test="stsCondi eq '접수완료'">cnfrmprchreq.sts = 'R2'</when>
+				<when test="stsCondi eq '입금확인'">cnfrmprchreq.sts = 'R3'</when>
+				<when test="stsCondi eq '견본완료'">cnfrmprchreq.sts = 'S1'</when>
+				<when test="stsCondi eq '견본수정중'">cnfrmprchreq.sts = 'S2'</when>
+				<when test="stsCondi eq '견본확인'">cnfrmprchreq.sts = 'S3'</when>
+				<when test="stsCondi eq '발행완료'">cnfrmprchreq.sts = 'C1'</when>
+			</choose>
+		</if>
+		
+		<if test="wrtrCondi != '전체'">
+		AND
+			cnfrmprchreq.wrtrid = (SELECT 
+						wrtrid
+					  FROM
+					  	admusr
+					  WHERE
+					  	admusr.name LIKE CONCAT('%',#{wrtrNm},'%'))
+		</if>
+		
+	</select>
+
+
+</mapper>

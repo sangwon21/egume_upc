@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	Date : 2018. 12. 19
+	Author : 이수빈
+	Description : memberInfoMappers.xml 생성
+	version 1.0
+	=======================================
+	버전 		수정일 		수정자 		설명
+	1.0		2018.12.19	이수빈		최초작성
+	1.1		2018.12.20	이수빈		회원정보수정
+	1.2		2018.12.20	이수빈		패스워드 일치/불일치 검사 및 회원탈퇴(휴면계정으로 전환)
+-->
+<mapper namespace="com.upc.user.usrinf.dao.MemberInfoDAO">
+
+	<!-- 회원정보조회 -->
+	<select id="selectUsrInf" parameterType="String" resultType="usrInfVO">
+		SELECT PRTNUM, CMPNNM, CEONM, ADDR1, ADDR2, 
+			MGRNAME, MGRTEL, MGRPHONE, MGREMAIL, MGRPSTN, MGRFAX,
+			RMNCNT, PREPAYYN, EMAILYN, SMSYN, BSNSFILEID 
+		FROM USRINF 
+		WHERE PRTNUM=#{prtnum}
+	</select>
+	
+	<!-- 회원정보수정 -->
+	<update id="updateUsrInf" parameterType="usrInfVO">
+		UPDATE USRINF SET
+			<if test='pw != "pw"'> PW = #{pw},</if>
+			<if test='mgrname != "mgrname"'> MGRNAME = #{mgrname},</if>
+			<if test='mgrtel != "mgrtel"'> MGRTEL = #{mgrtel},</if>
+			<if test='mgrphone != "mgrphone"'> MGRPHONE = #{mgrphone},</if>
+			<if test='mgremail != "mgremail"'> MGREMAIL=#{mgremail},</if>
+			<if test='mgrpstn != "mgrpstn"'> MGRPSTN = #{mgrpstn},</if>
+			<if test='mgrfax != "mgrfax"'> MGRFAX = #{mgrfax},</if>
+			<if test='emailyn != "emailyn"'> EMAILYN = #{emailyn}, 
+				EMAILDT = SYSDATE,
+			</if>
+			<if test='smsyn != "smsyn"'> SMSYN = #{smsyn},
+				SMSDT = SYSDATE,
+			</if>
+			<if test='prepayyn != "prepayyn"'> PREPAYYN=#{prepayyn},</if>
+			MDFTM = SYSDATE, MDFID = #{prtnum}
+		
+		WHERE PRTNUM=#{prtnum}
+	</update>
+	
+	<!-- 패스워드 일치 확인 -->
+	<select id="checkPw" parameterType="String" resultType="String">
+		SELECT PW FROM USRINF WHERE PRTNUM = #{prtnum}
+	</select>
+	
+	<!-- 회원 탈퇴(휴면계정) -->
+	<update id="deleteUsrInf" parameterType="String">
+		UPDATE USRINF SET STS='N' WHERE PRTNUM=#{prtnum}
+	</update>
+</mapper> 

@@ -1,0 +1,133 @@
+package com.upc.user.reqfrm.vo;
+
+
+/**
+ * 구매확인서 발급 신청
+ * @author 이상원
+ * @since 2018. 12. 14.
+ * @version
+ * @see 참고
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ */
+
+public class ReqFrmVO {
+		private String prtnum; // 사업자 등록번호
+		private String applnum; // 발급신청번호
+		private String splyprtnum; // 공급자 사업자 등록번호
+		private String splyorgnm; // 공급자 상호
+		private String splyceonm; // 공급자 대표자
+		private String splyaddr1; // 공급자 주소1
+		private String splyaddr2; // 공급자 주소2
+		private String prchdt; // 구매일
+		private String shipdt; // 선적기일
+		private String appldt; // 신청일자
+		private String sts; // 상태
+		private String appmthd; // 신청방법
+		private String regid; // 등록자아이디
+		private String applditc; // 신청구분
+		private String applfileid; // 신청서파일 id
+		private String notes; // 비고
+		
+		public String getNotes() {
+			return notes;
+		}
+		public void setNotes(String notes) {
+			this.notes = notes;
+		}
+		public void setSplyprtnum(String splyprtnum) {
+			this.splyprtnum = splyprtnum;
+		}
+		public String getPrtnum() {
+			return prtnum;
+		}
+		public void setPrtnum(String prtnum) {
+			this.prtnum = prtnum;
+		}
+		public String getApplnum() {
+			return applnum;
+		}
+		public void setApplnum(String applnum) {
+			this.applnum = applnum;
+		}
+		public String getSplyprtnum() {
+			return splyprtnum;
+		}
+		public void setSplyptrnum(String splyptrnum) {
+			this.splyprtnum = splyptrnum;
+		}
+		public String getSplyorgnm() {
+			return splyorgnm;
+		}
+		public void setSplyorgnm(String splyorgnm) {
+			this.splyorgnm = splyorgnm;
+		}
+		public String getSplyceonm() {
+			return splyceonm;
+		}
+		public void setSplyceonm(String splyceonm) {
+			this.splyceonm = splyceonm;
+		}
+		public String getSplyaddr1() {
+			return splyaddr1;
+		}
+		public void setSplyaddr1(String splyaddr1) {
+			this.splyaddr1 = splyaddr1;
+		}
+		public String getSplyaddr2() {
+			return splyaddr2;
+		}
+		public void setSplyaddr2(String splyaddr2) {
+			this.splyaddr2 = splyaddr2;
+		}
+		public String getPrchdt() {
+			return prchdt;
+		}
+		public void setPrchdt(String prchdt) {
+			this.prchdt = prchdt;
+		}
+		public String getShipdt() {
+			return shipdt;
+		}
+		public void setShipdt(String shipdt) {
+			this.shipdt = shipdt;
+		}
+		public String getAppldt() {
+			return appldt;
+		}
+		public void setAppldt(String appldt) {
+			this.appldt = appldt;
+		}
+		public String getSts() {
+			return sts;
+		}
+		public void setSts(String sts) {
+			this.sts = sts;
+		}
+		public String getAppmthd() {
+			return appmthd;
+		}
+		public void setAppmthd(String appmthd) {
+			this.appmthd = appmthd;
+		}
+		public String getRegid() {
+			return regid;
+		}
+		public void setRegid(String regid) {
+			this.regid = regid;
+		}
+		public String getApplditc() {
+			return applditc;
+		}
+		public void setApplditc(String applditc) {
+			this.applditc = applditc;
+		}
+		public String getApplfileid() {
+			return applfileid;
+		}
+		public void setApplfileid(String applfileid) {
+			this.applfileid = applfileid;
+		}
+		
+		
+}

@@ -1,0 +1,11 @@
+let submitButton = document.querySelector("#submitBtn");
+let inputBoxes = document.querySelectorAll("input");
+
+submitButton.addEventListener("click", function(e){
+	
+	// 파일을 업로드 하지 않았을 경우
+	if(inputBoxes[0].value === ""){
+		alert("필수제출사항입니다. 입력해주십시오.");
+		e.preventDefault();
+	}
+})

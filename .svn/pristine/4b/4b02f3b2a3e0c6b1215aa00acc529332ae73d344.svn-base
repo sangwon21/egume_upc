@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	Date : 2018. 12. 26
+	Author : 김진혁
+	Description : 고객 리스트 처리를 위한 Mappers
+	version 1.2
+	=======================================
+	버전 		수정일 		수정자 		설명
+	1.0		2018.12.26	김진혁		userList,getBoardTotUnit 추가
+-->
+<mapper namespace="com.upc.admin.userlist.dao.UserListDAO"> 
+
+	<!-- id 속성은 DAO 의 메소드와 같아야 한다  --> 
+	
+	<!--  어드민 목록 조회(검색)  -->
+	<select id="userList" parameterType="com.upc.admin.userlist.vo.SearchVO" resultType="userVO">
+	SELECT *
+	FROM	(
+				SELECT 	rownum rnum,
+						BODY.*
+				FROM	(
+							SELECT	u.prtnum, 
+									u.cmpnnm, 
+									u.ceonm, 
+									u.addr1, 
+									u.addr2, 
+									u.mgrtel, 
+									u.rmncnt, 
+									s.totcnt, 
+									TO_CHAR(u.rgsttm,'YYYY-MM-DD') as rgsttm
+							FROM 	usrinf u 
+									LEFT OUTER JOIN 	
+									( 	SELECT prtnum, count(applnum) as totcnt
+										FROM cnfrmprchreq 
+										WHERE sts='C1'
+										GROUP BY prtnum) s
+							ON u.prtnum=s.prtnum
+							WHERE u.rgsttm BETWEEN to_date(#{dateFrom}, 'YYYY-MM-DD') AND to_date(#{dateTo}, 'YYYY-MM-DD')+1
+							<!-- 전체검색이 아니면서 검색어를 입력했을 경우 -->
+							<if test="searchCondi != '전체'">	
+								<choose>
+									<when test="searchCondi == '사업자등록번호'">AND u.prtnum like '%'||#{searchVal}||'%'</when>
+									<when test="searchCondi == '상호명'">AND u.cmpnnm like '%'||#{searchVal}||'%'</when>
+									<when test="searchCondi == '대표자명'">AND u.ceonm like '%'||#{searchVal}||'%'</when>
+									<when test="searchCondi == '주소'">
+										AND 
+											( 	
+												u.addr1 like '%'||#{searchVal}||'%'
+												OR
+												u.addr2 like '%'||#{searchVal}||'%'
+											)					
+									</when>
+									<when test="searchCondi == '담당자전화번호'">AND u.mgrtel like '%'||#{searchVal}||'%'</when>
+								</choose>
+							</if>
+							<!--  전체 검색이면서 검색어를 입력했을 경우 -->
+							<if test="searchCondi == '전체'">	
+								<choose>
+									<when test="searchVal != null and searchVal != '' ">
+									AND	
+										(	
+											u.prtnum like '%'||#{searchVal}||'%' 
+											OR  
+											u.cmpnnm like '%'||#{searchVal}||'%'
+											OR
+											u.ceonm like '%'||#{searchVal}||'%'
+											OR
+											u.addr1 like '%'||#{searchVal}||'%'
+											OR 
+											u.addr2 like '%'||#{searchVal}||'%'
+											OR
+											u.mgrtel like '%'||#{searchVal}||'%'
+										)
+									</when>
+								</choose>
+							</if>
+							ORDER BY u.rgsttm DESC
+						) BODY
+			)
+	WHERE rnum BETWEEN #{pageIndex}*#{pageUnit}-#{pageUnit}+1 AND ${pageUnit}*${pageIndex}
+	</select>
+
+ 	<!-- 검색 결과 총 갯수 -->
+ 	<select id="getBoardTotUnit" parameterType="com.upc.admin.userlist.vo.SearchVO" resultType="int">
+ 		SELECT 	count(u.prtnum)
+				FROM usrinf u 
+					LEFT OUTER JOIN 	
+					( select prtnum, count(applnum) as totcnt
+					from cnfrmprchreq 
+					where sts='C1'
+					group by prtnum) s
+					ON u.prtnum=s.prtnum
+				WHERE rgsttm BETWEEN to_date(#{dateFrom}, 'YYYY-MM-DD') AND to_date(#{dateTo}, 'YYYY-MM-DD')+1
+				<!-- 전체검색이 아니면서 검색어를 입력했을 경우 -->
+				<if test="searchCondi != '전체'">	
+					<choose>
+						<when test="searchCondi == '사업자등록번호'">AND u.prtnum like '%'||#{searchVal}||'%'</when>
+						<when test="searchCondi == '상호명'">AND u.cmpnnm like '%'||#{searchVal}||'%'</when>
+						<when test="searchCondi == '대표자명'">AND u.ceonm like '%'||#{searchVal}||'%'</when>
+						<when test="searchCondi == '주소'">
+							AND 
+								( 	
+									u.addr1 like '%'||#{searchVal}||'%'
+									OR
+									u.addr2 like '%'||#{searchVal}||'%'
+								)					
+						</when>
+						<when test="searchCondi == '담당자전화번호'">AND u.mgrtel like '%'||#{searchVal}||'%'</when>
+					</choose>
+				</if>
+				<!--  전체 검색이면서 검색어를 입력했을 경우 -->
+				<if test="searchCondi == '전체'">	
+					<choose>
+						<when test="searchVal != null and searchVal != '' ">
+						AND	
+							(	
+								u.prtnum like '%'||#{searchVal}||'%' 
+								OR  
+								u.cmpnnm like '%'||#{searchVal}||'%'
+								OR
+								u.ceonm like '%'||#{searchVal}||'%'
+								OR
+								u.addr1 like '%'||#{searchVal}||'%'
+								OR 
+								u.addr2 like '%'||#{searchVal}||'%'
+								OR
+								u.mgrtel like '%'||#{searchVal}||'%'
+							)
+						</when>
+					</choose>
+				</if>
+ 	</select>
+ 	
+ 	<!--  고객 삭제하기  -->
+	<delete id="delUser" parameterType="String">
+		DELETE FROM usrinf WHERE prtnum=#{delAdmId}
+	</delete>
+ 
+ </mapper>

@@ -1,0 +1,41 @@
+package com.upc.admin.adminmdf.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.upc.admin.adminmdf.dao.AdminMdfDAO;
+import com.upc.admin.common.vo.AdminVO;
+
+/**
+ * 
+ * @author 김진혁
+ * @since 2018. 12. 19.
+ * @version 1.0
+ * @see 참고
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ * 1.0		2018.12.19	김진혁		최초작성
+ */
+@Service("adminMdfService")
+public class AdminMdfServiceImpl implements AdminMdfService {
+
+	@Autowired
+	private AdminMdfDAO dao;
+	
+	@Autowired
+	BCryptPasswordEncoder passwordEncoder;
+	
+	@Override
+	public AdminVO getAdminInfo(String id) throws Exception {
+		return dao.getAdminInfo(id);
+	}
+
+	@Override
+	public void updateAdminInfo(AdminVO vo) throws Exception {
+		String pw = passwordEncoder.encode(vo.getPw());
+		vo.setPw(pw);
+		dao.updateAdminInfo(vo);
+	}
+
+}

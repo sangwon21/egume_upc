@@ -1,0 +1,41 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<!-- Footer -->
+	<footer class="footer" style="background-color:#EAEAEA;">
+		<hr style="border: solid 1px #BDBDBD;">
+		<div class="container-fluid" style="height:70px;">
+				<div class="row" style="padding-top:10px;">    
+					<div class="col-md-4">    
+						<div class="row">
+							<div class="col-md-8"></div> 
+							<div class="col-md-4">
+								<img src="${pageContext.request.contextPath}/img/KTNET_logo.jpg" style="height:50px; width:100%; object-fit: contain;">
+							</div>  
+						</div>
+					</div>   
+					<div class="col-md-8">
+						<div class="row">
+							<div class="col-md-12 text-left">
+								13493) 경기도 성남시 분당구 판교로 338 (판교테크노밸리) 한국전자무역센터
+							</div>
+						</div>
+						<p></p>
+						<div class="row">
+							<div class="col-md-12 text-left">
+								Copyright 2013 KTNET Rights Reserved.
+							</div>
+						</div>
+					</div> 
+				</div>
+		</div>   
+		<hr style="border: solid 1px #BDBDBD;"> 
+	</footer>
+</body>
+</html>

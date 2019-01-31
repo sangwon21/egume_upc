@@ -1,0 +1,40 @@
+/**
+ * 로그인 처리 자바스크립트
+ * @author 김진혁
+ * @since 2018. 12. 14.
+ * @version 1.0
+ * @see 참고
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ * 1.0 		2018.12.14	김진혁		최초작성
+ */
+
+
+	/**
+	 * 로그인 버튼을 클릭했을 때 입력 폼을 서버로 요청하는 function
+	 * @return
+	 * @author 김진혁
+	 * @since 2018. 12. 14.
+	 * @version 1.0
+	 * @see 참고
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0 		2018.12.14	김진혁		최초작성
+	 */
+function validation() {
+	var id = $("#id").val();
+	var pw = $("#pw").val();
+	
+	if(id == "") {
+		alert("아이디를 입력해 주십시오.");
+		return false;
+	} else if(pw == "") {
+		alert("패스워드를 입력해 주십시오.");
+		return false;
+	} else {
+		return true;
+	}
+	
+	
+	
+}

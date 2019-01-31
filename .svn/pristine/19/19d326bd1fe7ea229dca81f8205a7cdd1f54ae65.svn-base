@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	Date : 2018. 12. 19
+	Author : 김진혁
+	Description : 어드민 수정 처리를 위한 Mappers
+	version 1.0
+	=======================================
+	버전 		수정일 		수정자 		설명
+	1.0		2018.12.19	김진혁		insertAdmin, checkId 추가
+-->
+<mapper namespace="com.upc.admin.adminmypage.dao.AdminMyPageDAO"> 
+
+	<!-- id 속성은 DAO 의 메소드와 같아야 한다  --> 
+	<!-- 어드민 등록 -->
+	<select id="getAdminInfo" parameterType="String" resultType="adminVO">
+		SELECT * FROM ADMUSR
+		WHERE
+		admid = #{id}
+	</select> 
+	
+	<update id="updateAdminInfo" parameterType="adminVO">
+		UPDATE ADMUSR 
+		SET pw=#{pw}, name=#{name}, email=#{email}, tel=#{tel}, role=#{role}, useyn=#{useyn}, mdftm=SYSDATE, mdfid=#{mdfid}
+		where admid=#{admid}
+	</update>
+	
+	<update id="updateAdminInfoEcpPw" parameterType="adminVO">
+		UPDATE ADMUSR 
+		SET name=#{name}, email=#{email}, tel=#{tel}, role=#{role}, useyn=#{useyn}, mdftm=SYSDATE, mdfid=#{mdfid}
+		where admid=#{admid}
+	</update>
+ </mapper>

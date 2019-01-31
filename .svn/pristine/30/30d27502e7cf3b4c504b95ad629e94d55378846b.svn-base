@@ -1,0 +1,108 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- 부가적인 테마 -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+	<!-- css -->
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<link href="${pageContext.request.contextPath}/css/writer/wrtList.css" rel="stylesheet" type="text/css">
+	<link href="${pageContext.request.contextPath}/css/rcver/list.css" rel="stylesheet" type="text/css">	
+	<meta charset="UTF-8">
+	<c:import url="header.jsp" />
+	<title>어드민 정보 수정</title>
+<script type="text/javascript">
+/*
+ * 유효성 체크
+ */
+function validationCheck() {
+	if ($("#pw").val() == "" || $("#name").val() == "" || $("#email").val() == "" || $("#tel").val() == "") {
+		alert("항목을 입력해 주십시오.");
+		return false;
+	}
+}
+
+
+</script>
+</head>
+<body>
+	<div class='container'>
+		<h3>어드민 정보 수정</h3>
+		<div class="well">
+			<div id="register_container">
+		<form name="f" id="f" action="adminMdfReq" method="GET" role="form" >
+		<table border="1" style="border:light-gray solid;" class="table table-bordered">
+			
+			<tr>
+				<td align="center" width="200px">
+					<label for="userid">아이디 </label>
+				</td>
+				<td>
+					<input type="text" name="admid" id="admid" style="width:50%;" value="${AdminVO.admid}" class="form-control" readonly>
+				</td>
+			</tr>
+
+			<tr>
+				<td align="center">
+					<label for="name">이 름 </label>
+				</td>
+				<td>
+					<input type="text" name="name" id="name" value="${AdminVO.name}" class="form-control" style="width:50%;">
+				</td>
+			</tr>
+			<tr>
+				<td align="center"><label for="email">이메일 </label></td>
+				<td>
+					<input type="email" name="email" id="email" size="40" style="width:50%;" class="form-control" value="${AdminVO.email}">
+				</td>
+			</tr>
+			<tr>
+				<td align="center"><label for="tel">전화번호 </label></td>
+				<td>
+					<input type="text" name="tel" id="tel" value="${AdminVO.tel}" class="form-control" style="width:50%;">
+				</td>
+			</tr>
+			
+			<tr>
+				<td align="center"><label for="role">역할 </label></td>
+				<td>
+					<select name="role" style="width:15%;" class="form-control">
+						<option value="M" <c:if test="${AdminVO.role=='M'}"> selected </c:if> >관리자</option>
+						<option value="R" <c:if test="${AdminVO.role=='R'}"> selected </c:if> >접수자</option>
+						<option value="W" <c:if test="${AdminVO.role=='W'}"> selected </c:if> >작성자</option>
+					</select>
+				</td>
+			</tr>
+			
+			<tr>
+				<td align="center"><label for="useyn">계정상태 </label></td>
+				<td>
+					<select name="useyn" style="width:15%;" class="form-control">
+						<option value="Y" <c:if test="${AdminVO.useyn=='Y'}"> selected </c:if>>사용</option>
+						<option value="N" <c:if test="${AdminVO.useyn=='N'}"> selected </c:if>>정지</option>
+					</select>
+				</td>
+			</tr>
+		</table>
+		<div class="row">
+			<div class="col-md-5"></div>
+			<div class="col-md-2" align="center">
+				<button type="submit" id="submission" onclick="return validationCheck()" class="form-control btn btn-primary" style="margin:5px;">수정</button>
+			</div>
+		</div>
+		<p>
+	</form>
+			</div>
+		</div>
+	</div>
+
+
+</body>
+<footer>
+	<c:import url="footer.jsp" />
+</footer>
+
+</html>
+

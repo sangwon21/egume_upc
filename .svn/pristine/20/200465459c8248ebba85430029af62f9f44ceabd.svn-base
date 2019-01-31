@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.upc.admin.applrcptrgst.dao.ApplRcptRgstDAO">
+	<select id="getApplRcptOne" parameterType="com.upc.admin.applrcptlist.vo.ApplRcptListVO" resultType="com.upc.admin.applrcptlist.vo.ApplRcptListVO">
+		SELECT 
+			prtnum,
+			applnum,
+			prchdt,
+			shipdt,
+			splyprtnum,
+			splyorgnm,
+			splyceonm,
+			splyaddr1,
+			splyaddr2,
+			TO_CHAR(appldt,'YYYY-MM-DD') appldt,
+			TO_CHAR(applrcvdt,'YYYY-MM-DD') applrcvdt,
+			sts,
+			applfileid,
+			appmthd,
+			applfileid,
+			(SELECT name FROM admusr WHERE cnfrmprchreq.wrtrid = admusr.admid) name, 
+			(SELECT codenm FROM code WHERE code.mstrcode = 'APPLSTS' AND cnfrmprchreq.sts = code.code ) codenm,
+			(SELECT cmpnnm FROM usrinf WHERE cnfrmprchreq.prtnum = usrinf.prtnum) cmpnnm,
+			notes
+		FROM
+			cnfrmprchreq
+		WHERE
+			applnum = #{applNum}
+
+	</select>
+
+	<select id="getFileInfoList" parameterType="com.upc.admin.applrcptlist.vo.ApplRcptListVO" 
+	resultType="com.upc.common.file.vo.FileVO">
+		SELECT 
+			formtype,
+        	LISTAGG(fileseq,',')WITHIN GROUP ( ORDER BY fileseq DESC) fileseq,
+       		LISTAGG(filenm,',')WITHIN GROUP ( ORDER BY fileseq DESC) filenm,
+        	LISTAGG(type,',')WITHIN GROUP ( ORDER BY fileseq DESC) type
+ 		FROM 
+ 			fileinf
+ 		WHERE 
+ 			applnum = #{applNum} AND (formtype = '세금계산서' or formtype = '수출근거서류')
+ 		GROUP BY 
+ 			formtype
+ 		ORDER BY
+ 			formtype
+ 			
+	</select>
+	
+	<update id="updateApplRcpt" parameterType="com.upc.user.reqfrm.vo.ReqFrmVO">
+		UPDATE
+			cnfrmprchreq
+		SET
+			prchdt = #{prchdt}, 
+			shipdt = #{shipdt}, 
+			splyprtnum = #{splyprtnum}, 
+			splyorgnm = #{splyorgnm}, 
+			splyceonm = #{splyceonm}, 
+			splyaddr1 = #{splyaddr1}, 
+			splyaddr2 = #{splyaddr2},
+			notes = #{notes}
+		WHERE
+			applnum = #{applnum}
+	
+	</update>
+
+</mapper>

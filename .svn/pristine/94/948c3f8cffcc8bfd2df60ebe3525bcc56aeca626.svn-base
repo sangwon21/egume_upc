@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	Date : 2018. 12. 19
+	Author : 신혜영
+	Description : 입금확인 Mappers
+	Version 1.0
+	History
+	Date			Author		Contents
+	==========		=========	===========================
+	2018.12.19		신혜영		입금정보 등록, 고객 잔여 건수 증가 추가
+	2018.12.24		김진혁		depList, delDep 추가
+	2018.12.26		김진혁		searchCmpnCeoNm 추가, selectDepositHsty, getBoardTotUnit 추가
+ -->
+<!-- 맵핑될 DAO 인터페이스의 Full name 을 줍니다. -->
+<mapper namespace="com.upc.admin.deplist.dao.DepositListDAO">
+
+	<!-- <insert id="insertDepositHsty" parameterType="com.upc.admin.wrtlist.vo.DepositCnfrmVO">
+			<selectKey order="BEFORE" keyProperty="depseq" resultType="String">
+			SELECT
+				'DEP' || to_char(to_number( to_char(sysdate, 'YYYYMMDD') || nvl(to_char(max(substr(depseq, 12))), '0000') )+1)
+			FROM DEPOSITHSTY 
+			WHERE to_char(rgsttm, 'YYYYMMDD')=to_char(sysdate, 'YYYYMMDD')
+		</selectKey>
+		INSERT INTO DEPOSITHSTY (
+			prtnum, depseq, depamt, depcnt, rgstid, rgsttm
+		) VALUES (
+			#{prtnum}, #{depseq}, #{depamt}, #{depcnt}, #{rgstid}, SYSDATE
+		)
+	
+	</insert>
+	
+	<update id="updateUsrRmncnt" parameterType="com.upc.admin.wrtlist.vo.WrtListVO">
+		UPDATE USRINF SET
+			rmncnt = rmncnt+1 
+		WHERE prtnum=#{prtnum}
+	</update> -->
+	
+	
+	<!-- 입금정보 등록 -->
+	<insert id="insertDepositHsty" parameterType="com.upc.admin.deplist.vo.DepositCnfrmVO">
+			<selectKey order="BEFORE" keyProperty="depseq" resultType="String">
+			SELECT
+				'DEP' || to_char(to_number( to_char(sysdate, 'YYYYMMDD') || nvl(to_char(max(substr(depseq, 12))), '0000') )+1)
+			FROM DEPOSITHSTY 
+			WHERE to_char(rgsttm, 'YYYYMMDD')=to_char(sysdate, 'YYYYMMDD')
+		</selectKey>
+		INSERT INTO DEPOSITHSTY (
+			prtnum, depseq, depdt, depamt, deprnm, depcnt, rgstid, rgsttm
+		) VALUES (
+			#{prtnum}, #{depseq}, #{depdt}, #{depamt}, #{deprnm}, #{depcnt}, #{rgstid}, SYSDATE
+		)
+	</insert>
+	
+	<!-- 건수 업데이트 -->
+	<update id="updateUsrRmncnt" parameterType="com.upc.admin.deplist.vo.DepositCnfrmVO">
+		UPDATE USRINF SET
+			rmncnt = rmncnt+#{depcnt}
+		WHERE prtnum=#{prtnum}
+	</update>
+	
+	<!-- 입금정보 조회(검색) -->
+	<select id="depList" parameterType="com.upc.admin.deplist.vo.SearchVO" resultType="depositHstyVO">
+		SELECT *
+		FROM	(
+					SELECT 	rownum rnum,
+							d.prtnum,
+							d.depseq,
+			                u.cmpnnm,
+			                u.ceonm,
+			                u.addr1,
+			                u.addr2,
+			                u.mgrtel,
+							d.depdt,
+							d.depamt,
+							d.deprnm,
+							d.depcnt,
+							d.rgstid,
+							TO_CHAR(d.rgsttm,'YYYY-MM-DD') as rgsttm
+					FROM deposithsty d, usrinf u
+					WHERE d.prtnum=u.prtnum
+			        AND d.rgsttm BETWEEN to_date(#{dateFrom}, 'YYYY-MM-DD') AND to_date(#{dateTo}, 'YYYY-MM-DD')+1
+					<!-- 조회조건이 존재하면서 검색어를 입력했을 경우 -->
+					<if test="searchCondi != '전체'">	
+						<choose>
+							<when test="searchCondi == '사업자등록번호'">AND d.prtnum like '%'||#{searchVal}||'%'</when>
+							<when test="searchCondi == '상호명'">AND u.cmpnnm like '%'||#{searchVal}||'%'</when>
+							<when test="searchCondi == '입금자'">AND d.deprnm like '%'||#{searchVal}||'%'</when>
+						</choose>
+					</if>
+					<!--  전체 검색이면서 검색어를 입력했을 경우 -->
+					<if test="searchCondi == '전체'">	
+						<choose>
+							<when test="searchVal != null and searchVal != '' ">
+							AND	
+								(
+									d.prtnum like '%'||#{searchVal}||'%' 
+									OR
+									u.cmpnnm like '%'||#{searchVal}||'%'
+									OR
+									d.deprnm like '%'||#{searchVal}||'%'
+								)
+							</when>
+						</choose>
+					</if>
+				) 
+		WHERE rnum BETWEEN #{pageIndex}*#{pageUnit}-#{pageUnit}+1 AND ${pageUnit}*${pageIndex}
+	</select>
+	
+	<!-- 검색 결과 총 갯수 -->
+	<select id="getBoardTotUnit" parameterType="com.upc.admin.deplist.vo.SearchVO" resultType="int">
+		SELECT 	count(d.depseq)
+		FROM 	deposithsty d, usrinf u
+		WHERE 	d.prtnum=u.prtnum
+		AND 	d.rgsttm BETWEEN to_date(#{dateFrom}, 'YYYY-MM-DD') AND to_date(#{dateTo}, 'YYYY-MM-DD')+1
+		<!-- 조회조건이 존재하면서 검색어를 입력했을 경우 -->
+		<if test="searchCondi != '전체'">	
+			<choose>
+				<when test="searchCondi == '사업자등록번호'">AND d.prtnum like '%'||#{searchVal}||'%'</when>
+				<when test="searchCondi == '상호명'">AND u.cmpnnm like '%'||#{searchVal}||'%'</when>
+				<when test="searchCondi == '입금자'">AND d.deprnm like '%'||#{searchVal}||'%'</when>
+			</choose>
+		</if>
+		<!--  전체 검색이면서 검색어를 입력했을 경우 -->
+		<if test="searchCondi == '전체'">	
+			<choose>
+				<when test="searchVal != null and searchVal != '' ">
+				AND	
+					(
+						d.prtnum like '%'||#{searchVal}||'%' 
+						OR
+						u.cmpnnm like '%'||#{searchVal}||'%'
+						OR
+						d.deprnm like '%'||#{searchVal}||'%'
+					)
+				</when>
+			</choose>
+		</if>	
+	</select>
+	
+	<!-- 입금정보 삭제 -->
+	<delete id="delDep" parameterType="String">
+		DELETE 
+		FROM deposithsty 
+		WHERE depseq=#{delDepSeq}
+	</delete>
+	
+	<!-- 입금정보 등록 시, 사업자등록번호로 상호명과 대표자명 조회 -->
+	<select id="searchCmpnCeoNm" parameterType="String" resultType="usrInfVO">
+		SELECT cmpnnm, ceonm 
+		FROM usrinf 
+		WHERE prtnum=#{prtnum}
+	</select>
+	
+	<!-- 입금정보 가져오기 -->
+	<select id="selectDepositHsty" parameterType="String" resultType="com.upc.admin.deplist.vo.DepositCnfrmVO">
+		SELECT *
+		FROM deposithsty
+		WHERE depseq=#{depseq}
+	</select>
+	
+	
+		
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd 
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-2.5.xsd" 
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p" 
+	xmlns="http://www.springframework.org/schema/beans">
+	
+	<!-- 중요 -->
+	<!--before에서 user id / user model을 세팅하므로 사용자 업무 로직은 아래의 조건을 반드시 충족시켜야 한다.
+		user는 로그인등에 사용되어야 함으로 common에 위치시키고반드시 아래 조건에서 제외되어야 함. 
+		단, updatePswd만은 사용자 업무이므로 아래 추가되었음. -->
+	<aop:config>
+		<aop:aspect ref="egumeInterceptor" id="serviceBeforeAction">
+			<!-- <aop:before
+				pointcut="execution(public * com..service.*ServiceImpl.insert*(..)) or execution(public * com..service.*ServiceImpl.update*(..)) or execution(public * com..service.*ServiceImpl.delete*(..)) or execution(public * com..service.*ServiceImpl.select*(..)) )"
+				method="beforeInterceptor" />
+			<aop:after-returning
+				pointcut="execution(public * com..service.*ServiceImpl.insert*(..)) or execution(public * com..service.*ServiceImpl.update*(..)) or execution(public * com..service.*ServiceImpl.delete*(..)) or execution(public * com..service.*ServiceImpl.select*(..)))"
+				method="afterInterceptor" returning="retVal"/> -->
+			<aop:after-throwing
+				pointcut="execution(public * com..service.*ServiceImpl.insert*(..)) or execution(public * com..service.*ServiceImpl.update*(..)) or execution(public * com..service.*ServiceImpl.delete*(..)) or execution(public * com..service.*ServiceImpl.select*(..)))"
+				method="afterExceptionInterceptor" throwing="exception" />
+		</aop:aspect>
+	</aop:config>
+	
+	<bean id="egumeInterceptor" class="com.upc.common.exception.interceptor.EgumeInterceptor">
+		<!-- <property name="interceptors">
+			<list>
+				<value>NoticeServiceImpl</value>
+				<value>FaqServiceImpl</value>
+				<value>QnAServiceImpl</value>
+				<value>ReferRoomServiceImpl</value>
+				<value>**service.*Impl</value>
+			</list>
+		</property> -->
+	</bean>
+
+</beans>

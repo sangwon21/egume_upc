@@ -1,0 +1,306 @@
+package com.upc.admin.applrcptrgst.service;
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.Collections;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.upc.admin.applrcptlist.vo.ApplRcptListVO;
+import com.upc.admin.applrcptrgst.dao.ApplRcptRgstDAO;
+import com.upc.common.file.service.MemberFileServiceImpl;
+import com.upc.common.file.vo.FileVO;
+import com.upc.common.process.status.StsCode;
+import com.upc.user.reqfrm.dao.ReqFrmDAO;
+import com.upc.user.reqfrm.service.ReqFrmServiceImpl;
+import com.upc.user.reqfrm.vo.ReqFrmVO;
+
+/**
+ * 발급신청 등록&상세 관련 클래스
+ * @author 강성효
+ * @since 2018. 12. 27.
+ * @version
+ * @see 참고
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"file:src/mapper/*.xml","file:WebContent/WEB-INF/spring/*.xml"})
+@Service
+public class ApplRcptRgstServiceImpl implements ApplRcptRgstService {
+	
+	Logger log = LoggerFactory.getLogger(ApplRcptRgstServiceImpl.class);
+	
+	@Autowired
+	private ApplRcptRgstDAO applRcptRgstDAO;
+	@Autowired
+	private ReqFrmServiceImpl reqFrmServiceImpl;
+	@Autowired
+	private MemberFileServiceImpl memberFileServiceImpl;
+	@Autowired
+	private ReqFrmDAO reqFrmdao;
+	
+	
+	
+	@Override
+	public ApplRcptListVO applRcptOne(ApplRcptListVO applRcptListVO) {
+			
+		applRcptListVO = applRcptRgstDAO.getApplRcptOne(applRcptListVO);
+			
+		return applRcptListVO;
+		
+	}
+
+	@Override
+	@Transactional(rollbackFor=Exception.class)
+	public ArrayList<FileVO> fileInfoList(ApplRcptListVO applRcptListVO) {
+		ArrayList<FileVO> fileList = applRcptRgstDAO.getFileInfoList(applRcptListVO);
+		ArrayList<FileVO> prsfileList = new ArrayList<>();
+		
+		if(fileList.size() != 0) {
+			
+			if(fileList.get(0).getFormtype().equals("세금계산서")) {
+				
+				for(int i = 0; i < fileList.size() ; i++) {
+					
+					String formType   =   fileList.get(i).getFormtype();
+					String fileSeq[]  =  fileList.get(i).getFileseq().split(",");
+					String fileNm[]   =   fileList.get(i).getFilenm().split(",");
+					String fileType[] = fileList.get(i).getType().split(",");
+					
+					for(int j = 0; j < 3; j++) {
+						
+						if(fileSeq.length - 1 < j) {
+							prsfileList.add(null);
+							
+						}else {
+							
+							FileVO fileVO = new FileVO();
+							fileVO.setFormtype(formType);
+							fileVO.setFileseq(fileSeq[j]);
+							fileVO.setFilenm(fileNm[j]);
+							fileVO.setType(fileType[j]);
+							prsfileList.add(fileVO);
+						}
+					}
+				}
+				
+				if(fileList.size()==1) {
+					for(int j = 0; j < 3; j++) {
+						prsfileList.add(null);
+					}
+				}
+				
+			}else {
+				
+					for(int j = 0; j < 3; j++) {
+						prsfileList.add(null);
+					}
+					
+					String formType   =   fileList.get(0).getFormtype();
+					String fileSeq[]  =  fileList.get(0).getFileseq().split(",");
+					String fileNm[]   =   fileList.get(0).getFilenm().split(",");
+					String fileType[] = fileList.get(0).getType().split(",");
+					
+					for(int j = 0; j < 3; j++) {
+						
+						if(fileSeq.length - 1 < j) {
+							prsfileList.add(null);
+							
+						}else {
+							
+							FileVO fileVO = new FileVO();
+							fileVO.setFormtype(formType);
+							fileVO.setFileseq(fileSeq[j]);
+							fileVO.setFilenm(fileNm[j]);
+							fileVO.setType(fileType[j]);
+							prsfileList.add(fileVO);
+						}
+					}
+				
+			}
+			
+			Collections.swap(prsfileList, 1, 3);
+			Collections.swap(prsfileList, 3, 2);
+			Collections.swap(prsfileList, 4, 3);
+			
+		}else {
+			for(int j = 0; j < 6; j++) {
+					prsfileList.add(null);
+			}
+		}
+		return prsfileList;
+	}
+
+	
+	@Override
+	@Transactional(rollbackFor=Exception.class)
+	public void modApplRgst(ReqFrmVO reqFrmVO,FileVO fileVO, MultipartFile[] tax, MultipartFile[] sup
+			, String modTax[], String modSup[]) throws Exception {
+		
+		int rst = StsCode.FAIL;
+		// 직접등록
+		if(reqFrmVO.getAppmthd().equals("SELF") && reqFrmVO.getApplnum().equals("")) {
+			reqFrmVO.setApplnum(reqFrmServiceImpl.makeSeqNum());
+			reqFrmVO.setSts("R1");
+			fileVO.setApplnum(reqFrmVO.getApplnum());
+			
+			//reqFrmServiceImpl.insertReqFrm(reqFrmVO, reqFrmVO.getPrtnum());
+			rst = reqFrmdao.insertCnfrmPrchReq(reqFrmVO);
+		}else {
+			rst = applRcptRgstDAO.updateApplRcpt(reqFrmVO);
+		}
+		
+		if(rst == StsCode.FAIL) {
+			throw new Exception("업데이트 오류");
+		}
+		
+		// 파일업로드
+		for(int i = 0; i < 6; i++ ) {
+		   if(i <= 2) {
+			   if(!tax[i].isEmpty()) {
+				   if(!modTax[i].equals("")) {
+					   fileVO.setFileseq(modTax[i]);
+					   memberFileServiceImpl.modifyFile(fileVO, tax[i]);
+				   }else {
+					   fileVO.setFormtype("세금계산서");
+					   memberFileServiceImpl.insertFile(fileVO, tax[i]);
+				   }
+			   }
+		   }else {
+			  if(!sup[i-3].isEmpty()) {
+				  
+				  if(!modSup[i-3].equals("")) {
+					  fileVO.setFileseq(modSup[i-3]);
+					   memberFileServiceImpl.modifyFile(fileVO, sup[i-3]);
+				   }else {
+					   fileVO.setFormtype("수출근거서류");
+					   memberFileServiceImpl.insertFile(fileVO, sup[i-3]);
+				   }
+			   }
+		   }
+		}
+		
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	@Test
+	public void applRcptOneTest() {
+		
+		ApplRcptListVO applRcptListVO = new ApplRcptListVO();
+		
+		applRcptListVO.setApplNum("APPL201812240118");
+		
+		applRcptListVO =  applRcptRgstDAO.getApplRcptOne(applRcptListVO);
+		assertEquals(1, applRcptListVO);
+	}
+	
+	@Test
+	public void fileInfoListTest() {
+		ApplRcptListVO applRcptListVO = new ApplRcptListVO();
+		applRcptListVO.setApplNum("APPL201901080001");
+		ArrayList<FileVO> fileList = applRcptRgstDAO.getFileInfoList(applRcptListVO);
+		ArrayList<FileVO> prsfileList = new ArrayList<>();
+		
+		if(fileList.size() != 0) {
+			
+			if(fileList.get(0).getFormtype().equals("세금계산서")) {
+				
+				for(int i = 0; i < fileList.size() ; i++) {
+					
+					String formType   =   fileList.get(i).getFormtype();
+					String fileSeq[]  =  fileList.get(i).getFileseq().split(",");
+					String fileNm[]   =   fileList.get(i).getFilenm().split(",");
+					String fileType[] = fileList.get(i).getType().split(",");
+					
+					for(int j = 0; j < 3; j++) {
+						
+						if(fileSeq.length - 1 < j) {
+							prsfileList.add(null);
+							
+						}else {
+							
+							FileVO fileVO = new FileVO();
+							fileVO.setFormtype(formType);
+							fileVO.setFileseq(fileSeq[j]);
+							fileVO.setFilenm(fileNm[j]);
+							fileVO.setType(fileType[j]);
+							prsfileList.add(fileVO);
+						}
+					}
+				}
+				
+				if(fileList.size()==1) {
+					for(int j = 0; j < 3; j++) {
+						prsfileList.add(null);
+					}
+				}
+				
+			}else {
+				
+					for(int j = 0; j < 3; j++) {
+						prsfileList.add(null);
+					}
+					
+					String formType   =   fileList.get(0).getFormtype();
+					String fileSeq[]  =  fileList.get(0).getFileseq().split(",");
+					String fileNm[]   =   fileList.get(0).getFilenm().split(",");
+					String fileType[] = fileList.get(0).getType().split(",");
+					
+					for(int j = 0; j < 3; j++) {
+						
+						if(fileSeq.length - 1 < j) {
+							prsfileList.add(null);
+							
+						}else {
+							
+							FileVO fileVO = new FileVO();
+							fileVO.setFormtype(formType);
+							fileVO.setFileseq(fileSeq[j]);
+							fileVO.setFilenm(fileNm[j]);
+							fileVO.setType(fileType[j]);
+							prsfileList.add(fileVO);
+						}
+					}
+				
+			}
+			
+				Collections.swap(prsfileList, 1, 3);
+				Collections.swap(prsfileList, 3, 2);
+				Collections.swap(prsfileList, 4, 3);
+				
+			
+		}else {
+			for(int j = 0; j < 6; j++) {
+					prsfileList.add(null);
+			}
+		}
+
+		for(FileVO vo : prsfileList) {
+			log.warn(vo+"");
+		}
+		
+	}
+}

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	Date : 2018. 12. 14
+	Author : 이수빈
+	Description : memberFileMappers.xml 생성
+	version 1.0
+	=======================================
+	버전 		수정일 		수정자 		설명
+			2018.12.17	이수빈		파일 저장 정보 검색 추가
+-->
+<mapper namespace="com.upc.common.file.dao.MemberFileDAO">
+
+	<!-- 사업자등록증사본 등록 -->
+	<insert id="insertFile" parameterType="fileVO">
+		INSERT INTO FILEINF VALUES(#{prtnum}, #{fileseq}, #{path}, #{filenm}, #{type}, #{prtnum}, SYSDATE, #{applnum}, #{formtype})
+	</insert>
+	
+	<!-- 파일 저장 정보 검색 -->
+	<select id="selectFileInfo" parameterType="String" resultType="Map">
+		SELECT FILENM, PATH FROM FILEINF WHERE FILESEQ=#{fileseq}
+	</select>
+	
+	<select id="selectMaxseq" resultType="int">
+		SELECT NVL((MAX(SUBSTR(FILESEQ, 12))), '0000') FROM FILEINF WHERE SUBSTR(FILESEQ, 0, 3)='ATT'
+	</select>	
+</mapper> 

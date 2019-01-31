@@ -1,0 +1,12 @@
+package com.upc.admin.wrtinfodetail.dao;
+
+import java.util.List;
+
+import com.upc.admin.wrtinfodetail.vo.CnfrmPrchIsueVO;
+import com.upc.admin.wrtinfodetail.vo.CnfrmPrchReqVO;
+
+public interface WrtInfoDetailDAO {
+	CnfrmPrchReqVO selectCnfrmPrchReq(String applnum);
+	List<CnfrmPrchIsueVO> selectCnfrmPrchIsue(String issuenum);
+	int updateSmpInfo(CnfrmPrchReqVO cnfrmPrchReqVO);
+}

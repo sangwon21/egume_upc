@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	Date : 2018. 12. 19
+	Author : 김진혁
+	Description : 어드민 조회 처리를 위한 Mappers
+	version 1.2
+	=======================================
+	버전 		수정일 		수정자 		설명
+	1.0		2018.12.19	김진혁		adminList 추가
+	1.1		2018.12.24	김진혁		delAdmin 추가
+	1.2		2018.12.26	김진혁		getBoardTotUnit 추가
+-->
+<mapper namespace="com.upc.admin.adminlist.dao.AdminListDAO"> 
+
+	<!-- id 속성은 DAO 의 메소드와 같아야 한다  --> 
+	
+	<!--  어드민 목록 조회(검색)  -->
+	<select id="adminList" parameterType="com.upc.admin.adminlist.vo.SearchVO" resultType="AdminVO">
+	SELECT *
+	FROM	(
+				SELECT 	rownum rnum,
+						BODY.*
+				FROM	(
+							SELECT	admid,
+									name, 
+									email,
+									tel, 
+									TO_CHAR(rgsttm,'YYYY-MM-DD') as rgsttm,
+									CASE role WHEN 'M' THEN '관리자' WHEN 'R' THEN '접수자' WHEN 'W' THEN '작성자' END as role, 
+									CASE useyn WHEN 'Y' THEN '사용' ELSE '사용안함' END as useyn
+							FROM 	admusr
+							WHERE	rgsttm BETWEEN to_date(#{dateFrom}, 'YYYY-MM-DD') AND to_date(#{dateTo}, 'YYYY-MM-DD')+1
+							<!-- 아이디 혹은 이름검색이면서 검색어를 입력했을 경우 -->
+							<if test="searchCondi != '전체'">	
+								<choose>
+									<when test="searchCondi == '아이디'">AND admid like '%'||#{searchVal}||'%'</when>
+									<when test="searchCondi == '이름'">AND name like '%'||#{searchVal}||'%'</when>
+								</choose>
+							</if>
+							<!--  전체 검색이면서 검색어를 입력했을 경우 -->
+							<if test="searchCondi == '전체'">	
+								<choose>
+									<when test="searchVal != null and searchVal != '' ">
+									AND	
+										(	
+											admid like '%'||#{searchVal}||'%' 
+											OR  
+											name like '%'||#{searchVal}||'%'
+										)
+									</when>
+								</choose>
+							</if>
+							<!-- 관리자or접수자or작성자로 구분 선택했을 경우 -->
+							<if test="searchRole != '전체'">				
+								<choose>
+									<when test="searchRole == '관리자'">AND role = 'M' </when>
+									<when test="searchRole == '접수자'">AND role = 'R' </when>
+									<when test="searchRole == '작성자'">AND role = 'W' </when>
+								</choose>
+							</if>
+							ORDER BY rgsttm DESC) BODY
+			) 
+	WHERE rnum BETWEEN #{pageIndex}*#{pageUnit}-#{pageUnit}+1 AND ${pageUnit}*${pageIndex}
+	</select>
+	
+	<!--  어드민 삭제하기  -->
+	<delete id="delAdmin" parameterType="String">
+		DELETE FROM admusr WHERE admid=#{delAdmId}
+	</delete>
+ 
+ 	<!-- 검색 결과 총 갯수 -->
+ 	<select id="getBoardTotUnit" parameterType="com.upc.admin.adminlist.vo.SearchVO" resultType="int">
+ 		SELECT count(admid)
+		FROM admusr
+		WHERE rgsttm BETWEEN to_date(#{dateFrom}, 'YYYY-MM-DD') AND to_date(#{dateTo}, 'YYYY-MM-DD')+1
+		<!-- 아이디 혹은 이름검색이면서 검색어를 입력했을 경우 -->
+		<if test="searchCondi != '전체'">	
+			<choose>
+				<when test="searchCondi == '아이디'">AND admid like '%'||#{searchVal}||'%'</when>
+				<when test="searchCondi == '이름'">AND name like '%'||#{searchVal}||'%'</when>
+			</choose>
+		</if>
+		<!--  전체 검색이면서 검색어를 입력했을 경우 -->
+		<if test="searchCondi == '전체'">	
+			<choose>
+				<when test="searchVal != null and searchVal != '' ">
+				AND	
+					(	
+						admid like '%'||#{searchVal}||'%' 
+						OR  
+						name like '%'||#{searchVal}||'%'
+					)
+				</when>
+			</choose>
+		</if>
+		<!-- 관리자or접수자or작성자로 구분 선택했을 경우 -->
+		<if test="searchRole != '전체'">				
+			<choose>
+				<when test="searchRole == '관리자'">AND role = 'M' </when>
+				<when test="searchRole == '접수자'">AND role = 'R' </when>
+				<when test="searchRole == '작성자'">AND role = 'W' </when>
+			</choose>
+		</if>
+ 	</select>
+ 
+ </mapper>

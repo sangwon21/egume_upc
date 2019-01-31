@@ -1,0 +1,14 @@
+eclipse.preferences.version=1
+encoding//src/com/upc/admin/applrcptlist/service/ApplRcptListServiceImpl.java=UTF-8
+encoding//src/com/upc/admin/applrcptlist/vo/ApplRcptListVO.java=UTF-8
+encoding//src/com/upc/admin/applrcptlist/vo/ApplRcptRstVO.java=UTF-8
+encoding//src/com/upc/admin/applrcptlist/vo/SearchVO.java=UTF-8
+encoding//src/com/upc/admin/common/vo/AdminVO.java=UTF-8
+encoding//src/com/upc/admin/wrtlist/vo/DepositCnfrmVO.java=UTF-8
+encoding//src/com/upc/admin/wrtlist/vo/SearchVO.java=UTF-8
+encoding//src/com/upc/admin/wrtlist/vo/WrtListVO.java=UTF-8
+encoding//src/com/upc/common/login/controller/CustomAuthenticationSuccessHandler.java=UTF-8
+encoding//src/com/upc/common/search/vo/SearchAbstractModel.java=UTF-8
+encoding//src/com/upc/user/reqfrm/vo/ReqFrmListVO.java=UTF-8
+encoding//src/com/upc/user/reqfrm/vo/ReqFrmVO.java=UTF-8
+encoding//src/com/upc/user/reqfrm/vo/UsrInfVO.java=UTF-8

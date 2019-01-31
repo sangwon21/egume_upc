@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	Date : 2018. 12. 24
+	Author : 이수빈
+	Description : 로그인  Mapper 
+	Version 1.0
+	History
+	Date			Author		Contents
+	==========		=========	===========================
+	
+ -->
+<!-- 맵핑될 DAO 인터페이스의 Full name 을 줍니다. --> 
+<mapper namespace="com.upc.common.login.dao.LoginDAO">
+
+	<!-- 로그인 시 담을 정보 -->
+	<select id="selectLoginInfo" parameterType="String" resultType="Map">
+	SELECT USERNAME, PASSWORD, ENABLED, AUTHORITY, NAME
+	FROM (SELECT PRTNUM AS USERNAME, PW AS PASSWORD, 1 AS ENABLED, STS AS AUTHORITY, CMPNNM AS NAME FROM USRINF 
+	    			UNION SELECT ADMID AS USERNAME, PW AS PASSWORD, (CASE USEYN WHEN 'Y' THEN 1 ELSE 0 END) AS ENABLED, ROLE AS AUTHORITY, NAME FROM ADMUSR) 
+	WHERE USERNAME=#{id}
+	</select>
+
+</mapper>

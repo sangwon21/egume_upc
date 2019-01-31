@@ -1,0 +1,131 @@
+#page-wrapper1 {
+  margin-top: 50px;
+  min-height: 1000px;
+}
+#page-wrapper3 {
+padding: 0;
+margin-top: 25px;
+margin-bottom: 25px;
+background-color: #ddd;
+border: 1px solid #000;
+  min-height: 1000px;	
+} 
+@media (max-width: 768px) {
+.navbar-form {
+margin: 0; 
+padding: 15px 0 5px 0; 
+border: 0;
+border-bottom: 0;
+box-shadow: inset 0px 0px 0px 0px;   
+-webkit-box-shadow: inset 0px 0px 0px 0px;  
+}
+}
+/*
+* Darkblue navbar style
+*/
+#navbar-darkblue.navbar-default { /* #003399 - #0033cc */
+  font-size: 14px;
+  background-color: rgba(51, 51, 153, 1);
+  background: -webkit-linear-gradient(top, rgb(77, 104, 161) 0%, rgb(88, 82, 135) 100%);
+  background: linear-gradient(to bottom, rgb(77, 104, 161) 0%, rgb(88, 82, 135) 100%);
+  border: 0px;
+border-radius: 0;
+}
+#navbar-darkblue.navbar-default .navbar-nav>li>a:hover,
+#navbar-darkblue.navbar-default .navbar-nav>li>a:focus,
+#navbar-darkblue.navbar-default .navbar-nav>li>ul>li>a:hover, 
+#navbar-darkblue.navbar-default .navbar-nav>li>ul>li>a:focus, 
+#navbar-darkblue.navbar-default .navbar-nav>.active>a,
+#navbar-darkblue.navbar-default .navbar-nav>.active>a:hover,
+#navbar-darkblue.navbar-default .navbar-nav>.active>a:focus {  
+color: rgba(51, 51, 51, 1);
+  background-color: rgba(255, 255, 255, 1);
+  background: -webkit-linear-gradient(top, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 100%);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 100%);
+}
+#sidebar-darkblue, #column-darkblue {
+background-color: #333399;
+}
+#navbar-darkblue.navbar-default .navbar-toggle {
+  border-color: #333399;
+}
+#navbar-darkblue.navbar-default .navbar-toggle:hover,
+#navbar-darkblue.navbar-default .navbar-toggle:focus {
+  background-color: #3333cc;
+}
+#navbar-darkblue.navbar-default .navbar-nav>li>a,
+#navbar-darkblue.navbar-default .navbar-nav>li>ul>li>a, 
+#navbar-darkblue.navbar-default .navbar-brand {
+  color: #ffffff;
+}
+#navbar-darkblue.navbar-default .navbar-toggle .icon-bar,
+#navbar-darkblue.navbar-default .navbar-toggle:hover .icon-bar,
+#navbar-darkblue.navbar-default .navbar-toggle:focus .icon-bar {
+  background-color: #ffffff; 
+}
+body{
+  background-image:linear-gradient(#FFFFFF, rgb(211, 216, 232));
+
+}
+form {
+    display: table-row;
+    width: 40rem;
+}
+span[role=button] {
+    display: table-cell;
+    font-family: Arial;
+    font-size: 1rem;
+    padding: 8px 8px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border: 2px solid #265986;  
+    color: #ffffff;
+    cursor: pointer;
+    background-color: #d1dddb;
+    outline: none;
+  }
+  span[role=button]:hover,
+  span[role=button]:focus {
+    box-shadow: 0 0 5px #595959;
+    background-color: #183a57;
+    border-color: #265986;
+    outline: 2px solid transparent;
+  }
+  .hide {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;
+  }
+  input[type=text], input[type=date], input[type=file] {
+    display: table-cell;
+    margin-left: -5px;
+    width: 20rem;
+    font-family: Arial;
+    font-size: 1rem;
+    padding: 8px 8px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px; 
+    color: #000000;
+    background-color: #ffffff;
+  }
+  input[type=text]:focus, input[type=date] {
+    box-shadow: 0 0 5px #595959;
+    border-color: #85b8CB;
+    outline: 2px solid transparent;
+  }
+  
+  h5{
+    font-size:2rem;
+    font-family: Arial;
+    font-weight: bolder;
+    font-family: 'Jeju Gothic', sans-serif;
+  }
+
+  .information{
+    font-family: 'Jeju Myeongjo', serif;
+  }

@@ -1,0 +1,61 @@
+package com.upc.admin.applrcptrgst.service;
+
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.upc.admin.applrcptlist.vo.ApplRcptListVO;
+import com.upc.admin.applrcptrgst.dao.ApplRcptRgstDAO;
+
+/**
+ * @author 강성효
+ * @since 2018. 12. 27.
+ * @version
+ * @see 참고
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"file:src/mapper/*.xml","file:WebContent/WEB-INF/spring/*.xml"})
+@Service
+public class ApplRcptRgstServiceImpl implements ApplRcptRgstService {
+	
+	
+	@Autowired
+	private ApplRcptRgstDAO applRcptRgstDAO;
+	
+	
+	@Test
+	public void applRcptOneTest() {
+		
+		ApplRcptListVO applRcptListVO = new ApplRcptListVO();
+		
+		applRcptListVO.setApplNum("APPL201812240118");
+		
+		applRcptListVO =  applRcptRgstDAO.getApplRcptOne(applRcptListVO);
+		
+		assertEquals(1, applRcptListVO);
+	}
+	
+	@Override
+	public ApplRcptListVO applRcptOne(ApplRcptListVO applRcptListVO) {
+		
+		try {
+			
+			applRcptListVO = applRcptRgstDAO.getApplRcptOne(applRcptListVO);
+			
+		} catch (Exception e) {
+			
+		}
+		
+		return applRcptListVO;
+		
+	}
+	
+	
+}

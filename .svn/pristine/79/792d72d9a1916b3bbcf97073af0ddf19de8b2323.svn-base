@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	
+	<!-- oracle 데이터베이스 연결 --> 
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+		<property name="url" value="jdbc:oracle:thin:@210.181.193.62:1521:xe" />
+		<property name="username" value="system"/>
+		<property name="password" value="hr"/>
+	</bean>
+	
+	<!-- SqlSessionFactory --> 
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!-- MyBatis 설정 파일의 위치 지정 -->
+		<property name="configLocation" value="classpath:/mybatis-config.xml" />
+		<!-- SQL 파일의 위치 지정 -->
+		<property name="mapperLocations" value="classpath:/mapper/*.xml" />
+	</bean> 
+	
+	<!-- SqlSession --> 
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate" destroy-method="clearCache"> 
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	
+	<!-- 지정된 베이스 패키지에서 DAO(Mapper) 를  검색하여 등록 --> 
+	<bean id="Mapper" class="org.mybatis.spring.mapper.MapperScannerConfigurer"> 
+		<property name="basePackage" value="com.upc.admin.**.dao, com.upc.user.**.dao, com.upc.common.file.dao
+											, com.upc.common.login.dao
+											, com.upc.common.rgstid.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+	
+	<!-- 아노테이션 기반의 트랜잭션을 사용 --> 
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+	
+	<!-- 트랜잭션 매니저 bean 등록 --> 
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> 
+		<property name="dataSource" ref="dataSource" /> 
+	</bean> 
+	
+	<!-- mysql 데이터베이스 연결 --> 
+	<bean id="dataSource2" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+		<property name="url" value="jdbc:mysql://210.181.194.109:3306/sms?useUnicode=true&amp;characterEncoding=utf8" />
+		<property name="username" value="shin"/>
+		<property name="password" value="shin"/>
+	</bean>
+	
+	<!-- SqlSessionFactory --> 
+	<bean id="sqlSessionFactory2" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource2" />
+		<!-- MyBatis 설정 파일의 위치 지정 -->
+		<property name="configLocation" value="classpath:/mybatis-config.xml" />
+		<!-- SQL 파일의 위치 지정 -->
+		<property name="mapperLocations" value="classpath:/mapper/*.xml" />
+	</bean> 
+	
+	<!-- SqlSession --> 
+	<bean id="sqlSession2" class="org.mybatis.spring.SqlSessionTemplate" destroy-method="clearCache"> 
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory2" />
+	</bean>
+	
+	<!-- 지정된 베이스 패키지에서 DAO(Mapper) 를  검색하여 등록 --> 
+	<bean id="Mapper2" class="org.mybatis.spring.mapper.MapperScannerConfigurer"> 
+		<property name="basePackage" value="com.upc.common.alert.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory2" />
+	</bean>
+	
+	<!-- 아노테이션 기반의 트랜잭션을 사용 --> 
+	<tx:annotation-driven transaction-manager="transactionManager2" proxy-target-class="true"/>
+	
+	<!-- 트랜잭션 매니저 bean 등록 --> 
+	<bean id="transactionManager2" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> 
+		<property name="dataSource" ref="dataSource2" /> 
+	</bean> 
+</beans>

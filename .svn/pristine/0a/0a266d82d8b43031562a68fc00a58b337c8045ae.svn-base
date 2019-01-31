@@ -1,0 +1,81 @@
+package com.upc.common.file.vo;
+
+import java.sql.Date;
+
+
+public class FileVO {
+	private String prtnum;
+	private String fileseq;
+	private String path;
+	private String filenm;
+	private String type;
+	private String rgstid;
+	private Date rgsttm;
+	private String applnum;
+	private String formtype;
+	
+	public String getPrtnum() {
+		return prtnum;
+	}
+	public void setPrtnum(String prtnum) {
+		this.prtnum = prtnum;
+	}
+	public String getFileseq() {
+		return fileseq;
+	}
+	public void setFileseq(String fileseq) {
+		this.fileseq = fileseq;
+	}
+	public String getPath() {
+		return path;
+	}
+	public void setPath(String path) {
+		this.path = path;
+	}
+	public String getFilenm() {
+		return filenm;
+	}
+	public void setFilenm(String filenm) {
+		this.filenm = filenm;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getRgstid() {
+		return rgstid;
+	}
+	public void setRgstid(String rgstid) {
+		this.rgstid = rgstid;
+	}
+	public Date getRgsttm() {
+		return rgsttm;
+	}
+	public void setRgsttm(Date rgsttm) {
+		this.rgsttm = rgsttm;
+	}
+	public String getApplnum() {
+		return applnum;
+	}
+	public void setApplnum(String applnum) {
+		this.applnum = applnum;
+	}
+	public String getFormtype() {
+		return formtype;
+	}
+	public void setFormtype(String formtype) {
+		this.formtype = formtype;
+	}
+	@Override
+	public String toString() {
+		return "FileVO [prtnum=" + prtnum + ", fileseq=" + fileseq + ", path=" + path + ", filenm=" + filenm + ", type="
+				+ type + ", rgstid=" + rgstid + ", rgsttm=" + rgsttm + ", applnum=" + applnum + ", formtype=" + formtype
+				+ "]";
+	}
+	
+	
+	
+	
+}

@@ -1,0 +1,148 @@
+@charset "UTF-8";
+
+html,body {
+	height:100%;
+}
+body {
+	margin:0;
+}
+
+label, p {
+	font-size:12px;
+}
+
+td {
+	padding:0.5% !important;
+}
+
+footer {
+	position:absolute;
+	width:100%;
+	margin-top:-80px;
+	
+}
+.col-lg-5{
+	margin-left:3%;
+	margin-right:3%;
+}
+
+.help-block{
+	color:#a94442 !important;
+}
+
+.wrap {
+	position:relative;
+	min-height:92.7%;
+	padding-bottom:80px;
+}
+
+.userInfo {
+	width:100%;
+	table-layout: fixed;
+} 
+
+
+.box {
+	
+	background-color: #f5f5f5;
+	border: 0.5px solid #e3e3e3;
+	border-radius:4px;
+	margin-bottom:0;
+}
+
+.icon {
+	color:#30BBBB;
+}
+
+.center {
+	float: none; 
+	margin: 0 auto;
+}
+
+.marginBottom {
+	margin-bottom:0;
+}
+#privateModal, #servInfModal {
+	margin-left:15px;
+}
+
+textarea, .btnUpload{
+	width:100%;
+	resize: none;
+}
+
+.user__header{
+	margin-bottom:10px;
+	border-bottom:1px solid black;
+}
+
+.pull-right{
+	margin-right:10px;	
+}
+
+.file-input{
+    position: relative;
+    overflow: hidden;
+  	margin: 0px;
+    color: #333;
+    cursor: pointer;
+    background-color: #fff;
+    border-color: #ccc;
+}
+.file-input input[type=file] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 0;
+	padding: 0;
+	cursor: pointer;
+	font-size: 20px;
+	opacity: 0;
+	filter: alpha(opacity=0);
+}
+.file-input-title {
+    margin-left:2px;
+}
+.files{
+	margin-bottom:10px;
+}
+
+table.borderless>tbody>tr>td, table.borderless>tbody>tr>th {
+     border:none;
+}
+
+.pointer{
+	cursor:pointer;
+}
+
+.dateInputParent {
+	display:flex; 
+	align-items:center;
+}
+
+.dateInput {
+	width:48%;
+	padding:0;
+}
+
+#paging {
+	text-align:center;
+}
+
+#buttonForWebSubmit,
+#buttonForFileSubmit{
+	margin-bottom:20px;
+}
+
+.titleDateParent{
+	display:flex;
+	align-items:center;
+}
+
+.titleDate{
+	margin-right:10px;
+}
+
+.searchText{
+	padding-top:7px;
+}

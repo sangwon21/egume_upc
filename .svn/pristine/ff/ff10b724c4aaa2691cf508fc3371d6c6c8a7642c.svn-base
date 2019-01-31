@@ -1,0 +1,4 @@
+.conditionBox{
+	background-image: radial-gradient(#FAFAFA, #ECECEC, #F7F7F7);
+}
+

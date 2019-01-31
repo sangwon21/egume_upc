@@ -1,0 +1,182 @@
+package com.upc.admin.deplist.controller;
+
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.upc.admin.deplist.service.DepositListService;
+import com.upc.admin.deplist.vo.DepositCnfrmVO;
+import com.upc.admin.deplist.vo.RmnCntCheckVO;
+import com.upc.admin.deplist.vo.SearchVO;
+import com.upc.user.usrinf.vo.UsrInfVO;
+
+
+/**
+ * 입금정보 조회, 등록, 삭제를 담당하는 컨트롤러
+ * @author 김진혁
+ * @since 2018. 12. 24.
+ * @version 1.0
+ * @see 참고
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ * 1.0		2018.12.24	김진혁		최초작성
+ */
+@Controller
+@RequestMapping("/admin")
+public class DepositListController {
+	
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(DepositListController.class);
+	
+	@Autowired
+	private DepositListService depositListService;
+	
+	
+	/**
+	 * 입금정보 조회(검색) 요청을 담당하는 메소드
+	 * @param searchVO
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 * @author 김진혁
+	 * @since 2018. 12. 24.
+	 * @version 1.0
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0		2018.12.24	김진혁		최초작성
+	 */
+	@RequestMapping(value = "/depList.do", method = RequestMethod.GET)
+	public String getDepListView(@ModelAttribute SearchVO searchVO, Model model) throws Exception{
+		model.addAttribute("SearchVO",searchVO);
+		logger.info("SearchVO={}",searchVO);
+		
+		List<DepositCnfrmVO> depList = depositListService.depList(searchVO);
+		logger.info("depList={}",depList);
+		model.addAttribute("depList", depList);
+		return "admin/depList";
+	}   
+	
+	/**
+	 * 
+	 * @param checkArr
+	 * @return
+	 * @throws Exception
+	 * @author 김진혁
+	 * @since 2018. 12. 31.
+	 * @version
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 */
+	/*@RequestMapping(value="/checkCntAjax", method=RequestMethod.POST)
+	public @ResponseBody Map<String, List<RmnCntCheckVO>> checkCnt(@RequestParam(value="checkArr[]", required=false) List<String> checkArr) throws Exception {
+		logger.info("checkArr={}",checkArr);
+		Map<String,List<RmnCntCheckVO>> map=new HashMap<>();
+		List<RmnCntCheckVO> rmnList = new ArrayList<>();
+		for(int i=0; i<checkArr.size(); i++)
+		{
+			rmnList.add(depositListService.checkRmnCnt(checkArr.get(i)));
+		}
+		map.put("rmnList", rmnList);
+		return map;
+	}*/
+	
+	
+	
+	/**
+	 * 입금정보 삭제 요청을 담당하는 메소드
+	 * @param model
+	 * @param delDepSeq
+	 * @return
+	 * @throws Exception
+	 * @author 김진혁
+	 * @since 2018. 12. 24.
+	 * @version 1.1
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0		2018.12.24	김진혁		최초작성
+	 * 1.1		2018.12.31	김진혁		삭제(차감)하기 전, 잔여건수와 비교하여 삭제할 수 있는지 확인 
+	 */
+	@RequestMapping(value = "/depDel", method = RequestMethod.GET)
+	public String deleteDep(Model model, @RequestParam(value="RowCheck") String [] delDepSeq) throws Exception{
+		int result1=0;
+		int result2=0;
+		if(depositListService.canDelete(delDepSeq)) {
+			for(int i=0; i<delDepSeq.length; i++)
+			{
+				DepositCnfrmVO depCnfrmVO=depositListService.selectDepositHsty(delDepSeq[i]);	// 삭제할 DepositCnfrmVO를 받아와서
+				depCnfrmVO.setDepcnt(depCnfrmVO.getDepcnt() * (-1));							// 건수 업데이트 값이 -가 되도록(차감을 위해) 변경
+				result1=depositListService.updateUsrRmncnt(depCnfrmVO);							// USRINF 테이블에서 건수 차감
+				result2=depositListService.delDep(delDepSeq[i]);								// DEPOSITHSTY 테이블에서 삭제
+			}
+			if(result1!=0 && result2!=0) {
+				return "redirect:depList.do";
+			}
+			else
+				return "redirect:depList.do";
+		}
+		else {
+			//건수 차감이 불가능할때
+			logger.error("삭제 할 건수에 비해 고객 잔여건수가 모자랍니다. 삭제할 수 없습니다. ");
+			return "redirect:depList.do";	//오류 페이지
+		}
+	}
+	
+	/**
+	 * 입금정보 등록 시, 사업자등록번호로 상호명과 대표자명 조회 요청을 담당하는 메소드
+	 * @param prtnum
+	 * @return
+	 * @throws Exception
+	 * @author 김진혁
+	 * @since 2018. 12. 26.
+	 * @version 1.0
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0		2018.12.26	김진혁		최초작성
+	 */
+	@RequestMapping(value="/depSearchCmpnCeoNmAjax", method=RequestMethod.POST)
+	public @ResponseBody Map<Object, Object> depSearchCmpnCeoNm(@RequestBody String prtnum) throws Exception {
+		logger.info("prtnum={}",prtnum);
+        UsrInfVO usrinfVO = depositListService.searchCmpnCeoNm(prtnum);
+        Map<Object, Object> map = new HashMap<Object, Object>();
+        map.put("Cmpnnm", usrinfVO.getCmpnnm());
+        map.put("Ceonm", usrinfVO.getCeonm());
+        return map;
+	}
+	
+	
+	/**
+	 * 입금정보 등록 요청을 담당하는 메소드
+	 * @param model
+	 * @param depCnfrmVO
+	 * @return
+	 * @throws Exception
+	 * @author 김진혁
+	 * @since 2018. 12. 26.
+	 * @version 1.0
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0		2018.12.26	김진혁		최초작성
+	 */
+	@RequestMapping(value = "/depRgst", method = RequestMethod.GET)
+	public String RgstDep(Model model, @ModelAttribute DepositCnfrmVO depCnfrmVO, Principal principal) throws Exception{
+		logger.info("DepositCnfrmVO={}",depCnfrmVO);
+		String loginId=principal.getName();
+		depCnfrmVO.setRgstid(loginId);
+		depositListService.insertDepositHsty(depCnfrmVO);	// DEPOSITHSTY 테이블에 INSERT
+		depositListService.updateUsrRmncnt(depCnfrmVO);		// USRINF 테이블의 rmncnt UPDATE
+		return "redirect:depList.do";
+	}
+	
+}

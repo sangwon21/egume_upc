@@ -1,0 +1,56 @@
+let submitButton = document.querySelector("#submitBtn");
+let inputBoxes = document.querySelectorAll("input");
+let inputBoxesLength = inputBoxes.length;
+// submit 버튼을 눌렀을 때
+submitButton.addEventListener("click", function(e){
+	
+	// 파일 업로드를 제외한 값에 하나라도 빈 칸이 있다면
+	
+	for(let i = 5; i < inputBoxesLength - 6; i++){
+		if(inputBoxes[i].value === ""){
+			alert("필수기입사항입니다. 입력해주십시오.");
+			e.preventDefault();
+			break;
+		}
+	}
+	
+	// 선적기일은 구매일보다 빠른 걸 체크한다.
+	let shipDate = Date.parse(document.querySelector("#shipdt").value);
+	let purDate = Date.parse(document.querySelector("#prchdt").value);
+	
+	if(shipDate < purDate){
+		alert("선적기일은 구매일보다 빠를 수 없습니다.");
+		e.preventDefault();
+	}
+})
+
+$(document).ready(function() {
+    // updateStatus() example
+    $('#shipdt').datetimepicker();
+
+    $('#shipdt').bootstrapValidator({
+        feedbackIcons: {
+            valid: 'glyphicon glyphicon-ok',
+            invalid: 'glyphicon glyphicon-remove',
+            validating: 'glyphicon glyphicon-refresh'
+        },
+        fields: {
+            datetimePicker: {
+                validators: {
+                    notEmpty: {
+                        message: 'The date is required and cannot be empty'
+                    },
+                    date: {
+                        format: 'MM/DD/YYYY h:m A'
+                    }
+                }
+            }
+        }
+    });
+
+    $('#shipdt')
+        .on('dp.change dp.show', function (e) {
+            // Revalidate the date when user change it
+            $('#shipdt').bootstrapValidator('revalidateField', 'shipdt');
+        });
+});

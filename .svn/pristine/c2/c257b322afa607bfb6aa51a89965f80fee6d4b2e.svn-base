@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	Date : 2018. 12. 26
+	Author : 신혜영
+	Description : 발급지원 작성 상세 조회 Mapper 
+	Version 1.0
+	History
+	Date			Author		Contents
+	==========		=========	===========================
+	2018.12.26		신혜영		구매확인서 신청 정보, 구매확인서 발급 목록 가져오기 추가
+	2018.12.27		신혜영		견본 정보 업데이트 추가
+	2018.12.28		신혜영		견본 확인, 원본 정보 업데이트 추가/ 구매확인서발급 등록, 정보 업데이트 추가
+	2018.12.31		신혜영		발급차감이력정보 조회, 등록 추가
+	2019.01.02		신혜영		구매확인서 상세정보, 수정요청사항 수정 추가
+	2019.01.11		신혜영		구매확인서원본 리스트: 신규발행, 변경발행 목록 나누어서 가져오게 수정
+ -->
+<!-- 맵핑될 DAO 인터페이스의 Full name 을 줍니다. -->
+<mapper namespace="com.upc.admin.wrtinfodetail.dao.WrtInfoDetailDAO">
+
+ 	<!-- 구매확인서 신청, 구매자, 공급자, 견본, 견본 확인 정보를 가져옴 -->
+	<select id="selectCnfrmPrchReq" parameterType="String" resultType="cnfrmPrchReqVO">
+		SELECT cpr.applnum
+			, cpr.applrcvdt
+			, cpr.applrcvid
+			, (SELECT name
+				FROM ADMUSR ad 
+				WHERE cpr.applrcvid=ad.admid) as applrcvnm
+			, cpr.prchdt
+			, cpr.shipdt
+			, cpr.prtnum
+			, usr.cmpnnm
+			, usr.addr1
+			, usr.addr2
+			, usr.ceonm
+			, usr.mgrname
+			, usr.mgremail
+			, usr.mgrfax
+			, usr.mgrtel
+			, usr.mgrphone
+			, usr.prepayyn
+			, usr.smsyn
+			, cpr.applditc
+			, cpr.sts
+			, (SELECT codenm 
+				FROM CODE cd 
+				WHERE mstrcode='APPLSTS' AND cpr.sts=cd.code) as codenm
+			, cpr.notes
+			, usr.rmncnt
+			, cpr.splyprtnum
+			, cpr.splyaddr1
+			, cpr.splyaddr2
+			, cpr.splyceonm
+			, cpr.splyorgnm
+			, cpr.wrtrid
+			, (SELECT name
+				FROM ADMUSR adm 
+				WHERE cpr.wrtrid=adm.admid ) as wrtrnm
+			, cpr.smpldt
+			, cpr.smpldocid
+			, cpr.smplfileid
+			, (SELECT filenm 
+				FROM FILEINF fi 
+				WHERE cpr.prtnum=fi.prtnum AND cpr.smplfileid=fi.fileseq) as smplfilenm
+			, cpr.cnfrmdt
+			, cpr.cnfrmid
+			, cpr.cnfrmfileid
+			, (SELECT filenm 
+				FROM FILEINF fi2 
+				WHERE cpr.prtnum=fi2.prtnum AND cpr.cnfrmfileid=fi2.fileseq) as cnfrmfilenm
+			, cpr.smplmdfreq
+			, cpr.issuenum
+			, cpr.issuemdfreq 
+		FROM CNFRMPRCHREQ cpr 
+		JOIN USRINF usr ON cpr.prtnum=usr.prtnum 
+		WHERE cpr.applnum=#{applnum}
+	</select>
+	
+	<!-- 구매확인서 발급 목록(히스토리)를 가져옴 -->
+	<select id="selectCnfrmPrchIsue" parameterType="com.upc.admin.wrtinfodetail.vo.CnfrmPrchReqVO" resultType="cnfrmPrchIsueVO">
+		SELECT prtnum
+			, issuenum
+			, seq
+			, docditc
+			, docid
+			, splyprtnum
+			, splyorgnm
+			, notes
+			, isuefileid
+			, rgstnm
+			, rgsttm
+			, issuecnt
+		FROM (
+			SELECT cpi.*
+				, NVL((SELECT seq 
+						FROM CNFRMPRCHISUE 
+						WHERE issuenum=cpi.issuenum 
+						AND docditc='A')-1, tot) as docditcA
+			FROM (SELECT cpi.prtnum
+					, cpi.issuenum
+					, cpi.seq
+					, cpi.docditc
+					, cpi.docid
+					, cpi.splyprtnum
+					, cpi.splyorgnm
+					, cpi.notes
+					, cpi.isuefileid
+					, adm.name as rgstnm
+					, cpi.rgsttm
+					, cpi.issuecnt 
+					, count(*) over(order by cpi.seq) as tot
+				FROM CNFRMPRCHISUE cpi
+				JOIN ADMUSR adm ON cpi.rgstid=adm.admid 
+				WHERE cpi.issuenum=#{issuenum} 
+				ORDER BY cpi.seq
+				) cpi
+			)
+		WHERE 
+		<choose>
+			<when test='applditc == "O"'>
+				seq BETWEEN 1 AND docditcA
+			</when>
+			<when test='applditc == "A"'>
+				seq BETWEEN docditcA+1 AND tot
+			</when>
+		</choose>
+	</select>
+	
+	<!-- 구매확인서 정보를 수정함 -->
+	<update id="updateCnfrmPrchReq" parameterType="com.upc.admin.wrtinfodetail.vo.CnfrmPrchReqVO">
+		UPDATE CNFRMPRCHREQ 
+		SET notes=#{notes}
+			, splyprtnum=#{splyprtnum}
+			, splyorgnm=#{splyorgnm}
+			, splyceonm=#{splyceonm}
+			, splyaddr1=#{splyaddr1}
+			, splyaddr2=#{splyaddr2}
+		WHERE applnum=#{applnum}
+	</update>
+	
+	<!-- 발급 차감 이력 정보 조회 -->
+	<select id="selectChrg" parameterType="String" resultType="int">
+		SELECT count(chrgseq) 
+		FROM CHRGHSTY 
+		WHERE applnum=#{applnum}
+	</select>
+	
+	<!-- 발급 차감 이력 정보 등록 -->
+	<insert id="insertChrg" parameterType="com.upc.admin.wrtinfodetail.vo.ChrgHstyVO">
+		<selectKey order="BEFORE" keyProperty="chrgseq" resultType="String">
+			SELECT
+				'CHRG' || to_char(to_number( to_char(sysdate, 'YYYYMMDD') || nvl(to_char(max(substr(chrgseq, 13))), '0000') )+1)
+			FROM CHRGHSTY 
+			WHERE to_char(rgsttm, 'YYYYMMDD')=to_char(sysdate, 'YYYYMMDD')
+		</selectKey>
+		INSERT 
+		INTO CHRGHSTY (
+			prtnum, chrgseq, applnum, chrgditc, chrgcnt, rgsttm, rgstid
+		) VALUES (
+			#{prtnum}, #{chrgseq}, #{applnum}, #{chrgditc}, #{chrgcnt}, SYSDATE, #{rgstid}
+		)
+	</insert>
+	
+	<!-- 구매확인서 신청에 견본 정보 추가  -->
+	<update id="updateSmpInfo" parameterType="com.upc.admin.wrtinfodetail.vo.CnfrmPrchReqVO">
+		UPDATE CNFRMPRCHREQ 
+		SET sts='S1'
+			, smpldt=SYSDATE
+			, smpldocid=#{smpldocid}
+			, smplfileid=#{smplfileid} 
+		WHERE applnum=#{applnum}
+	</update>
+	
+	<!-- 고객 잔여 건수 차감 -->
+	<update id="updateUsrRmncnt" parameterType="String">
+		UPDATE USRINF 
+		SET rmncnt=rmncnt-1 
+		WHERE prtnum=#{prtnum}
+	
+	</update>
+
+	<!-- 구매확인서 신청에 견본확인 정보 추가-->
+	<update id="updateSmpCnfrmInfo" parameterType="com.upc.admin.wrtinfodetail.vo.CnfrmPrchReqVO">
+		UPDATE CNFRMPRCHREQ 
+		SET sts='S3'
+			, cnfrmdt=SYSDATE
+			, cnfrmid=#{cnfrmid}
+			, cnfrmfileid=#{cnfrmfileid} 
+		WHERE applnum=#{applnum}
+	</update>
+	
+	<!-- 구매확인서 원본 등록 -->
+	<insert id="insertIssue" parameterType="com.upc.admin.wrtinfodetail.vo.CnfrmPrchIsueVO">
+		<selectKey order="BEFORE" keyProperty="seq" resultType="int">
+			SELECT nvl(max(seq), 0)+1 
+			FROM CNFRMPRCHISUE 
+			WHERE issuenum=#{issuenum}
+		</selectKey>
+		
+		INSERT INTO CNFRMPRCHISUE (
+			prtnum, issuenum, seq, docditc, splyprtnum, splyorgnm, notes, isuefileid, rgstid, rgsttm, issuecnt
+		) VALUES (
+			#{prtnum}, #{issuenum}, #{seq}, #{docditc}, #{splyprtnum}, #{splyorgnm}, #{notes}, #{isuefileid}, #{rgstid}, SYSDATE, #{issuecnt}
+		)
+	</insert>
+	
+	<!-- 구매확인서 신청에 원본 정보 추가-->
+	<update id="updateIssueInfo" parameterType="com.upc.admin.wrtinfodetail.vo.CnfrmPrchIsueVO">
+		UPDATE CNFRMPRCHREQ 
+		SET sts='C1'
+			, issuenum=#{issuenum} 
+		WHERE applnum=#{applnum}
+	</update>
+	
+	<!-- 수정요청사항 정보 수정 -->
+	<update id="updateMdfReq" parameterType="map">
+		UPDATE CNFRMPRCHREQ
+		SET 
+			<choose>
+				<when test='type == "sample"'>
+					smplmdfreq=#{mdfReq}
+				</when>
+				<otherwise>
+					issuemdfreq=#{mdfReq}
+				</otherwise>
+			</choose>
+		WHERE applnum=#{applnum}
+	</update>
+
+</mapper>

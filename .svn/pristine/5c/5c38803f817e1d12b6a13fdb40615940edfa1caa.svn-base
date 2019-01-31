@@ -1,0 +1,119 @@
+@charset "UTF-8";
+
+#detailInfoTop{
+	margin: 20px 0px;
+	padding: 20px 0px;
+}
+
+#detailInfoTitle {
+	float: left;
+	bold
+}
+
+#goBackBtn {
+	padding: 3px 6px;
+	float: right;
+}
+
+.detailMenu {
+	font-weight: bold;
+}
+
+.detailContents {
+	margin-bottom: 60px;
+}
+
+#detailInfoTable {
+	margin: 20px 0px;
+}
+
+#saveBtn {
+	text-align: right;
+}
+
+#fileInfoTable {
+	text-align: center;
+	margin-bottom: 60px;
+}
+
+table th {
+	text-align: center;
+}
+
+.smpText {
+	padding: 10px 0px;
+}
+
+.fileUpload {
+	margin-bottom: 15px;
+	font-size:15px;
+}
+
+.fileUploadTitle {
+	float: left;
+	margin: 6px 12px;
+}
+
+#smpFile {
+	width: 73%;
+	display: inline;
+}
+
+.fileUploadBtn {
+	float: right;
+	margin: 5px 23px 5px 10px;
+}
+
+.mdf {
+	padding: 0px 15px;
+}
+
+.mdfTitle {
+	font-size:15px;
+}
+
+.mdfText {
+	width: 76%;
+	margin: 0px 8px 0px 23px;
+}
+
+.mdfBtn {
+	
+}
+
+.smpCnfrmDiv {
+	margin-bottom: 100px;
+}
+
+#smpCnfrmFile {
+	width: 71%;
+	display: inline;
+}
+
+#issueFile {
+	width: 35%;
+	display: inline;
+	margin-right: 37px;
+}
+
+#issueCnt {
+	padding-top: 6px;
+	width: 10%;
+}
+
+#issueInfo{
+	margin-top: 5px;
+}
+
+#issueNum {
+	margin: 0px 56px 0px 85px;
+	width: 35%;
+}
+
+#notes {
+	margin: 0px 0px 0px 10px;
+	width: 30%;
+}
+
+
+

@@ -1,0 +1,100 @@
+package com.upc.user.reqfrm.vo;
+
+
+public class ReqFrmListVO {
+	private String prtnum; // 사업자등록번호
+	private String applnum; // 발급신청번호
+	private String splyorgnm; // 공급자상호
+	private String appldt; // 신청일자
+	private String sts; // 상태
+	private String codenm; // 코드명
+	private String issuenum; // 구매확인서번호
+	private String rgsttm; // 등록일시
+	private String smplmdfreq; // 견본수정요청사항
+	private String applditc; // 신청구분
+	private String isuefileid; // 구매확인서 파일id
+	private String smplfileid; // 견본파일 id
+	private String issuemdfreq;// 구매확인서수정요청사항
+	
+	public String getPrtnum() {
+		return prtnum;
+	}
+	public void setPrtnum(String prtnum) {
+		this.prtnum = prtnum;
+	}
+	public String getApplnum() {
+		return applnum;
+	}
+	public void setApplnum(String applnum) {
+		this.applnum = applnum;
+	}
+	public String getSplyorgnm() {
+		return splyorgnm;
+	}
+	public void setSplyorgnm(String splyorgnm) {
+		this.splyorgnm = splyorgnm;
+	}
+	public String getAppldt() {
+		return appldt;
+	}
+	public void setAppldt(String appldt) {
+		this.appldt = appldt;
+	}
+	public String getSts() {
+		return sts;
+	}
+	public void setSts(String sts) {
+		this.sts = sts;
+	}
+	public String getCodenm() {
+		return codenm;
+	}
+	public void setCodenm(String codenm) {
+		this.codenm = codenm;
+	}
+	public String getIssuenum() {
+		return issuenum;
+	}
+	public void setIssuenum(String issuenum) {
+		this.issuenum = issuenum;
+	}
+	public String getRgsttm() {
+		return rgsttm;
+	}
+	public void setRgsttm(String rgsttm) {
+		this.rgsttm = rgsttm;
+	}
+	public String getSmplmdfreq() {
+		return smplmdfreq;
+	}
+	public void setSmplmdfreq(String smplmdfreq) {
+		this.smplmdfreq = smplmdfreq;
+	}
+	public String getApplditc() {
+		return applditc;
+	}
+	public void setApplditc(String applditc) {
+		this.applditc = applditc;
+	}
+	public String getIsuefileid() {
+		return isuefileid;
+	}
+	public void setIsuefileid(String isuefileid) {
+		this.isuefileid = isuefileid;
+	}
+	public String getSmplfileid() {
+		return smplfileid;
+	}
+	public void setSmplfileid(String smplfileid) {
+		this.smplfileid = smplfileid;
+	}
+	public String getIssuemdfreq() {
+		return issuemdfreq;
+	}
+	public void setIssuemdfreq(String issuemdfreq) {
+		this.issuemdfreq = issuemdfreq;
+	}
+
+	
+	
+}

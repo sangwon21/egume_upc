@@ -1,0 +1,225 @@
+package com.upc.admin.applrcptlist.service;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.upc.admin.applrcptlist.dao.ApplRcptListDAO;
+import com.upc.admin.applrcptlist.vo.ApplRcptListVO;
+import com.upc.admin.applrcptlist.vo.ApplRcptRstVO;
+import com.upc.admin.applrcptlist.vo.SearchVO;
+import com.upc.common.process.status.StsCode;
+
+/**
+ * 발급지원신청 목록화면  관련 클래스
+ * @author 강성효
+ * @since 2018. 12. 13.
+ * @version
+ * @see 참고
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"file:src/mapper/*.xml","file:WebContent/WEB-INF/spring/*.xml"})
+@Service
+public class ApplRcptListServiceImpl implements ApplRcptListService {
+	
+	final int dateFrom = 0;
+	final int dateTo = 1;
+	Logger log = LoggerFactory.getLogger(ApplRcptListServiceImpl.class);
+	
+	@Autowired
+	private ApplRcptListDAO appRcptListDAO;
+	
+	
+	@Test
+	public void getApplRcptCmbRst() {
+		ApplRcptRstVO applRcptRstVO = appRcptListDAO.getApplRcptCmbRst(); 
+		
+		assertNotNull(applRcptRstVO.getApplPrvMth());
+		assertNotNull(applRcptRstVO.getApplReqTdy());
+		assertNotNull(applRcptRstVO.getApplTdy());
+		assertNotNull(applRcptRstVO.getReqTime());
+	}
+	
+	@Test
+	public void getTotCntTest() throws SQLException {
+		SearchVO searchVO = new SearchVO();
+		String date[] = new String[2];
+		// date 초기값 설정
+		if(searchVO.getDateFrom() == null) {
+			initDate(date);
+			searchVO.setDateFrom(date[dateFrom]);
+			searchVO.setDateTo(date[dateTo]);
+		}
+		assertSame(32, appRcptListDAO.getBoardTotUnit(searchVO));
+	}
+	 
+	@Test
+	public void getApplListTest() throws SQLException {
+		SearchVO searchVO = new SearchVO();
+		String date[] = new String[2];
+		
+		// date 초기값 설정
+		if(searchVO.getDateFrom() == null) {
+			initDate(date);
+			searchVO.setDateFrom(date[dateFrom]);
+			searchVO.setDateTo(date[dateTo]);
+		}
+		searchVO.setSearchCondi("사업자등록번호");
+		searchVO.setSearchVal("495");
+		int boardTotUnit = appRcptListDAO.getBoardTotUnit(searchVO);
+		int pageIndex = searchVO.getPageIndex();
+		int pageSize = searchVO.getPageSize();
+		int totPage = (boardTotUnit % pageSize == 0) ? (boardTotUnit / pageSize) : (boardTotUnit / pageSize + 1); 
+		int firstIndex = ((pageIndex - 1) / pageSize) * pageSize + 1;
+		int lastIndex = firstIndex + pageSize - 1;
+		if (lastIndex > totPage) {
+			lastIndex = totPage;
+		}
+		log.info(searchVO.getFirstIndex()+"");
+		
+		searchVO.setBoardTotUnit(boardTotUnit);
+		searchVO.setTotPage(totPage);
+		searchVO.setPageUnit(10);
+		searchVO.setPageIndex(1);
+		searchVO.setFirstIndex(firstIndex);
+		searchVO.setLastIndex(lastIndex);
+		ArrayList<ApplRcptListVO> applist = appRcptListDAO.getApplList(searchVO);
+		assertSame(applist, null);
+	}
+	
+	@Test
+	public void wrtrApptdTest() {
+		int rst = StsCode.FAIL;
+		ApplRcptListVO applRcptListVO = new ApplRcptListVO();
+		applRcptListVO.setApplNum("11");
+		applRcptListVO.setWrtrId("qefqef");
+		rst=appRcptListDAO.updateWrtrApptd(applRcptListVO);
+		assertSame(StsCode.SUCCESS, rst);
+	}
+	
+	
+	@Override
+	public ApplRcptRstVO applRcptCmbRst() {
+		
+		ApplRcptRstVO applRcptRstVO = null;
+		
+		try {
+			applRcptRstVO = appRcptListDAO.getApplRcptCmbRst(); 			
+			
+		}catch(Exception e) {
+			log.error("Error occurred : database select(getApplRcptCmbRst)");
+		}
+		
+		return applRcptRstVO;
+	}
+	
+	
+	
+	@Override
+	public ArrayList<ApplRcptListVO> applList(SearchVO searchVO) {
+		String date[] = new String[2];
+		ArrayList<ApplRcptListVO> appList = null;
+		
+		// date 초기값 설정
+		if(searchVO.getDateFrom() == null) {
+			initDate(date);
+			searchVO.setDateFrom(date[dateFrom]);
+			searchVO.setDateTo(date[dateTo]);
+		}
+		
+		// 전체 접수건
+		int boardTotUnit = appRcptListDAO.getBoardTotUnit(searchVO);
+		// 현재페이지
+		int pageIndex = searchVO.getPageIndex();
+		// 한페이지당 건 수
+		int pageUnit = searchVO.getPageUnit();
+		// 보여줄 페이지 크기
+		int pageSize = searchVO.getPageSize();
+		// 전체페이지
+		int totPage = (boardTotUnit % pageUnit == 0) ? (boardTotUnit / pageUnit) : (boardTotUnit / pageUnit + 1); 
+		// 시작페이지
+		int firstIndex = ((pageIndex - 1) / pageSize) * pageSize + 1;
+		// 끝페이지
+		int lastIndex = firstIndex + pageSize - 1;
+		//끝페이지 처리
+		if (lastIndex > totPage) {
+			lastIndex = totPage;
+		}
+		
+		searchVO.setBoardTotUnit(boardTotUnit);
+		searchVO.setTotPage(totPage);
+		searchVO.setFirstIndex(firstIndex);
+		searchVO.setLastIndex(lastIndex);
+		
+		log.info("Processing : Paging Ok");
+		
+		try {
+			
+			appList = appRcptListDAO.getApplList(searchVO);
+			
+		}catch (Exception e) {
+			
+			log.error("Error occurred : database select(getApplList)");
+		}
+		
+		return appList;
+	}
+	
+	
+	
+	@Override
+	public int wrtrApptd(ApplRcptListVO applRcptListVO) {
+		
+		int rst = StsCode.FAIL;
+		rst = appRcptListDAO.updateWrtrApptd(applRcptListVO);
+		
+		if(rst != StsCode.FAIL) {
+			
+			return StsCode.SUCCESS;
+		}else {
+			
+			return StsCode.FAIL;
+		}
+	}
+
+	/** 
+	 * 조회기간 초기값 설정 메소드
+	 * @param date
+	 * @author 강성효
+	 * @since 2018. 12. 20.
+	 * @version
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 */
+	public void initDate(String[] date) {
+		SimpleDateFormat format = new SimpleDateFormat ("yyyyMMdd");
+		Date time = new Date();
+        Calendar cal = Calendar.getInstance();
+        
+        cal.setTime(time);
+        cal.add(Calendar.MONTH,-1);
+        
+        //dateTo
+        date[dateFrom] = format.format(cal.getTime());
+        //dateFrom
+        date[dateTo] = format.format(time);
+	}
+	
+	
+
+}

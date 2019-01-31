@@ -1,0 +1,17 @@
+package com.upc.admin.applrcptrgst.service;
+
+import com.upc.admin.applrcptlist.vo.ApplRcptListVO;
+
+public interface ApplRcptRgstService {
+	
+	/** 
+	 * @param applRcptListVO
+	 * @return
+	 * @author 강성효
+	 * @since 2018. 12. 27.
+	 * @version
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 */
+	ApplRcptListVO applRcptOne(ApplRcptListVO applRcptListVO);
+}

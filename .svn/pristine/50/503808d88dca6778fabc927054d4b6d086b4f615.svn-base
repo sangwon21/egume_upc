@@ -1,0 +1,49 @@
+package com.upc.admin.wrtinfodetail.controller;
+
+import javax.annotation.Resource;
+
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.upc.admin.wrtinfodetail.service.WrtInfoDetailService;
+import com.upc.admin.wrtinfodetail.vo.CnfrmPrchReqVO;
+
+/**
+ * 발급지원 작성 상세조회 컨트롤러
+ * @author 신혜영
+ * @since 2018. 12. 21.
+ * @version
+ * @see
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ */
+@Controller
+public class WrtInfoDetailController {
+	@Resource(name = "wrtInfoDetailService")
+	private WrtInfoDetailService wrtInfoDetailService;
+	
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(WrtInfoDetailController.class);
+	
+	@RequestMapping(value = "/admin/wrtInfoDetail.do", method = RequestMethod.GET)
+	public String getWrtInfoDetail(@RequestParam(value="applnum") String applnum, Model model) {
+		
+		logger.info("in wrtInfoDetailController");
+		
+		//TODO select 근거서류
+		
+		//select cnfrmprchreq 
+		CnfrmPrchReqVO cnfrmPrchReqVO = wrtInfoDetailService.selectCnfrmPrchReq(applnum);
+		model.addAttribute("cnfrmprchreq", cnfrmPrchReqVO);
+		
+		//select issue
+		if(cnfrmPrchReqVO.getIssuenum() != null) {
+			model.addAttribute("issueList", wrtInfoDetailService.selectCnfrmPrchIsue(cnfrmPrchReqVO.getIssuenum()));
+		}
+		
+		return "writer/wrtInfoDetail";
+	}
+}

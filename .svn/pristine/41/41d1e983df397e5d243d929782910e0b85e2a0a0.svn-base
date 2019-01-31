@@ -1,0 +1,93 @@
+package com.upc.admin.adminlist.controller;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.upc.admin.adminlist.service.AdminListService;
+import com.upc.admin.adminlist.vo.SearchVO;
+import com.upc.admin.common.vo.AdminVO;
+
+
+/**
+ * 어드민 리스트 조회, 삭제를 담당하는 컨트롤러
+ * @author 김진혁
+ * @since 2018. 12. 18.
+ * @version 1.0
+ * @see 참고
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ * 1.0		2018.12.18	김진혁		최초작성
+ */
+@Controller
+@RequestMapping("/admin")
+public class AdminListController {
+	
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(AdminListController.class);
+	
+	@Autowired
+	private AdminListService adminListService;
+	
+	/**
+	 * 어드민 조회(검색) 요청을 담당하는 메소드
+	 * @param searchVO
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 * @author 김진혁
+	 * @since 2018. 12. 18.
+	 * @version 1.1
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0		2018.12.18	김진혁		최초작성
+	 * 1.1		2018.12.20	김진혁		검색 기능 추가
+	 */
+	@RequestMapping(value = "/adminList", method = RequestMethod.GET)
+	public String getAdminListView(@ModelAttribute SearchVO searchVO, Model model) throws Exception{
+		List<AdminVO> adminlist = adminListService.adminList(searchVO);
+		logger.info("searchVO={}" + searchVO);
+		model.addAttribute("searchVO",searchVO);
+		logger.info("AdminList={}",adminlist);
+		model.addAttribute("adminList", adminlist);
+		return "admin/adminList";
+	}   
+	
+	/**
+	 * 어드민 삭제 요청을 담당하는 메소드
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 * @author 김진혁
+	 * @since 2018. 12. 21.
+	 * @version 1.0
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.0		2018.12.21	김진혁		최초작성
+	 */
+	@RequestMapping(value = "/adminDel", method = RequestMethod.GET)
+	public String deleteAdmin(Model model, @RequestParam(value="RowCheck") String [] delAdmId) throws Exception{
+		int result=0;
+		for(int i=0; i<delAdmId.length; i++)
+		{
+			result=adminListService.delAdmin(delAdmId[i]);
+		}
+		if(result!=0) {
+			return "redirect:adminList";
+		}
+		return "redirect:adminMain";
+	}
+	
+	
+}

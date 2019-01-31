@@ -1,0 +1,36 @@
+<!DOCTYPE html">
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+
+<html lang="ko">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/main.css" />
+<head>
+  <title>구매확인서 발급지원 서비스</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<div class="topnav">
+	<ul>
+   		<li style="float:left;"><a href="${pageContext.request.contextPath}/"><font size="5">구매확인 발급지원 서비스</font></a></li>
+   		<li ><sec:authorize access="isAnonymous()"><a href="${pageContext.request.contextPath}/user/loginForm.do" >LogIn</a></sec:authorize></li>
+   		<li><sec:authorize access="isAuthenticated()"><a href="${pageContext.request.contextPath}/user/logout">LogOut</a></sec:authorize></li>
+ 		<li><a  href="${pageContext.request.contextPath}/user/usrinf/userInfo.do">MyInfo</a></li>
+  		<li><a  href="${pageContext.request.contextPath}/user/reqfrm/list">현황조회</a></li>
+  		<li><a  href="${pageContext.request.contextPath}/user/reqfrm/web">발급신청</a></li>
+  	</ul>
+</div>
+ 
+</body>
+</html>

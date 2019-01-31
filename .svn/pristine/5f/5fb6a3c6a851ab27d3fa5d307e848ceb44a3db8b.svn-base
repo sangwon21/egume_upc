@@ -1,0 +1,25 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="${pageContext.request.contextPath }/css/error.css" />
+<link href="https://fonts.googleapis.com/css?family=Montserrat:500" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Titillium+Web:700,900" rel="stylesheet">
+
+<title>Insert title here</title>
+</head>
+<body>
+<div id="error">
+	<div class="error">
+		<div class="error-error">
+			<h1>Error</h1>
+		</div>
+		<h2>에러가 발생하였습니다.</h2>
+		<p></p>
+		<a href="${pageContext.request.contextPath }"><span class="glyphicon glyphicon-home"></span>홈으로</a>
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,141 @@
+package com.upc.user.reqfrm.service;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.upc.user.reqfrm.dao.ReqFrmDAO;
+import com.upc.user.reqfrm.vo.ReqFrmListVO;
+import com.upc.user.reqfrm.vo.ReqFrmVO;
+import com.upc.user.reqfrm.vo.SearchVO;
+import com.upc.user.reqfrm.vo.UsrInfVO;
+
+/**
+ * 
+ * @author 이상원
+ * @since 2018. 12. 14.
+ * @version
+ * @see 참고
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ * 1.1		18.12.18	이상원		선적기일과 구매일을 String 형식으로 전환
+ */
+
+@Service
+public class ReqFrmServiceImpl implements ReqFrmService{
+	
+	@Autowired
+	private ReqFrmDAO dao;
+	
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ReqFrmServiceImpl.class);
+	
+	
+	@Override
+	public String makeSeqNum() {
+		// 발급신청번호
+		Date date = new Date();
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+		String dateFormat = format.format(date);
+		
+		String seq = String.format("%04d", dao.selectMaxSeq()+1);
+		String applnum = "APPL" + dateFormat+ seq;
+		
+		return applnum;
+	}
+	
+	@Override
+	public void insertReqFrm(ReqFrmVO reqFrmVO, String prtnum) throws Exception {
+		
+		
+		logger.info("insertReqFrm 시작");
+		// TO DO: 발급신청번호 만들기
+		
+		reqFrmVO.setPrtnum(prtnum);
+		reqFrmVO.setRegid(prtnum);
+		reqFrmVO.setApplditc("O");
+		
+		// 선적기일과 구매일에서 -를 제거한다
+		if(reqFrmVO.getAppmthd().equals("Web")) {
+			String prchdt = (String)reqFrmVO.getPrchdt();
+			prchdt = prchdt.replaceAll("-","");
+			reqFrmVO.setPrchdt(prchdt);
+			String shipdt = (String)reqFrmVO.getShipdt();
+			shipdt = shipdt.replaceAll("-","");
+			reqFrmVO.setShipdt(shipdt);
+		}
+		
+		/* 오늘 날짜를 String 형식에 맞춘다.
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		Calendar calendar = Calendar.getInstance();
+		String today = sdf.format(calendar.getTime());
+		reqFrmVO.setAppldt(today);*/
+		
+		reqFrmVO.setSts("R1");
+		logger.info("Regid는 " + reqFrmVO.getRegid() + " Applditc는 " + reqFrmVO.getApplditc() + " Sts는 " + reqFrmVO.getSts() + "Appmthd는 " + reqFrmVO.getAppmthd());
+		dao.insertCnfrmPrchReq(reqFrmVO);
+	}
+	
+	@Override
+	public UsrInfVO selectUser(String prtnum) {
+		UsrInfVO usrinfvo = dao.selectUser(prtnum);
+		return usrinfvo;
+	}
+	
+	@Override
+	public List<ReqFrmListVO> selectReqFrmList(SearchVO searchVO){
+		
+		
+		// Date형식의 날짜를 Varchar2 형식으로 변환
+		/*if (searchVO.getDateCondition().equals("appldt")) {
+			String date_from = searchVO.getDateFrom();
+			String date_to = searchVO.getDateTo();
+
+			date_from = date_from.replaceAll("-", "");
+			date_to = date_to.replaceAll("-", "");
+
+			searchVO.setDateFrom(date_from);
+			searchVO.setDateTo(date_to);
+		}*/
+		
+		// 전체 접수건
+		int boardTotUnit = dao.selectBoardTotUnit(searchVO);
+		// 현재페이지
+		int pageIndex = searchVO.getPageIndex();
+		// 한페이지당 건 수
+		int pageUnit = searchVO.getPageUnit();
+		// 보여줄 페이지 크기
+		int pageSize = searchVO.getPageSize();
+		// 전체페이지
+		int totPage = (boardTotUnit % pageUnit == 0) ? (boardTotUnit / pageUnit) : (boardTotUnit / pageUnit + 1); 
+		// 시작페이지
+		int firstIndex = ((pageIndex - 1) / pageSize) * pageSize + 1;
+		// 끝페이지
+		int lastIndex = firstIndex + pageSize - 1;
+		//끝페이지 처리
+		if (lastIndex > totPage) {
+			lastIndex = totPage;
+		}
+		
+		searchVO.setBoardTotUnit(boardTotUnit);
+		searchVO.setTotPage(totPage);
+		searchVO.setFirstIndex(firstIndex);
+		searchVO.setLastIndex(lastIndex);
+		
+		return dao.selectReqFrmList(searchVO);
+	}
+	
+	@Override
+	public void updateSts(List<ReqFrmListVO> reqFrmListVO) throws Exception{
+		logger.info("update서비스 안 reqFrmListVO는 " + reqFrmListVO.get(0).getSmplmdfreq());
+		for (ReqFrmListVO item : reqFrmListVO) {
+			logger.info("반복문 안의 item의 smplmdfreq: " + item.getSmplmdfreq() + " item의 sts:" + item.getSts() + " item의 applnum:" + item.getApplnum() + " item의 prtnum: "+ item.getPrtnum());
+			dao.updateSts(item);
+		}
+	}
+	
+}

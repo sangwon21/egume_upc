@@ -1,0 +1,12 @@
+package com.upc.admin.userjoinreqlist.service;
+
+import java.util.List;
+
+import com.upc.admin.userjoinreqlist.vo.SearchVO;
+import com.upc.admin.userjoinreqlist.vo.UserJoinReqVO;
+
+public interface UserJoinReqListService {
+	public List<UserJoinReqVO> getUserJoinReqList(SearchVO vo) throws Exception;
+	int getBoardTotUnit(SearchVO searchVO);
+	public int delUserJoinReq(String delUserId) throws Exception;
+}

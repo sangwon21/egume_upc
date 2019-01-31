@@ -1,0 +1,16 @@
+package com.upc.admin.wrtinfodetail.service;
+
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import com.upc.admin.wrtinfodetail.vo.CnfrmPrchIsueVO;
+import com.upc.admin.wrtinfodetail.vo.CnfrmPrchReqVO;
+
+public interface WrtInfoDetailService {
+	CnfrmPrchReqVO selectCnfrmPrchReq(String applnum);
+	List<CnfrmPrchIsueVO> selectCnfrmPrchIsue(String issuenum);
+	void insertSmpFile(CnfrmPrchReqVO cnfrmPrchReqVO, MultipartFile file) throws Exception;
+	void insertSmpCnfrmFile(CnfrmPrchReqVO cnfrmPrchReqVO, MultipartFile file, String loginId) throws Exception;
+	void insertIssueFile(CnfrmPrchIsueVO cnfrmPrchIsueVO, MultipartFile file, String loginId) throws Exception;
+}

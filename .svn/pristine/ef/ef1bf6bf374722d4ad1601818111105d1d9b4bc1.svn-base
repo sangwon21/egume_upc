@@ -1,0 +1,7 @@
+.conditionBox{
+	background-image: radial-gradient(#FAFAFA, #ECECEC, #F7F7F7);
+}
+
+div.container{
+	 padding-top:60px;
+}

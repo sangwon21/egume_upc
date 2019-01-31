@@ -1,0 +1,86 @@
+@charset "UTF-8";
+
+label, p {
+	font-size:12px;
+}
+/* table {
+	width:100%;
+	table-layout: fixed;
+} */
+/* td {
+	padding:1% !important;
+} */
+
+.col-lg-5{
+	margin-left:3%;
+	margin-right:3%;
+}
+
+.help-block{
+	color:#a94442 !important;
+}
+
+.header {
+	padding-top:30px;
+	padding-bottom:30px;
+}
+
+.well {
+	background-image: #ECECEC;
+}
+
+.icon {
+	color:#30BBBB;
+}
+
+#privateModal, #servInfModal {
+	margin-left:15px;
+}
+
+.file-input{
+    position: relative;
+    overflow: hidden;
+  	margin: 0px;
+    color: #333;
+    cursor: pointer;
+    background-color: #fff;
+    border-color: #ccc;
+}
+.file-input input[type=file] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 0;
+	padding: 0;
+	cursor: pointer;
+	font-size: 20px;
+	opacity: 0;
+	filter: alpha(opacity=0);
+}
+.file-input-title {
+    margin-left:2px;
+}
+.files{
+	margin-bottom:10px;
+}
+
+.user__header{
+	margin-bottom:10px;
+	border-bottom:1px solid black;
+}
+textarea{
+	width:100%;
+	resize: none;
+}
+.pointer{
+	cursor:pointer;
+}
+
+.pull-right{
+	margin-right:10px;	
+}
+
+#buttonForWebSubmit,
+#buttonForFileSubmit{
+	margin-bottom:20px;
+}

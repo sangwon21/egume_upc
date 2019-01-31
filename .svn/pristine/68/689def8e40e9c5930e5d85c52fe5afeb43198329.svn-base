@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	Date : 2018. 12. 26
+	Author : 김진혁
+	Description : 고객 정보 수정 처리를 위한 Mappers
+	version 1.2
+	=======================================
+	버전 		수정일 		수정자 		설명
+	1.0		2018.12.26	김진혁		userList,getBoardTotUnit 추가
+-->
+<mapper namespace="com.upc.admin.usermdf.dao.UserMdfDAO"> 
+
+	<!-- id 속성은 DAO 의 메소드와 같아야 한다  --> 
+	
+	<!-- 수정할 고객 정보  -->
+	<select id="getUserInfo" parameterType="string" resultType="userMdfVO">
+        SELECT u.*, f.filenm, f.type
+        FROM usrinf u LEFT OUTER JOIN fileinf f
+        ON u.bsnsfileid=f.fileseq
+        WHERE u.prtnum=#{prtnum}
+	</select>
+	
+	<!-- 고객 정보 수정 -->
+	<update id="mdfUserInfo" parameterType="userMdfVO">	
+		UPDATE USRINF 
+		SET cmpnnm=#{cmpnnm}, ceonm=#{ceonm}, addr1=#{addr1}, addr2=#{addr2}, 
+			emailyn=#{emailyn},
+			smsyn=#{smsyn}, 
+			prepayyn=<if test="prepayyn == 'on'">'Y'</if><if test="prepayyn != 'on'">'N'</if>, 
+			sts=#{sts}, 
+			mdftm=SYSDATE, mdfid=#{mdfid}, mgrname=#{mgrname}, mgrtel=#{mgrtel}, mgrphone=#{mgrphone}, mgremail=#{mgremail}, mgrpstn=#{mgrpstn}, mgrfax=#{mgrfax}
+			<if test="bsnsfileid != null and bsnsfileid != '' ">, bsnsfileid=#{bsnsfileid} </if> 
+		where prtnum=#{prtnum}
+	</update>
+
+ </mapper>

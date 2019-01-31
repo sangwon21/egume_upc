@@ -1,0 +1,13 @@
+package com.upc.admin.applrcptrgst.dao;
+
+
+import java.util.ArrayList;
+
+import com.upc.admin.applrcptlist.vo.ApplRcptListVO;
+import com.upc.common.file.vo.FileVO;
+
+public interface ApplRcptRgstDAO {
+	ApplRcptListVO getApplRcptOne(ApplRcptListVO applRcptListVO);
+	ArrayList<FileVO> getFileInfoList(ApplRcptListVO applRcptListVO);
+	
+}

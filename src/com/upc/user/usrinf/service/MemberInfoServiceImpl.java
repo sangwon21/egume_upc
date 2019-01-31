@@ -1,0 +1,117 @@
+package com.upc.user.usrinf.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.upc.user.usrinf.vo.UsrInfVO;
+import com.upc.user.usrinf.dao.MemberInfoDAO;
+
+/**
+ * 회원정보관리 ServiceImpl
+ * @author 이수빈
+ * @Date 2018.12.19
+ * @version 1.0
+ * @see
+ * 수정이력
+ * 버전 	수정일 		수정자 	수정내용
+ * 1.1	2018.12.26	이수빈	트랜잭션 처리
+ * */
+@Service("memberInfoService")
+@Transactional
+public class MemberInfoServiceImpl implements MemberInfoService{
+
+	@Autowired
+	private MemberInfoDAO dao;
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
+	
+	/**
+	 * 고객 정보 조회
+	 * @param prtnum
+	 * @author 이수빈
+	 * @since 2018.12.19
+	 * @version 1.0
+	 * @see 
+	 * 
+	 * */
+	@Override
+	public UsrInfVO selectUsrInf(String prtnum) throws Exception {
+		return dao.selectUsrInf(prtnum);
+	}
+
+	/**
+	 * 고객 정보 수정
+	 * @param usrInfVO
+	 * @author 이수빈
+	 * @since 2018.12.20
+	 * @version 1.0
+	 * @see 
+	 * 
+	 * */
+	@Override
+	@Transactional(rollbackFor=Exception.class)
+	public void updateUsrInf(UsrInfVO usrInfVO) throws Exception {
+		String pw = usrInfVO.getPw();
+
+		if(!pw.isEmpty()) {
+			pw = passwordEncoder.encode(usrInfVO.getPw());
+		}
+		
+		usrInfVO.setPw(pw);
+
+		if(usrInfVO.getEmailyn() == null) {
+			usrInfVO.setEmailyn("N");
+		}
+		if(usrInfVO.getSmsyn() == null) {
+			usrInfVO.setSmsyn("N");
+		}
+		if(usrInfVO.getPrepayyn() == null) {
+			usrInfVO.setPrepayyn("N");
+		}
+		
+		dao.updateUsrInf(usrInfVO);
+	}
+
+	/**
+	 * 회원 탈퇴를 위한 패스워드 일치/불일치 검사
+	 * @param prtnum
+	 * @param pw
+	 * @return
+	 * @author 이수빈
+	 * @since 2018.12.20
+	 * @version 1.0
+	 * @see 
+	 * 
+	 * */
+	@Override
+	public boolean checkPw(String prtnum, String pw) throws Exception {
+		boolean result;
+		
+		String password = dao.checkPw(prtnum);
+		if(passwordEncoder.matches(pw, password)) {
+			result = true;
+		} else {
+			result = false;
+		}
+		return result;
+	}
+	
+	/**
+	 * 회원 탈퇴(휴면 계정으로 전환)
+	 * @param prtnum
+	 * @author 이수빈
+	 * @since 2018.12.20
+	 * @version 1.0
+	 * @see 
+	 * 
+	 * */
+	@Override
+	@Transactional(rollbackFor=Exception.class)
+	public void deleteUsrInf(String prtnum) throws Exception {
+		dao.deleteUsrInf(prtnum);
+	}
+
+}

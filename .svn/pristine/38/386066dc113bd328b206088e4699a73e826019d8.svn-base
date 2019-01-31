@@ -1,0 +1,15 @@
+.conditionBox{
+	background-image: radial-gradient(#FAFAFA, #ECECEC, #F7F7F7);
+}
+
+div.main{
+	 padding-top:60px;
+}
+
+div.conditionBox{
+	padding:30px;
+}
+
+#changeButton{
+	margin-right:10px;
+}

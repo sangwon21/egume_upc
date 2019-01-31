@@ -1,0 +1,101 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %> 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/main.css"/>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.2/css/bootstrapValidator.min.css"/>
+	<!-- 자바스크립트 -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>	
+	<link href="${pageContext.request.contextPath}/css/admin.css" rel="stylesheet">
+	<link href="${pageContext.request.contextPath}/css/main.css" rel="stylesheet">
+</head>
+<body> 
+	<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse"
+					data-target="#myNavbar">
+					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+			</div>
+	
+		<div class="col-md-3" > 
+		   <span style="color:#F1F1F1; font-weight; 800; top: 10;"><h4>구매확인 발급지원 관리</h4></span>
+<!--  
+            <div class="widget widget-black shadow">
+                <div>
+                    <span class="pull-right">
+                        <h6 style="color: black;">신청 20건</h3>
+                    </span>
+                    <span class="pull-left text-warning">
+                        <h6 style="color: black;">발급 20건</h3>
+                    </span>
+                </div>
+                
+                <div style="clear: both;"></div>
+                <div class="" style="max-height: 5px;">
+                    <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" style="width:20%">
+                        <strong style="color: black;">20 %</strong>
+                    </div>
+                    <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" style="width:80%">
+                        <strong style="color: black;">80 %</strong>
+                    </div>
+                </div>
+                <div class="widget-controls hidden">
+                    <a href="#" class="widget-control-right"><span class="fa fa-times"></span></a>
+                </div>
+          </div>
+               -->
+
+           </div> 
+			<div class="collapse navbar-collapse" id="myNavbar">
+				<ul class="nav navbar-nav navbar-right"> 
+					<li class="dropdown"><a class="dropdown-toggle"
+						data-toggle="dropdown" href="#">회원통합관리<span class="caret"></span></a>   
+						<ul class="dropdown-menu">
+							<li><a href="${pageContext.request.contextPath}/admin/userList.do">회원정보조회</a></li>
+							<li><a href="${pageContext.request.contextPath}/admin/userJoinReqList.do">가입신청승인관리</a></li>
+							<sec:authorize access="hasAuthority('M')">
+								<li><a href="${pageContext.request.contextPath}/admin/adminList.do">어드민관리</a></li>
+							</sec:authorize>
+						</ul>
+					</li>
+					<li><a href="${pageContext.request.contextPath}/admin/depList.do">입금내역관리</a></li>
+					<li><a href="${pageContext.request.contextPath}/admin/applrcpt/prchCnfrmApplList.do">발급신청관리</a></li>
+					<li><a href="${pageContext.request.contextPath}/admin/wrtlist.do">발급작성관리</a></li>
+					<sec:authorize access="isAuthenticated()">
+						<li>
+							<a href="${pageContext.request.contextPath}/admin/adminMyPage.do"> 
+								<span class="glyphicon glyphicon-user"></span>
+									<sec:authentication property="principal.username"/>님  -
+									<sec:authorize access="hasAuthority('M')"> 
+										[관리자]
+									</sec:authorize>
+									<sec:authorize access="hasAuthority('R')">
+										[접수자]
+									</sec:authorize>
+									<sec:authorize access="hasAuthority('W')">
+										[작성자]
+									</sec:authorize>
+							</a>
+						</li>
+					<li><a href="${pageContext.request.contextPath}/admin/logout.do"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+					</sec:authorize>
+				</ul>
+			</div>
+		</div>
+	</nav>
+</body>
+</html>

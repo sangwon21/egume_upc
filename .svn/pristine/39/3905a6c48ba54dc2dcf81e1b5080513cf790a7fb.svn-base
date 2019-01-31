@@ -1,0 +1,166 @@
+package com.upc.admin.wrtlist.service;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.upc.admin.deplist.dao.DepositListDAO;
+import com.upc.admin.deplist.vo.DepositCnfrmVO;
+import com.upc.admin.wrtlist.dao.WrtListDAO;
+import com.upc.admin.wrtlist.vo.SearchVO;
+import com.upc.admin.wrtlist.vo.WrtListVO;
+
+/**
+ * 접수완료 이후의 발급신청 건들 목록을 가져옴
+ * @author 신혜영
+ * @since 2018. 12. 14.
+ * @version 1.2
+ * @see 참고
+ * 수정이력
+ * 버전		수정일		수정자		수정내용
+ * 1.0	2018.12.14		신혜영		작성 목록 가져오기 추가
+ * 1.1	2018.12.18		신혜영		상태변경 기능 추가
+ * 1.2	2018.12.19		신혜영		상태변경->입금정보등록, 발급건수 증가 기능 추가
+ */
+@Service("wrtListService")
+public class WrtListServiceImpl implements WrtListService {
+
+	@Autowired
+	private WrtListDAO wrtListDao;
+
+	@Autowired
+	private DepositListDAO depositListDAO;
+
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(WrtListServiceImpl.class);
+
+	/**
+	 * 조건에 맞는 목록들을 가져옴
+	 * @param searchVO
+	 * @return List<WrtListVO>
+	 * @author 신혜영
+	 * @since 2018. 12. 14.
+	 * @version 1.1
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.1	2019.01.10		신혜영		searchVO 초기 세팅 설정
+	 */
+	@Override
+	public List<WrtListVO> selectWrtrList(SearchVO searchVO, String loginId) {
+		// 페이지에 처음 접속 시, 접수일자 조회일자를 1개월전~현재 로 세팅해줌
+		if (searchVO.getDateFrom() == null && searchVO.getDateTo() == null) {
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+			Date currentTime = new Date();
+			String mTime = simpleDateFormat.format(currentTime);
+			searchVO.setDateTo(mTime);
+
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.MONTH, -1);
+			searchVO.setDateFrom(simpleDateFormat.format(cal.getTime()));
+		}
+
+		// 로그인한 작성자의 id를 초기값으로 설정
+		if (searchVO.getSearchWriter() == null) {
+			searchVO.setSearchWriter(loginId);
+		}
+
+		//앞 뒤 공백 제거
+		searchVO.setConditionValue(searchVO.getConditionValue().trim());
+
+		// 전체 접수건
+		int boardTotUnit = wrtListDao.selectBoardTotUnit(searchVO);
+		// 현재페이지
+		int pageIndex = searchVO.getPageIndex();
+		// 한페이지당 건 수
+		int pageUnit = searchVO.getPageUnit();
+		// 보여줄 페이지 크기
+		int pageSize = searchVO.getPageSize();
+		// 전체페이지
+		int totPage = (boardTotUnit % pageUnit == 0) ? (boardTotUnit / pageUnit) : (boardTotUnit / pageUnit + 1); 
+		// 시작페이지
+		int firstIndex = ((pageIndex - 1) / pageSize) * pageSize + 1;
+		// 끝페이지
+		int lastIndex = firstIndex + pageSize - 1;
+		//끝페이지 처리
+		if (lastIndex > totPage) {
+			lastIndex = totPage;
+		}
+		
+		searchVO.setBoardTotUnit(boardTotUnit);
+		searchVO.setTotPage(totPage);
+		searchVO.setFirstIndex(firstIndex);
+		searchVO.setLastIndex(lastIndex);
+		
+		logger.info("end select wrtier list logic with searchVO");
+
+		return wrtListDao.selectWrtrList(searchVO);
+	}
+
+	/**
+	 * 작성자 목록을 가져옴
+	 * @param
+	 * @return List<WrtListVO>
+	 * @author 신혜영
+	 * @since 2018. 12. 14.
+	 * @version 1.0
+	 */
+	@Override
+	public List<WrtListVO> selectWriters() {
+		return wrtListDao.selectWriters();
+	}
+
+	/**
+	 * 입금확인완료로 상태변경, 입금정보 등록 및 고객 건수 증가
+	 * @param wrtListVO
+	 * @return
+	 * @author 신혜영
+	 * @since 2018. 12. 18.
+	 * @version 1.1
+	 * @throws Exception
+	 * 수정이력
+	 * 버전		수정일		수정자		수정내용
+	 * 1.1	2019.01.09		신혜영		입금확인으로 상태변경 제거
+	 * 1.2	2019.01.14		신혜영		메서드명변경 (updateSts -> depositConfirm)
+	 */
+	@Override
+	@Transactional(rollbackFor=Exception.class)
+	public void depositConfirm(List<WrtListVO> wrtListVO) throws Exception {
+
+		for (WrtListVO item : wrtListVO) {
+			DepositCnfrmVO depositCnfrmVo = new DepositCnfrmVO();
+
+			//입금정보 세팅
+			depositCnfrmVo.setPrtnum(item.getPrtnum());
+			
+			//입급날짜를 등록하는 현재날짜로 세팅
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+			Date currentTime = new Date();
+			String mTime = simpleDateFormat.format(currentTime);
+			depositCnfrmVo.setDepdt(mTime);
+			
+			//입급자명을 작성자 이름으로 세팅
+			depositCnfrmVo.setDeprnm("작성자:"+item.getWrtrid());
+			depositCnfrmVo.setRgstid(item.getWrtrid());
+
+			// 입금정보 등록
+			if (depositListDAO.insertDepositHsty(depositCnfrmVo) != 1) {
+				logger.info("inserting deposit history is failed");
+				throw new Exception("입금정보 등록 실패");
+			}
+			// 고객 잔여건수 증가
+			if (depositListDAO.updateUsrRmncnt(depositCnfrmVo) != 1) {
+				logger.info("updating user rmncnt to rmncnt+1 is failed");
+				throw new Exception("고객 건수 증가 실패");
+			}
+		}
+		logger.info("end deposit confirm logic");
+
+		return;
+	}
+
+}

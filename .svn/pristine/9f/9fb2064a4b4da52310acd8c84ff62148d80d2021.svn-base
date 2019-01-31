@@ -1,0 +1,397 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ page session="false"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>발급지원 작성 상세 조회</title>
+<!-- 부가적인 테마 -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+
+<link href="${pageContext.request.contextPath}/css/writer/wrtInfoDetail.css" rel="stylesheet">
+<c:import url="../admin/header.jsp" />
+<script type="text/javascript">
+	var status = "${cnfrmprchreq.sts}";
+	var prtnum = "${cnfrmprchreq.prtnum}";
+	var applnum = "${cnfrmprchreq.applnum}";
+	
+	window.onload = function() {
+		
+		eventListener();
+	}
+
+	function eventListener() {
+		document.getElementById("smpFile").addEventListener("change", checkFile);
+		document.getElementById("smpCnfrmFile").addEventListener("change", checkFile);
+		document.getElementById("issueFile").addEventListener("change", checkFile);
+		
+		document.getElementById("smpFileSubmit").addEventListener("click", submitSmpFile);
+		document.getElementById("smpCnfrmFileSubmit").addEventListener("click", submitSmpCnfrmFile);
+		document.getElementById("issueFileSubmit").addEventListener("click", submitIssueFile);
+	}
+
+	//파일 확장자 검사
+	function checkFile(evt) {
+		var file = evt.target;
+		
+		if(!/\.(pdf|docx|hwp)$/i.test(file.files[0].name)) {
+			alert("허용되지 않는 파일 형식입니다");
+			file.value = "";
+		}
+	}
+
+	function submitSmpFile(evt) {
+		//진행 상태 확인
+		if( status === "R1" || status === "R2" ) {
+			alert("입금확인 건만 견본을 등록할 수 있습니다");
+			return;
+			
+		}
+		if( status === "C1" ) {
+			alert("이미 발행이 완료되었습니다");
+			return;
+		}
+
+		if( checkFileValue(document.getElementById("smpFile")) == false) {
+			return;
+		}
+		
+		uploadFile("sample");
+	}
+	
+	function submitSmpCnfrmFile() {
+		//진행 상태 확인
+		if( status !== "S1") {
+			alert("견본 완료된 이후에만 견본확인을 등록할 수 있습니다");
+			return;
+		}
+		
+		if( checkFileValue(document.getElementById("smpCnfrmFile")) == false) {
+			return;
+		}
+		
+		uploadFile("sampleConfirm");
+	}
+	
+	function submitIssueFile() {
+		//진행 상태 확인
+		if( status !== "S3" && status !== "C1") {
+			alert("견본 확인이 완료된 후에만 원본을 등록할 수 있습니다");
+			return;
+		}
+		
+		if( document.getElementById("issueNum").value == "" ) {
+			alert("구매확인서 번호를 입력해주십시오");
+			return;
+		}
+		
+		if( checkFileValue(document.getElementById("issueFile")) == false) {
+			return;
+		}
+		
+		uploadFile("issue");
+	}
+	
+	//파일 선택을 했는지 검사
+	function checkFileValue(file) {
+		//등록할 파일 존재 유무 체크
+		if( file.value == "" ) {
+			alert("파일을 선택해 주시길 바랍니다");
+			return false;
+		} 
+		
+		//파일 등록 한번더 확인
+		if( confirm("파일을 등록하시겠습니까?") == false ) {
+			return false;
+		}
+		
+		return true;
+	}
+
+	function uploadFile(str) {
+		if( str === "sample") {
+			var rmncnt = "${cnfrmprchreq.rmncnt}";
+			if(rmncnt === 0) {
+				alert("잔여 건수가 없습니다");
+				return;
+			}
+			document.getElementById("smpFileForm").submit();
+		}
+		
+		if( str === "sampleConfirm" ) {
+			document.getElementById("smpCnfrmFileForm").submit();
+		}
+		
+		if( str === "issue" ) {
+			document.getElementById("issueFileForm").submit();
+		}
+		
+		
+	}
+
+</script>
+</head>
+
+<body>
+	<div class="container">
+		<div id="detailInfoTop">
+			<h4 id="detailInfoTitle" class="detailMenu">발급지원 작성 상세 정보</h4>
+			<input type="button" class="btn btn-default" id="goBackBtn" value="목록" onclick="history.go(-1)">
+		</div>
+		<div id="detailInfoTable" class = "panel">
+			<table class="table table-bordered table-hover table-condensed">
+				<thead class="bg-primary">
+					<tr>
+						<th>대행 신청번호</th>
+						<th>접수일자</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>발급신청번호: ${cnfrmprchreq.applnum}</td>
+						<td>접수일자: ${cnfrmprchreq.applrcvdt}</td>
+					</tr>
+					<tr>
+						<td>구매일: ${cnfrmprchreq.prchdt}</td>
+						<td>선적기일: ${cnfrmprchreq.shipdt}</td>
+					</tr>
+					
+					<tr>
+						<td>사업자등록번호: ${cnfrmprchreq.prtnum}</td>
+						<td>구매자상호: ${cnfrmprchreq.cmpnnm}</td>
+					</tr>
+					<tr>
+						<td>주소: ${cnfrmprchreq.addr1}${cnfrmprchreq.addr2}</td>
+						<td>대표자명: ${cnfrmprchreq.ceonm}</td>
+					</tr>
+					<tr>
+						<td>구매자: ${cnfrmprchreq.mgrname}</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>구매자 메일주소: ${cnfrmprchreq.mgremail}</td>
+						<td>Fax번호: ${cnfrmprchreq.mgrfax}</td>
+					</tr>
+					<tr>
+						<td>전화번호: ${cnfrmprchreq.mgrtel}</td>
+						<td>휴대폰번호: ${cnfrmprchreq.mgrphone}</td>
+					</tr>
+					<tr>
+						<td>선불유무: ${cnfrmprchreq.prepayyn}</td>
+						<td>신청구분: ${cnfrmprchreq.applditc=='O' ? '신규발행':'변경발행'}</td>
+					</tr>
+					<tr>
+						<td>비고: ${cnfrmprchreq.notes}</td>
+						<td>잔여건수: ${cnfrmprchreq.rmncnt}</td>
+					</tr>
+					<tr>
+						<td>공급자사업자등록번호: ${cnfrmprchreq.splyprtnum}</td>
+						<td>공급자 주소: ${cnfrmprchreq.splyaddr1}${cnfrmprchreq.splyaddr2}</td>
+					</tr>
+					<tr>
+						<td>공급자대표명: ${cnfrmprchreq.splyceonm}</td>
+						<td>공급자상호명: ${cnfrmprchreq.splyorgnm}</td>
+					</tr>
+					<tr>
+						<td>진행상태: ${cnfrmprchreq.sts}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		<h4 class="detailMenu">근거서류정보</h4>
+		<div class="detailContents">
+			<div id="fileInfoTable" class = "panel">
+				<table class="table table-bordered table-hover table-condensed">
+					<colgroup>
+						<col width="110px">
+						<col width="">
+						<col width="">
+					</colgroup>
+					<thead class="bg-primary">
+						<tr>
+							<th>첨부파일</th>
+							<th>세금계산서</th>
+							<th>수출근거서류</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>1</td>
+							<td>${item.name}<button>다운로드</button></td>
+							<td>${item.name}<button>다운로드</button></td>
+						</tr>
+						<tr>
+							<td>2</td>
+							<td>${item.name}<button>다운로드</button></td>
+							<td>${item.name}<button>다운로드</button></td>
+						</tr>
+						<tr>
+							<td>3</td>
+							<td>${item.name}<button>다운로드</button></td>
+							<td>${item.name}<button>다운로드</button></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<h4 class="detailMenu">구매확인서 견본 및 견본확인</h4>
+		<div class="smpText">- 구매확인서 견본</div>
+		<div class="detailContents">
+			<div id="smpTable" class = "panel">
+				<table class="table table-bordered table-hover table-condensed">
+					<thead class='bg-primary'>
+						<tr>
+							<th>진행상태</th>
+							<th>작성자</th>
+							<th>작성일자</th>
+							<th>견본 전자문서번호</th>
+							<th>견본 파일명</th>
+							<th>공급자상호</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+					<c:if test="${cnfrmprchreq.smplfileid != null}">
+						<tr>
+							<th>견본완료</th>
+							<th>${cnfrmprchreq.wrtrnm}</th>
+							<th>${cnfrmprchreq.smpldt}</th>
+							<th>${cnfrmprchreq.smpldocid}</th>
+							<th>${cnfrmprchreq.smplfilenm}</th>
+							<th>${cnfrmprchreq.splyorgnm}</th>
+							<th><button>삭제</button></th>
+						</tr>
+					</c:if>
+					</tbody>
+				</table>
+			</div>
+	
+			<div class="fileUpload">
+				<span class="fileUploadTitle">구매학인서 견본 파일 업로드</span>
+				<form id="smpFileForm" method="post" action="${pageContext.request.contextPath}/admin/uploadSmpFile" enctype="multipart/form-data">
+					<input type="hidden" name="prtnum" value="${cnfrmprchreq.prtnum}">
+					<input type="hidden" name="applnum" value="${cnfrmprchreq.applnum}">
+					<input type="file" id="smpFile" class="form-control" name="smpFile">
+					<input class="fileUploadBtn" id="smpFileSubmit" type="button" value="등록">
+				</form>
+			</div>
+	
+			<div class="mdf">
+				<span class="mdfTitle">*************수정 요청 사항</span>
+				<input class="mdfText" type="text" value="${cnfrmprchreq.smplmdfreq}"/>
+				<input class="mdfBtn" type="submit" value="저장">
+			</div>
+		</div>
+		
+		
+		<div class="smpText">- 구매확인서 견본 확인</div>
+		<div class="detailContents">
+			<div id="smpCnfrmTable" class = "panel">
+				<table class="table table-bordered table-hover table-condensed">
+					<thead class='bg-primary'>
+						<tr>
+							<th>진행상태</th>
+							<th>확인 등록자</th>
+							<th>확인일자</th>
+							<th>견본 확인 파일명</th>
+							<th>공급자상호</th>
+							<th> </th>
+						</tr>
+					</thead>
+					<tbody>
+					<c:if test="${cnfrmprchreq.cnfrmdt != null}">
+						<tr>
+							<th>견본확인</th>
+							<th>${cnfrmprchreq.cnfrmid}</th>
+							<th>${cnfrmprchreq.cnfrmdt}</th>
+							<th>${cnfrmprchreq.cnfrmfilenm}</th>
+							<th>${cnfrmprchreq.splyorgnm}</th>
+							<th><button>삭제</button></th>
+						</tr>
+					</c:if>
+					</tbody>
+				</table>
+			</div>
+			<div class="fileUpload">
+				<span class="fileUploadTitle">구매학인서 견본 확인 파일 업로드</span>
+				<form id="smpCnfrmFileForm" method="post" action="${pageContext.request.contextPath}/admin/uploadSmpCnfrmFile" enctype="multipart/form-data">
+					<input type="hidden" name="prtnum" value="${cnfrmprchreq.prtnum}">
+					<input type="hidden" name="applnum" value="${cnfrmprchreq.applnum}">
+					<input type="file" id="smpCnfrmFile" class="form-control" name="smpCnfrmFile">
+					<input class="fileUploadBtn" id="smpCnfrmFileSubmit" type="button" value="등록">
+				</form>
+			</div>
+		</div>
+
+		<h4 class="detailMenu">구매확인서 원본</h4>
+		<div class="detailContents">
+			<div id="issueTable" class = "panel">
+				<table class="table table-bordered table-hover table-condensed">
+					<thead class='bg-primary'>
+						<tr>
+							<th>진행상태</th>
+							<th>작성자</th>
+							<th>발행구분</th>
+							<th>구매확인서번호</th>
+							<th>발급일자</th>
+							<th>공급자상호</th>
+							<th>발급건수</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<c:forEach var="issue" items="${issueList}">
+							<tr>
+								<th>발급완료</th>
+								<th>${issue.rgstnm}</th>
+								<th>${issue.docditc}</th>
+								<th>${issue.issuenum}</th>
+								<th>${issue.rgsttm}</th>
+								<th>${issue.splyorgnm}</th>
+								<th>${issue.issuecnt}</th>
+								<th><button>삭제</button></th>
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+			</div>
+	
+			<form id="issueFileForm" action="${pageContext.request.contextPath}/admin/uploadIssueFile" method="post" enctype="multipart/form-data">
+				<div class="fileUpload rounded border border-secondary">
+					<div>
+						<span class="fileUploadTitle">구매학인서 원본 파일 업로드</span>
+						<input type="hidden" name="applnum" value="${cnfrmprchreq.applnum}">
+						<input type="hidden" name="prtnum" value="${cnfrmprchreq.prtnum}">
+						<input type="hidden" name="splyprtnum" value="${cnfrmprchreq.splyprtnum}">
+						<input type="hidden" name="splyorgnm" value="${cnfrmprchreq.splyorgnm}">
+						<input type="file" id="issueFile" class="form-control" name="issueFile">
+						<span>발급건수</span><input type="text" id="issueCnt" name="issuecnt" value="1">
+					</div>
+					<div id="issueInfo">
+						<span class="fileUploadTitle">구매확인서 번호</span><input type="text" name="issuenum" id="issueNum" required>
+						<span>비고</span><input type="text" name="notes" id="notes">
+						<input class="fileUploadBtn" id="issueFileSubmit"type="button" value="등록">
+					</div>
+				</div>
+			</form>
+	
+			<div class="mdf">
+				<span class="mdfTitle">*************수정 요청 사항</span>
+				<input class="mdfText" type="text"/>
+				<input class="mdfBtn" type="submit" value="저장">
+			</div>
+		</div>
+
+
+	</div>
+</body>
+
+<footer>
+<c:import url="../admin/footer.jsp" />
+</footer>
+
+</html>
