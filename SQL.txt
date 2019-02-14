@@ -1,0 +1,514 @@
+﻿-- 테이블 순서는 관계를 고려하여 한 번에 실행해도 에러가 발생하지 않게 정렬되었습니다.
+
+-- USRINF Table Create SQL
+CREATE TABLE USRINF
+(
+    prtnum        VARCHAR2(10)     NOT NULL, 
+    pw            VARCHAR2(50)     NULL, 
+    cmpnnm        VARCHAR2(50)     NOT NULL, 
+    ceonm         VARCHAR2(50)     NOT NULL, 
+    addr1         VARCHAR2(35)     NOT NULL, 
+    addr2         VARCHAR2(35)     NOT NULL, 
+    mgrname       VARCHAR2(50)     NOT NULL, 
+    mgrtel        VARCHAR2(20)     NOT NULL, 
+    mgrphone      VARCHAR2(20)     NOT NULL, 
+    mgremail      VARCHAR2(100)    NOT NULL, 
+    mgrpstn       VARCHAR2(100)    NOT NULL, 
+    mgrfax        VARCHAR2(20)     NOT NULL, 
+    rmncnt        NUMBER(10)       NOT NULL, 
+    prepayyn      VARCHAR2(1)      NOT NULL, 
+    emailyn       VARCHAR2(1)      NOT NULL, 
+    emaildt       DATE             NOT NULL, 
+    smsyn         VARCHAR2(1)      NOT NULL, 
+    smsdt         DATE             NOT NULL, 
+    sts           VARCHAR2(1)      NOT NULL, 
+    rgsttm        DATE             NOT NULL, 
+    rgstid        VARCHAR2(20)     NOT NULL, 
+    mdftm         DATE             NOT NULL, 
+    mdfid         VARCHAR2(20)     NOT NULL, 
+    bsnsfileid    VARCHAR2(50)     NOT NULL, 
+    applfileid    VARCHAR2(50)     NOT NULL, 
+    CONSTRAINT USRINF_PK PRIMARY KEY (prtnum)
+)
+/
+
+COMMENT ON TABLE USRINF IS '고객'
+/
+
+COMMENT ON COLUMN USRINF.prtnum IS '사업자등록번호'
+/
+
+COMMENT ON COLUMN USRINF.pw IS '패스워드'
+/
+
+COMMENT ON COLUMN USRINF.cmpnnm IS '상호명'
+/
+
+COMMENT ON COLUMN USRINF.ceonm IS '대표자명'
+/
+
+COMMENT ON COLUMN USRINF.addr1 IS '주소'
+/
+
+COMMENT ON COLUMN USRINF.addr2 IS '상세주소'
+/
+
+COMMENT ON COLUMN USRINF.mgrname IS '담당자성명'
+/
+
+COMMENT ON COLUMN USRINF.mgrtel IS '담당자전화번호'
+/
+
+COMMENT ON COLUMN USRINF.mgrphone IS '담당자휴대전화'
+/
+
+COMMENT ON COLUMN USRINF.mgremail IS '담당자이메일'
+/
+
+COMMENT ON COLUMN USRINF.mgrpstn IS '담당자부서직위'
+/
+
+COMMENT ON COLUMN USRINF.mgrfax IS '담당자팩스번호'
+/
+
+COMMENT ON COLUMN USRINF.rmncnt IS '잔여건수'
+/
+
+COMMENT ON COLUMN USRINF.prepayyn IS 'Y:선불, N:선불아님'
+/
+
+COMMENT ON COLUMN USRINF.emailyn IS 'Y:수신, N:수신안함'
+/
+
+COMMENT ON COLUMN USRINF.emaildt IS '이메일수신동의일자'
+/
+
+COMMENT ON COLUMN USRINF.smsyn IS 'S:SMS, K:KAKAO, N:수신안함'
+/
+
+COMMENT ON COLUMN USRINF.smsdt IS 'SMS수신동의일자'
+/
+
+COMMENT ON COLUMN USRINF.sts IS 'R:승인 중, Y: 사용함, N:사용안함'
+/
+
+COMMENT ON COLUMN USRINF.rgsttm IS '신청일시'
+/
+
+COMMENT ON COLUMN USRINF.rgstid IS '등록자ID'
+/
+
+COMMENT ON COLUMN USRINF.mdftm IS '수정일시'
+/
+
+COMMENT ON COLUMN USRINF.mdfid IS '수정자ID'
+/
+
+COMMENT ON COLUMN USRINF.bsnsfileid IS '사업자등록사본'
+/
+
+COMMENT ON COLUMN USRINF.applfileid IS '첨부파일로 승인 신청한 경우의 가입신청서'
+/
+
+
+-- CNFRMPRCHREQ Table Create SQL
+CREATE TABLE CNFRMPRCHREQ
+(
+    prtnum         VARCHAR2(10)     NOT NULL, 
+    applnum        VARCHAR2(35)     NOT NULL, 
+    prchdt         VARCHAR2(8)      NOT NULL, 
+    shipdt         VARCHAR2(8)      NOT NULL, 
+    splyprtnum     VARCHAR2(10)     NOT NULL, 
+    splyorgnm      VARCHAR2(35)     NOT NULL, 
+    splyceonm      VARCHAR2(35)     NOT NULL, 
+    splyaddr1      VARCHAR2(35)     NOT NULL, 
+    splyaddr2      VARCHAR2(35)     NOT NULL, 
+    regid          VARCHAR2(20)     NOT NULL, 
+    appldt         VARCHAR2(8)      NOT NULL, 
+    applditc       VARCHAR2(1)      NOT NULL, 
+    sts            VARCHAR2(20)     NOT NULL, 
+    applfileid     VARCHAR2(50)     NOT NULL, 
+    appmthd        VARCHAR2(10)     NOT NULL, 
+    applrcvid      VARCHAR2(20)     NOT NULL, 
+    applrcvdt      DATE             NOT NULL, 
+    wrtrid         VARCHAR2(20)     NOT NULL, 
+    smpldt         DATE             NOT NULL, 
+    smpldocid      VARCHAR2(35)     NOT NULL, 
+    smplfileid     VARCHAR2(35)     NOT NULL, 
+    cnfrmdt        DATE             NOT NULL, 
+    cnfrmid        VARCHAR2(20)     NOT NULL, 
+    smplmdfreq     VARCHAR2(100)    NOT NULL, 
+    cnfrmfileid    VARCHAR2(35)     NOT NULL, 
+    issuenum       VARCHAR2(35)     NOT NULL, 
+    notes          VARCHAR2(100)    NOT NULL, 
+    CONSTRAINT CNFRMPRCHREQ_PK PRIMARY KEY (prtnum, applnum)
+)
+/
+
+COMMENT ON TABLE CNFRMPRCHREQ IS '구매확인서 신청'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.prtnum IS '사업자등록번호'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.applnum IS '발급신청번호'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.prchdt IS 'YYYYMMDD'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.shipdt IS 'YYYYMMDD'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.splyprtnum IS '공급자사업자등록번호'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.splyorgnm IS '공급자상호'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.splyceonm IS '공급자대표자'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.splyaddr1 IS '공급자주소1'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.splyaddr2 IS '공급자주소2'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.regid IS '사용자id 또는 어드민id'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.appldt IS 'YYYYMMDD'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.applditc IS 'O: 신규발행, A: 변경발행'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.sts IS '상태'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.applfileid IS '신청서파일id'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.appmthd IS 'File: 신청서파일업로드, Web:웹 신청'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.applrcvid IS '접수자'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.applrcvdt IS '접수일시'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.wrtrid IS '작성자'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.smpldt IS '견본작성일시'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.smpldocid IS '견본전자문서번호'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.smplfileid IS '견본파일id'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.cnfrmdt IS '견본확인일시'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.cnfrmid IS '사용자id 또는 어드민id'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.smplmdfreq IS '견본수정요청사항'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.cnfrmfileid IS '견본확인파일id'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.issuenum IS '구매확인서번호'
+/
+
+COMMENT ON COLUMN CNFRMPRCHREQ.notes IS '비고'
+/
+
+
+-- CNFRMPRCHISUE Table Create SQL
+CREATE TABLE CNFRMPRCHISUE
+(
+    prtnum        VARCHAR2(10)     NOT NULL, 
+    issuenum      VARCHAR2(35)     NOT NULL, 
+    fileseq       NUMBER(10)       NOT NULL, 
+    docditc       VARCHAR2(1)      NULL, 
+    docid         VARCHAR2(35)     NOT NULL, 
+    splyprtnum    VARCHAR2(10)     NOT NULL, 
+    splyorgnm     VARCHAR2(35)     NOT NULL, 
+    notes         VARCHAR2(100)    NOT NULL, 
+    isuefileid    VARCHAR2(50)     NOT NULL, 
+    rgstid        VARCHAR2(20)     NOT NULL, 
+    rgsttm        DATE             NOT NULL, 
+    CONSTRAINT CNFRMPRCHISUE_PK PRIMARY KEY (prtnum, issuenum, fileseq)
+)
+/
+
+COMMENT ON TABLE CNFRMPRCHISUE IS '구매확인서 발급'
+/
+
+COMMENT ON COLUMN CNFRMPRCHISUE.prtnum IS '사업자등록번호'
+/
+
+COMMENT ON COLUMN CNFRMPRCHISUE.issuenum IS '구매확인서번호'
+/
+
+COMMENT ON COLUMN CNFRMPRCHISUE.fileseq IS '일련번호(1부터순차적)'
+/
+
+COMMENT ON COLUMN CNFRMPRCHISUE.docditc IS 'O:신규발행, M:수정발행(7일이내수정), A:변경발행'
+/
+
+COMMENT ON COLUMN CNFRMPRCHISUE.docid IS '구매확인서전자문서번호'
+/
+
+COMMENT ON COLUMN CNFRMPRCHISUE.splyprtnum IS '공급자사업자번호'
+/
+
+COMMENT ON COLUMN CNFRMPRCHISUE.splyorgnm IS '공급업체명'
+/
+
+COMMENT ON COLUMN CNFRMPRCHISUE.notes IS '비고'
+/
+
+COMMENT ON COLUMN CNFRMPRCHISUE.isuefileid IS '구매확인서파일id'
+/
+
+COMMENT ON COLUMN CNFRMPRCHISUE.rgstid IS '등록자'
+/
+
+COMMENT ON COLUMN CNFRMPRCHISUE.rgsttm IS '등록일시'
+/
+
+
+-- ADMUSR Table Create SQL
+CREATE TABLE ADMUSR
+(
+    admid     VARCHAR2(20)    NOT NULL, 
+    pw        VARCHAR2(50)    NULL, 
+    name      VARCHAR2(35)    NOT NULL, 
+    email     VARCHAR2(35)    NOT NULL, 
+    tel       VARCHAR2(35)    NOT NULL, 
+    role      VARCHAR2(1)     NULL, 
+    useyn     VARCHAR2(1)     NOT NULL, 
+    rgsttm    DATE            NULL, 
+    rgstid    VARCHAR2(20)    NOT NULL, 
+    mdftm     DATE            NOT NULL, 
+    mdfid     VARCHAR2(20)    NOT NULL, 
+    CONSTRAINT ADMUSR_PK PRIMARY KEY (admid)
+)
+/
+
+COMMENT ON TABLE ADMUSR IS '어드민'
+/
+
+COMMENT ON COLUMN ADMUSR.admid IS '아이디'
+/
+
+COMMENT ON COLUMN ADMUSR.pw IS '패스워드'
+/
+
+COMMENT ON COLUMN ADMUSR.name IS '이름'
+/
+
+COMMENT ON COLUMN ADMUSR.email IS '이메일'
+/
+
+COMMENT ON COLUMN ADMUSR.tel IS '전화번호'
+/
+
+COMMENT ON COLUMN ADMUSR.role IS 'M:관리자, R:접수자, W:작성자'
+/
+
+COMMENT ON COLUMN ADMUSR.useyn IS 'Y:사용중, N:사용안함'
+/
+
+COMMENT ON COLUMN ADMUSR.rgsttm IS '등록일시'
+/
+
+COMMENT ON COLUMN ADMUSR.rgstid IS '등록자ID'
+/
+
+COMMENT ON COLUMN ADMUSR.mdftm IS '수정일시'
+/
+
+COMMENT ON COLUMN ADMUSR.mdfid IS '수정자ID'
+/
+
+
+-- DEPOSITHSTY Table Create SQL
+CREATE TABLE DEPOSITHSTY
+(
+    prtnum    VARCHAR2(10)    NOT NULL, 
+    depseq    VARCHAR2(35)    NOT NULL, 
+    depdt     VARCHAR2(8)     NULL, 
+    depamt    NUMBER(10)      NOT NULL, 
+    deprnm    VARCHAR2(50)    NOT NULL, 
+    depcnt    NUMBER(5)       NULL, 
+    rgstid    VARCHAR2(20)    NOT NULL, 
+    rgsttm    DATE            NOT NULL, 
+    CONSTRAINT DEPOSITHSTY_PK PRIMARY KEY (prtnum, depseq)
+)
+/
+
+COMMENT ON TABLE DEPOSITHSTY IS '입금정보'
+/
+
+COMMENT ON COLUMN DEPOSITHSTY.prtnum IS '사업자등록번호'
+/
+
+COMMENT ON COLUMN DEPOSITHSTY.depseq IS '일련번호(DEP+YYYYMMDD+seq)'
+/
+
+COMMENT ON COLUMN DEPOSITHSTY.depdt IS '입금날짜'
+/
+
+COMMENT ON COLUMN DEPOSITHSTY.depamt IS '입금액'
+/
+
+COMMENT ON COLUMN DEPOSITHSTY.deprnm IS '입금자명'
+/
+
+COMMENT ON COLUMN DEPOSITHSTY.depcnt IS '적립건수'
+/
+
+COMMENT ON COLUMN DEPOSITHSTY.rgstid IS '어드민id'
+/
+
+COMMENT ON COLUMN DEPOSITHSTY.rgsttm IS '등록일시'
+/
+
+
+-- CODE Table Create SQL
+CREATE TABLE CODE
+(
+    mstrcode    VARCHAR2(20)     NOT NULL, 
+    code        VARCHAR2(20)     NOT NULL, 
+    codenm      VARCHAR2(100)    NULL, 
+    prntcode    VARCHAR2(20)     NOT NULL, 
+    desc1       VARCHAR2(100)    NOT NULL, 
+    desc2       VARCHAR2(100)    NOT NULL, 
+    desc3       VARCHAR2(100)    NOT NULL, 
+    useyn       VARCHAR2(1)      NOT NULL, 
+    rgsttm      DATE             NOT NULL, 
+    mdfttm      DATE             NOT NULL, 
+    CONSTRAINT CODE_PK PRIMARY KEY (mstrcode, code)
+)
+/
+
+COMMENT ON TABLE CODE IS '상태정보'
+/
+
+COMMENT ON COLUMN CODE.mstrcode IS '마스터코드'
+/
+
+COMMENT ON COLUMN CODE.code IS '코드'
+/
+
+COMMENT ON COLUMN CODE.codenm IS '코드명'
+/
+
+COMMENT ON COLUMN CODE.prntcode IS '상위코드'
+/
+
+COMMENT ON COLUMN CODE.desc1 IS '추가기재1'
+/
+
+COMMENT ON COLUMN CODE.desc2 IS '추가기재2'
+/
+
+COMMENT ON COLUMN CODE.desc3 IS '추가기재3'
+/
+
+COMMENT ON COLUMN CODE.useyn IS 'Y:사용, N:사용안함'
+/
+
+COMMENT ON COLUMN CODE.rgsttm IS '등록일시'
+/
+
+COMMENT ON COLUMN CODE.mdfttm IS '수정일시'
+/
+
+
+-- FILEINF Table Create SQL
+CREATE TABLE FILEINF
+(
+    prtnum     VARCHAR2(10)     NOT NULL, 
+    fileseq    VARCHAR2(35)     NOT NULL, 
+    path       VARCHAR2(100)    NOT NULL, 
+    filenm     VARCHAR2(50)     NOT NULL, 
+    type       VARCHAR2(20)     NOT NULL, 
+    rgstid     VARCHAR2(20)     NOT NULL, 
+    rgsttm     DATE             NOT NULL, 
+    CONSTRAINT FILEINF_PK PRIMARY KEY (prtnum, fileseq)
+)
+/
+
+COMMENT ON TABLE FILEINF IS '파일정보'
+/
+
+COMMENT ON COLUMN FILEINF.prtnum IS '사업자등록번호'
+/
+
+COMMENT ON COLUMN FILEINF.fileseq IS '일련번호(ATT+YYYYMMDD+seq)'
+/
+
+COMMENT ON COLUMN FILEINF.path IS '파일경로'
+/
+
+COMMENT ON COLUMN FILEINF.filenm IS '파일명'
+/
+
+COMMENT ON COLUMN FILEINF.type IS '파일유형(확장자)'
+/
+
+COMMENT ON COLUMN FILEINF.rgstid IS '등록자'
+/
+
+COMMENT ON COLUMN FILEINF.rgsttm IS '등록일시'
+/
+
+
+-- CHRGHSTY Table Create SQL
+CREATE TABLE CHRGHSTY
+(
+    prtnum      VARCHAR2(10)    NOT NULL, 
+    chrgseq     VARCHAR2(35)    NOT NULL, 
+    applnum     DATE            NOT NULL, 
+    chrgditc    VARCHAR2(1)     NULL, 
+    chrgcnt     NUMBER(5)       NULL, 
+    rgsttm      DATE            NULL, 
+    rgstid      VARCHAR2(20)    NULL, 
+    CONSTRAINT CHRGHSTY_PK PRIMARY KEY (prtnum, chrgseq)
+)
+/
+
+COMMENT ON TABLE CHRGHSTY IS '발금차감이력정보'
+/
+
+COMMENT ON COLUMN CHRGHSTY.prtnum IS '사업자등록번호'
+/
+
+COMMENT ON COLUMN CHRGHSTY.chrgseq IS '일련번호(CHRG+YYYYMMDD+seq)'
+/
+
+COMMENT ON COLUMN CHRGHSTY.applnum IS '발급신청번호'
+/
+
+COMMENT ON COLUMN CHRGHSTY.chrgditc IS 'O: 신규발행, A:변경발행'
+/
+
+COMMENT ON COLUMN CHRGHSTY.chrgcnt IS '차감건수'
+/
+
+COMMENT ON COLUMN CHRGHSTY.rgsttm IS '등록일시'
+/
+
+COMMENT ON COLUMN CHRGHSTY.rgstid IS '등록자id'
+/
+
+
